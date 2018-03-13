@@ -1,27 +1,23 @@
 # MAE:MuxiAppEngine
 An easier way to manipulate Kubernetes cluser.
 
-The Server Part of [Projetc MAE](http://zxc0328.github.io/2017/05/27/mae/)
+The Paas of Muxi-Studio, Server Part of [Project MAE](http://zxc0328.github.io/2017/05/27/mae/)
+
+# Note:
+
++ 对使用者隐藏Namespace, Deployment, Svc等概念，只需提供image镜像以及必须的参数即可部署服务.
++ 提供版本回滚：记录时间、版本配置信息、操作者等，可以回滚到服务的某个版本.
 
 # Todo:
-暂时不打算在MAE中增加删除选项，而是交给Devops去处理，避免出现不可控的错误.
 
-## 查询
-+ 获取所有namespaces
-+ 根据namespaces获取相应deployment, service, pods以及其状态
-+ 根据namespace/pod/container 获取 log(缺省设置--tail=100等参数)
++ 查询服务状态 & log信息
++ 构建新服务
++ 更新服务
++ 删除服务
++ 用户权限管理
++ 数据库记录服务配置信息，保证在服务因各种原因挂掉后可以及时重启
++ 为服务提供相应Nginx配置
 
-## 创建
-+ 创建namespaces
-+ 创建namespaces/deployment
-+ 创建namespaces/svc
-
-## 更新
-+ 重新构建镜像后重启deployment
-+ 更改镜像地址重启deployment
-+ 改变副本数量后重启deployment
 
 # 语言
-Python OR Go? <br>
-K8s Python Client: https://github.com/kubernetes-client/python <br>
-K8s Golang Client: https://github.com/kubernetes/client-go <br>
+Golang  https://github.com/kubernetes/client-go
