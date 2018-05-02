@@ -1,0 +1,296 @@
+swagger: "2.0"
+
+info:
+  version: 1.0.0
+  title: MAE API Document
+  description: A simple API to learn how to write OpenAPI Specification
+
+schemes:
+  - https
+host: simple.api
+basePath: /api
+
+paths:
+  /auth:
+    post:
+      summary: MAE登录API
+      description: login
+      parameters: 
+      - name: logininfo
+        in: body
+        description: 登录所需用户名密码
+        required: true
+        schema:
+          required: 
+            - username
+            - password
+          properties:
+            password:
+              type: string
+            username:
+              type: string
+      responses:
+        200:
+          description: 登录成功
+          schema:
+            required: 
+              - uid
+              - token
+            properties:
+              uid:
+                type: integer
+              token:
+                type: string
+        401:
+          description: 密码错误 or 用户不存在
+          
+  
+  /apps:
+    get:
+      description: 查看该用户拥有查看权限的App列表
+      parameters: 
+        - in: header
+          name: token
+          description:  标识身份的Token
+          required: true
+          type: string
+      responses:
+        200:
+          description: a \*list* of App
+          schema:
+            type: array
+            items:
+              required: 
+                - appid
+                - appname
+              properties:
+                appid:
+                  type: integer
+                appname:
+                  type: string
+  
+  /app:
+    post:
+      description: 服务建立所需信息
+      parameters: 
+        - name: appinfo
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/App'
+        - name: token
+          in: header
+          description:  标识身份的Token
+          required: true
+          type: string
+      
+      responses:
+        200:
+          description: 建立成功
+          schema:
+            required: 
+              - appid
+            properties:
+              appid:
+                type: integer
+        403:
+          description: 无权限构建App
+        
+        503:
+          description: 服务器资源不足以构建App
+        
+        
+  
+  /app/{appid}/:
+    get:
+      description: 查看App信息
+      parameters: 
+        - name: appid
+          in: path
+          type: integer
+          required: true
+        - name: token
+          in: header
+          type: string
+          description:  标识身份的Token
+          required: true
+
+      responses:
+        200:
+          description: 返回App信息
+          schema:
+            $ref: '#/definitions/App'
+        403:
+          description: 无权限构建App
+            
+    put:
+      description: 重新构建App, 仅可更改imageurl, imagetag, replicas, 若不仅需要此三项则证明需要重新构建App.
+      parameters: 
+        - name: rebuildinfo
+          in: body
+          schema:
+            $ref: '#/definitions/RebuildApp'
+        - name: appid
+          in: path
+          type: integer
+          required: true
+        - name: token
+          description:  标识身份的Token
+          in: header
+          type: string
+          required: true
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/App'
+        403:
+          description: 无权限构建App
+        
+        503:
+          description: 服务器资源不足以重新构建App
+    
+    delete:
+      description: 删除App
+      parameters: 
+        - name: appid
+          in: path
+          type: integer
+          required: true
+        - name: token
+          in: header
+          type: string
+          required: true
+      responses:
+        200:
+          description: OK
+        403:
+          description: 无权限删除App
+  
+  /app/log/{appid}/:
+    get:
+      description: 获取特定App log
+      parameters: 
+        - name: appid
+          in: path
+          type: integer
+          required: true
+        - name: token
+          in: header
+          type: string
+          required: true
+      responses:
+        200:
+          description: 返回log信息
+          schema:
+            $ref: '#/definitions/Log'
+        
+        403:
+          description: 无权限获取App 
+  
+
+definitions:
+    
+  App:
+    required: 
+      - appname
+      - containers
+    properties:
+      appname:
+        description: App名字
+        type: string
+      appversion:
+        description: App 版本号
+        type: string
+        default: "betav1"
+      replicas:
+        description: 副本数量
+        type: integer
+        default: 1
+      containers:
+        description: 容器信息
+        type: array
+        items:
+          $ref: "#/definitions/Container"
+          
+  Container:
+    required: 
+      - containername
+      - imageurl
+      
+    properties:
+      containername:
+        description: container名字
+        type: string
+      imageurl:
+        description: 镜像地址
+        type: string
+      imagetag:
+        description: 镜像版本号
+        type: string
+        default: latest
+      runcmd:
+        description: 容器运行命令
+        type: string
+        default: 空
+      envs:
+        description: 环境变量键值对
+        type: array
+        items:
+          $ref: '#/definitions/ENVpair'
+      port:
+        description: 容器开放的端口
+        type: integer
+        default: 3000
+      volumns:
+        description: 挂载点键值对
+        type: array
+        items:
+          $ref: '#/definitions/VolumnPair'
+        default: 空
+        
+  
+  RebuildApp:
+    required: 
+      - imageurl
+      - imagetag
+    properties:
+      imageurl:
+        type: string
+      imagetag:
+        type: string
+      replicas:
+        type: integer
+        description: -1代表使用原数目
+        default: -1
+  
+  ENVpair:
+    required: 
+      - envname
+      - envvalue
+    properties:
+      envname:
+        type: string
+      envvalue:
+        type: string
+  
+  VolumnPair:
+    required: 
+      - innerlocation
+      - outlocation
+    properties:
+      innerlocation:
+        description: 在容器内的挂载点
+        type: string
+      outlocation:
+        description: 在宿主机上挂载点
+        type: string
+    
+  Log:
+    required: 
+      - log
+    properties:
+      log:
+        description: log
+        type: string
+    
