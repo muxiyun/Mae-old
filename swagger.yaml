@@ -3,7 +3,7 @@ swagger: "2.0"
 info:
   version: 1.0.0
   title: MAE API Document
-  description: A simple API to learn how to write OpenAPI Specification
+  description: Muxi App Engine API Document
 
 schemes:
   - https
@@ -11,7 +11,7 @@ host: simple.api
 basePath: /api
 
 paths:
-  /auth:
+  /auth/:
     post:
       summary: MAE登录API
       description: login
@@ -44,10 +44,9 @@ paths:
         401:
           description: 密码错误 or 用户不存在
           
-  
-  /apps:
+  /apps/:
     get:
-      description: 查看该用户拥有查看权限的App列表
+      summary: 获取应用列表
       parameters: 
         - in: header
           name: token
@@ -56,37 +55,38 @@ paths:
           type: string
       responses:
         200:
-          description: a \*list* of App
+          description: a \*list* of apps
           schema:
             type: array
             items:
               required: 
-                - appid
                 - appname
+                - appid
               properties:
                 appid:
                   type: integer
                 appname:
                   type: string
-  
-  /app:
+  /app/:
     post:
-      description: 服务建立所需信息
+      summary: 创建一个应用
       parameters: 
-        - name: appinfo
-          in: body
+        - in: body
+          name: appname
           required: true
           schema:
-            $ref: '#/definitions/App'
-        - name: token
-          in: header
-          description:  标识身份的Token
+            required:
+              - appname
+            properties:
+              appname:
+                type: string
+        - in: header
+          name: token
           required: true
           type: string
-      
       responses:
         200:
-          description: 建立成功
+          description: OK
           schema:
             required: 
               - appid
@@ -94,104 +94,265 @@ paths:
               appid:
                 type: integer
         403:
-          description: 无权限构建App
+          description: Forbidden
         
-        503:
-          description: 服务器资源不足以构建App
-        
-        
-  
-  /app/{appid}/:
+                
+  /app/{appid}/services/:
     get:
-      description: 查看App信息
+      summary: 获取一个app内所有服务
       parameters: 
-        - name: appid
-          in: path
-          type: integer
+        - in: header
+          name: token
+          description: 标识身份
           required: true
-        - name: token
-          in: header
           type: string
-          description:  标识身份的Token
+        - in: path
+          name: appid
           required: true
-
-      responses:
-        200:
-          description: 返回App信息
-          schema:
-            $ref: '#/definitions/App'
-        403:
-          description: 无权限构建App
-            
-    put:
-      description: 重新构建App, 仅可更改imageurl, imagetag, replicas, 若不仅需要此三项则证明需要重新构建App.
-      parameters: 
-        - name: rebuildinfo
-          in: body
-          schema:
-            $ref: '#/definitions/RebuildApp'
-        - name: appid
-          in: path
           type: integer
-          required: true
-        - name: token
-          description:  标识身份的Token
-          in: header
-          type: string
-          required: true
       responses:
         200:
           description: OK
           schema:
-            $ref: '#/definitions/App'
+            type: array
+            items:
+              required: 
+                - svcid
+                - svcname
+              properties:
+                svcid:
+                  type: integer
+                svcname:
+                  type: string
         403:
-          description: 无权限构建App
-        
-        503:
-          description: 服务器资源不足以重新构建App
+          description: Forbidden
+  
+  /app/{appid}/service/:      
+    post:
+      summary: 创建一个服务
+      description: 如一个APP内拥有前端，后端，redis数据库等服务
+      parameters: 
+        - in: path
+          name: appid
+          description: APP id
+          required: true
+          type: integer
+        - in: header
+          name: token
+          description: 标识身份
+          required: true
+          type: string
+        - in: body
+          name: svcinfo
+          description: 服务信息：包括name与port
+          required: true
+          schema:
+            required: 
+              - svcname
+              - port
+            properties:
+              svcname:
+                type: string
+              port:
+                type: integer
+              
+      responses:
+        200:
+          description: OK
+          schema:
+            required: 
+              - svcid
+            properties:
+              appid:
+                type: integer
+        403:
+          description: Forbidden
+      
     
-    delete:
-      description: 删除App
-      parameters: 
-        - name: appid
-          in: path
+  /app/{appid}/service/{svcid}/versions/:
+    get:
+      summary: 获取一个服务所有版本.
+      parameters:
+        - in: path
+          name: appid
+          description: 应用 ID
+          required: true
           type: integer
+        - in: path
+          name: svcid
+          description: 服务 ID
           required: true
-        - name: token
-          in: header
+          type: integer
+        - in: header
+          name: token
+          required: true
           type: string
+          
+      responses:
+        200:
+          description: OK
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Version'
+        403:
+          description: Forbidden
+              
+  /app/{appid}/service/{svcid}/version/:
+    post:
+      summary: 创建一个服务的某个版本
+      parameters: 
+        - in: path
+          name: appid
+          description: 应用 ID
           required: true
+          type: integer
+        - in: path
+          name: svcid
+          description: 服务 ID
+          required: true
+          type: integer
+        - in: header
+          name: token
+          required: true
+          type: string
+        - in: body
+          name: version_create_info
+          schema:
+            $ref: '#/definitions/VersionCreate'
+            
+      responses:
+        200:
+          description: OK
+          schema:
+            required:
+              - versionid
+            properties:
+              versionid:
+                type: integer
+        403:
+          description: Forbidden
+                
+  /app/{appid}/service/{svcid}/version/{versionid}/:
+    post:
+      summary: 激活某版本(deactive其他版本)
+      parameters: 
+        - in: path
+          name: appid
+          description: 应用 ID
+          required: true
+          type: integer
+        - in: path
+          name: svcid
+          description: 服务 ID
+          required: true
+          type: integer
+        - in: path
+          name: versionid
+          required: true
+          description: 版本 ID
+          type: integer
+        - in: header
+          name: token
+          required: true
+          type: string
       responses:
         200:
           description: OK
         403:
-          description: 无权限删除App
-  
-  /app/log/{appid}/:
-    get:
-      description: 获取特定App log
-      parameters: 
-        - name: appid
-          in: path
+          description: Forbidden
+        409:
+          description: Conflict,原本已经active
+          
+    delete:
+      summary: 删除某个版本
+      parameters:
+        - in: path
+          name: appid
+          description: 应用 ID
+          required: true
           type: integer
+        - in: path
+          name: svcid
+          description: 服务 ID
           required: true
-        - name: token
-          in: header
+          type: integer
+        - in: path
+          name: versionid
+          required: true
+          description: 版本 ID
+          type: integer
+        - in: header
+          name: token
+          required: true
           type: string
-          required: true
       responses:
         200:
-          description: 返回log信息
+          description: OK
+        403:
+          description: Forbidden
+
+  /app/{appid}/service/{svcid}/version/{versionid}/logs:
+    get:
+      summary: 获取Log
+      parameters:
+        - in: path
+          name: appid
+          description: 应用 ID
+          required: true
+          type: integer
+        - in: path
+          name: svcid
+          description: 服务 ID
+          required: true
+          type: integer
+        - in: path
+          name: versionid
+          required: true
+          description: 版本 ID
+          type: integer
+        - in: query
+          name: tail
+          description: log从后往前的行数,0为全部
+          type: integer
+          minimum: 0
+          maximum: 1000
+          required: true
+        - in: header
+          name: token
+          required: true
+          type: string
+      responses:
+        200:
+          description: OK
           schema:
             $ref: '#/definitions/Log'
-        
-        403:
-          description: 无权限获取App 
-  
-
-definitions:
     
-  App:
+          
+          
+definitions:
+  
+  Version:
+    required: 
+      - appname
+      - svcname
+      - version
+      - status
+    properties:
+      appname:
+        description: app名字
+        type: string
+      svcname:
+        description: svc名字
+        type: string
+      version:
+        description: 版本名
+        type: string
+      status:
+        description: 状态:是否正在使用
+        type: string
+  
+  VersionCreate:
     required: 
       - appname
       - containers
@@ -250,20 +411,6 @@ definitions:
         default: 空
         
   
-  RebuildApp:
-    required: 
-      - imageurl
-      - imagetag
-    properties:
-      imageurl:
-        type: string
-      imagetag:
-        type: string
-      replicas:
-        type: integer
-        description: -1代表使用原数目
-        default: -1
-  
   ENVpair:
     required: 
       - envname
@@ -285,6 +432,20 @@ definitions:
       outlocation:
         description: 在宿主机上挂载点
         type: string
+        
+  RecreateVersion:
+    required: 
+      - imageurl
+      - imagetag
+    properties:
+      imageurl:
+        type: string
+      imagetag:
+        type: string
+      replicas:
+        type: integer
+        description: -1代表使用原数目
+        default: -1
     
   Log:
     required: 
@@ -292,5 +453,5 @@ definitions:
     properties:
       log:
         description: log
-        type: string
-    
+        type: string 
+  
