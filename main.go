@@ -1,7 +1,7 @@
 package main
 
 import (
-	"MAE/models"
+	"github.com/Andrewpqc/MAE/models"
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/middleware/logger"
 	"github.com/kataras/iris/middleware/recover"
