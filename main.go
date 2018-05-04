@@ -8,7 +8,7 @@ import (
 
 )
 
-func main() {
+func newApp() *iris.Application{
 	app := iris.New()
 	app.Logger().SetLevel("debug")
 	app.Use(recover.New())
@@ -17,7 +17,9 @@ func main() {
 	app.Get("/hi", func(ctx iris.Context) {
 		ctx.JSON(models.Logininfo{Username: "小明", Password: "hhhhh2333"})
 	})
-
-	app.Run(iris.Addr("127.0.0.1:8000"),iris.WithoutVersionChecker,iris.WithoutServerError(iris.ErrServerClosed))
-
+	return app
+}
+func main() {
+	ap:=newApp()
+	ap.Run(iris.Addr("127.0.0.1:8000"),iris.WithoutVersionChecker,iris.WithoutServerError(iris.ErrServerClosed))
 }
