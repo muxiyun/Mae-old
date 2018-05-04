@@ -1,4 +1,7 @@
 # MAE:Muxi APP Engine
+
+[![Build Status](https://travis-ci.org/Andrewpqc/MAE.svg?branch=master)](https://travis-ci.org/Andrewpqc/MAE)
+
 An easier way to manipulate Kubernetes cluser.
 
 The PaaS of Muxi-Studio, Server Part of [Project MAE](http://zxc0328.github.io/2017/05/27/mae/)
