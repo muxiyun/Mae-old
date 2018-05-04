@@ -6,6 +6,7 @@ import (
 	"github.com/kataras/iris/middleware/logger"
 	"github.com/kataras/iris/middleware/recover"
 
+
 )
 
 func newApp() *iris.Application{
@@ -20,6 +21,7 @@ func newApp() *iris.Application{
 	return app
 }
 func main() {
-	ap:=newApp()
-	ap.Run(iris.Addr("127.0.0.1:8000"),iris.WithoutVersionChecker,iris.WithoutServerError(iris.ErrServerClosed))
+	app:=newApp()
+	app.Configure(iris.WithConfiguration(iris.YAML("./config.yml")))
+	app.Run(iris.Addr("127.0.0.1:8000"),iris.WithoutVersionChecker,iris.WithoutServerError(iris.ErrServerClosed))
 }
