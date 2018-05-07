@@ -1,11 +1,14 @@
-# MAE:MuxiAppEngine
+# MAE:Muxi APP Engine
+
+[![Build Status](https://travis-ci.org/Andrewpqc/MAE.svg?branch=master)](https://travis-ci.org/Andrewpqc/MAE)
+
 An easier way to manipulate Kubernetes cluser.
 
-The Paas of Muxi-Studio, Server Part of [Project MAE](http://zxc0328.github.io/2017/05/27/mae/)
+The PaaS of Muxi-Studio, Server Part of [Project MAE](http://zxc0328.github.io/2017/05/27/mae/)
 
 # Note:
 
-+ 对使用者隐藏Namespace, Deployment, Svc等概念，只需提供image镜像以及必须的参数即可部署服务.
++ 对使用者隐藏Namespace, Deployment, Service等概念，只需提供image镜像以及必须的参数即可部署服务.
 + 提供版本回滚：记录时间、版本配置信息、操作者等，可以回滚到服务的某个版本.
 
 # Todo:

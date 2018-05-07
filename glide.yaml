@@ -1,0 +1,7 @@
+package: github.com/muxiyun/MAE
+import:
+- package: github.com/kataras/iris
+  version: v10.6.3
+  subpackages:
+  - middleware/logger
+  - middleware/recover
