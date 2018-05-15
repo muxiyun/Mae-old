@@ -20,6 +20,7 @@ func newApp() *iris.Application{
 	})
 	return app
 }
+
 func main() {
 	app:=newApp()
 	app.Configure(iris.WithConfiguration(iris.YAML("./config.yml")))
