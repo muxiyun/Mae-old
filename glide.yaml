@@ -1,7 +1,29 @@
-package: github.com/muxiyun/MAE
+package: github.com/muxiyun/Mae
 import:
-- package: github.com/kataras/iris
-  version: v10.6.3
+- package: github.com/dgrijalva/jwt-go
+  version: ~3.2.0
+- package: github.com/fsnotify/fsnotify
+  version: ~1.4.7
+- package: github.com/jinzhu/gorm
+  version: ~1.9.1
   subpackages:
-  - middleware/logger
-  - middleware/recover
+  - dialects/mysql
+- package: github.com/kataras/iris
+  version: ~10.6.7
+  subpackages:
+  - core/errors
+- package: github.com/lexkong/log
+- package: github.com/shirou/gopsutil
+  version: ~2.18.7
+  subpackages:
+  - cpu
+  - disk
+  - load
+  - mem
+- package: github.com/spf13/viper
+  version: ~1.0.2
+- package: golang.org/x/crypto
+  subpackages:
+  - bcrypt
+- package: gopkg.in/go-playground/validator.v9
+  version: ~9.20.2

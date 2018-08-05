@@ -1,0 +1,5 @@
+2018-08-05 13:49:59.612 INFO Mae/main.go:74 Start to listening the incoming requests on http address: :8080
+2018-08-05 13:49:59.612 INFO Mae/main.go:69 Start to listeni5ng the incoming requests on https address: :8081
+2018-08-05 13:49:59.612 INFO Mae/main.go:27 Waiting for the router, retry in 1 second.
+2018-08-05 13:50:00.617 INFO Mae/main.go:61 The router has been deployed successfully.
+2018-08-05 13:50:02.222 INFO Mae/main.go:75 http: Server closed

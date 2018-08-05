@@ -2,13 +2,13 @@ package middleware
 
 import (
 	"github.com/kataras/iris"
-	"github.com/Andrewpqc/Mae/handler"
+	"github.com/muxiyun/Mae/handler"
 	"fmt"
 	"encoding/base64"
 	"strings"
-	"github.com/Andrewpqc/Mae/pkg/errno"
-	"github.com/Andrewpqc/Mae/pkg/token"
-	"github.com/Andrewpqc/Mae/model"
+	"github.com/muxiyun/Mae/pkg/errno"
+	"github.com/muxiyun/Mae/pkg/token"
+	"github.com/muxiyun/Mae/model"
 	"time"
 	"github.com/kataras/iris/core/errors"
 )
