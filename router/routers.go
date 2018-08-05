@@ -17,6 +17,7 @@ func Load(app *iris.Application) *iris.Application {
 	app.Use(middleware.NoCache)
 	app.Use(middleware.Options)
 	app.Use(middleware.Secure)
+	app.Use(middleware.CasbinMiddleware.ServeHTTP)
 
 	//routers setup here
 
