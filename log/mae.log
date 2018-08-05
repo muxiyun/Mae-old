@@ -3,3 +3,33 @@
 2018-08-05 13:49:59.612 INFO Mae/main.go:27 Waiting for the router, retry in 1 second.
 2018-08-05 13:50:00.617 INFO Mae/main.go:61 The router has been deployed successfully.
 2018-08-05 13:50:02.222 INFO Mae/main.go:75 http: Server closed
+2018-08-05 19:16:03.542 INFO Mae/main.go:74 Start to listening the incoming requests on http address: :8080
+2018-08-05 19:16:03.542 INFO Mae/main.go:69 Start to listeni5ng the incoming requests on https address: :8081
+2018-08-05 19:16:03.542 INFO Mae/main.go:27 Waiting for the router, retry in 1 second.
+2018-08-05 19:16:04.566 INFO Mae/main.go:27 Waiting for the router, retry in 1 second.
+2018-08-05 19:16:05.569 INFO Mae/main.go:27 Waiting for the router, retry in 1 second.
+2018-08-05 19:16:06.572 INFO Mae/main.go:27 Waiting for the router, retry in 1 second.
+2018-08-05 19:16:07.573 INFO Mae/main.go:27 Waiting for the router, retry in 1 second.
+2018-08-05 19:16:08.575 INFO Mae/main.go:27 Waiting for the router, retry in 1 second.
+2018-08-05 19:16:09.577 INFO Mae/main.go:27 Waiting for the router, retry in 1 second.
+2018-08-05 19:16:10.578 INFO Mae/main.go:27 Waiting for the router, retry in 1 second.
+2018-08-05 19:16:11.580 INFO Mae/main.go:27 Waiting for the router, retry in 1 second.
+2018-08-05 19:16:12.581 INFO Mae/main.go:27 Waiting for the router, retry in 1 second.
+2018-08-05 19:16:13.581 FATAL Mae/main.go:59 The router has no response, or it might took too long to start up. error: Cannot connect to the router.
+2018-08-05 19:21:00.624 INFO Mae/main.go:74 Start to listening the incoming requests on http address: :8080
+2018-08-05 19:21:00.625 INFO Mae/main.go:69 Start to listeni5ng the incoming requests on https address: :8081
+2018-08-05 19:21:00.642 INFO Mae/main.go:27 Waiting for the router, retry in 1 second.
+2018-08-05 19:21:01.647 INFO Mae/main.go:27 Waiting for the router, retry in 1 second.
+2018-08-05 19:21:02.658 INFO Mae/main.go:27 Waiting for the router, retry in 1 second.
+2018-08-05 19:21:02.988 INFO Mae/main.go:70 http: Server closed
+2018-08-05 19:21:02.988 INFO Mae/main.go:75 http: Server closed
+2018-08-05 21:15:37.653 INFO Mae/main.go:74 Start to listening the incoming requests on http address: :8080
+2018-08-05 21:15:37.653 INFO Mae/main.go:69 Start to listeni5ng the incoming requests on https address: :8081
+2018-08-05 21:15:37.656 INFO Mae/main.go:27 Waiting for the router, retry in 1 second.
+2018-08-05 21:15:38.660 INFO Mae/main.go:27 Waiting for the router, retry in 1 second.
+2018-08-05 21:15:39.533 INFO Mae/main.go:75 http: Server closed
+2018-08-05 21:19:01.582 INFO Mae/main.go:74 Start to listening the incoming requests on http address: :8080
+2018-08-05 21:19:01.583 INFO Mae/main.go:69 Start to listeni5ng the incoming requests on https address: :8081
+2018-08-05 21:19:01.584 INFO Mae/main.go:27 Waiting for the router, retry in 1 second.
+2018-08-05 21:19:02.594 INFO Mae/main.go:61 The router has been deployed successfully.
+2018-08-05 22:40:30.872 INFO Mae/main.go:75 http: Server closed

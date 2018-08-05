@@ -8,6 +8,7 @@ import (
 	"github.com/kataras/iris"
 	"github.com/muxiyun/Mae/model"
 	"github.com/muxiyun/Mae/pkg/errno"
+	"github.com/muxiyun/Mae/router/middleware"
 )
 
 
@@ -34,6 +35,10 @@ func CreateUser(ctx iris.Context) {
 		fmt.Println(err)
 		SendResponse(ctx, errno.New(errno.ErrDatabase, err), nil)
 		return
+	}
+
+	if user.Role==1{
+		middleware.Enforcer.AddPolicy()
 	}
 
 	SendResponse(ctx, nil, iris.Map{"id": user.ID, "username": user.UserName})

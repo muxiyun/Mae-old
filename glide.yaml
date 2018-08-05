@@ -1,9 +1,14 @@
 package: github.com/muxiyun/Mae
 import:
+- package: github.com/casbin/casbin
+  version: ~1.5.0
+- package: github.com/casbin/gorm-adapter
 - package: github.com/dgrijalva/jwt-go
   version: ~3.2.0
 - package: github.com/fsnotify/fsnotify
   version: ~1.4.7
+- package: github.com/go-sql-driver/mysql
+  version: ~1.4.0
 - package: github.com/jinzhu/gorm
   version: ~1.9.1
   subpackages:

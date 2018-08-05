@@ -13,6 +13,7 @@ type User struct {
 	UserName string `json:"username" gorm:"column:username;not null;unique"`
 	Email string `json:"email" gorm:"column:email;not null;unique"`
 	PasswordHash string `json:"password" gorm:"column:passwordhash;not null"`
+	Role int `json:"role" gorm:"column:role;default:'1'"`
 }
 
 
