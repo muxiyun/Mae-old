@@ -8,7 +8,8 @@ import (
 	"github.com/kataras/iris"
 	"github.com/muxiyun/Mae/model"
 	"github.com/muxiyun/Mae/pkg/errno"
-	"github.com/muxiyun/Mae/router/middleware"
+	"github.com/muxiyun/Mae/pkg/casbin"
+
 )
 
 
@@ -37,8 +38,10 @@ func CreateUser(ctx iris.Context) {
 		return
 	}
 
-	if user.Role==1{
-		middleware.Enforcer.AddPolicy()
+	if user.Role=="admin"{
+		casbin.AttachAdminToAdminRole(user.UserName)
+	}else {
+		casbin.AttachUserToUserRole(user.UserName)
 	}
 
 	SendResponse(ctx, nil, iris.Map{"id": user.ID, "username": user.UserName})

@@ -1,4 +1,3 @@
-//改编自iris-casbin
 
 package casbin
 
@@ -8,6 +7,11 @@ import (
 	"github.com/kataras/iris"
 	"github.com/casbin/casbin"
 	"github.com/muxiyun/Mae/model"
+	"github.com/casbin/gorm-adapter"
+
+	_ "github.com/go-sql-driver/mysql"
+	"fmt"
+	"strings"
 )
 
 func New(e *casbin.Enforcer) *Casbin {
@@ -34,10 +38,12 @@ func (c *Casbin) Check(ctx iris.Context) bool {
 	username := Username(ctx)
 	method := ctx.Method()
 	path := ctx.Path()
+	fmt.Println(username)
 	if username==""{
-		return true
+		username="anonymous"
 	}
-	return c.enforcer.Enforce(username, path, method)//授权通过则返回true
+	domain:="dom_"+strings.Split(path,"/")[3] //dom_*
+	return c.enforcer.Enforce(username,domain,path,method)
 }
 
 // Username gets the username from db according current_user_id
@@ -46,3 +52,24 @@ func Username(ctx iris.Context) string {
 	current_user,_:=model.GetUserByID(uint(current_user_id))
 	return current_user.UserName
 }
+
+
+
+var (
+	CasbinMiddleware *Casbin
+)
+
+func init() {
+	a := gormadapter.NewAdapter("mysql", "root:pqc19960320@tcp(127.0.0.1:3306)/")
+	Enforcer:= casbin.NewEnforcer("conf/casbinmodel.conf", a)
+	CasbinMiddleware = New(Enforcer)
+
+	// load policy to memory
+	CasbinMiddleware.enforcer.LoadPolicy()
+}
+
+
+
+
+
+

@@ -4,14 +4,16 @@ import (
 	"errors"
 	"net/http"
 	"time"
-
 	"github.com/muxiyun/Mae/config"
 	"github.com/muxiyun/Mae/model"
 	"github.com/muxiyun/Mae/router"
+	"github.com/muxiyun/Mae/pkg/casbin"
 
 	"github.com/kataras/iris"
 	"github.com/lexkong/log"
 	"github.com/spf13/viper"
+	"github.com/spf13/pflag"
+	"fmt"
 )
 
 // pingServer pings the http server to make sure the router is working.
@@ -52,6 +54,15 @@ func newApp() *iris.Application{
 func main() {
 
 	app:=newApp()
+	addpolicy:=pflag.BoolP("addpolicy", "p", false, "add the init policy to database")
+	pflag.Parse()
+	if (*addpolicy){
+		casbin.UserRolePolicy()
+		casbin.AdminRolePolicy()
+		casbin.AnonymousRolePolicy()
+		fmt.Println("policy ok")
+		return
+	}
 
 	// Ping the server to make sure the router is working.
 	go func() {
