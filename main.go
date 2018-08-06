@@ -13,7 +13,6 @@ import (
 	"github.com/lexkong/log"
 	"github.com/spf13/viper"
 	"github.com/spf13/pflag"
-	"fmt"
 )
 
 // pingServer pings the http server to make sure the router is working.
@@ -57,10 +56,7 @@ func main() {
 	addpolicy:=pflag.BoolP("addpolicy", "p", false, "add the init policy to database")
 	pflag.Parse()
 	if (*addpolicy){
-		casbin.UserRolePolicy()
-		casbin.AdminRolePolicy()
-		casbin.AnonymousRolePolicy()
-		fmt.Println("policy ok")
+		casbin.InitPolicy()
 		return
 	}
 
