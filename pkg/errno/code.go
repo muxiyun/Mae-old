@@ -19,9 +19,9 @@ var (
 	ErrUserNotFound      = &Errno{Code: 20102, Message: "The user was not found."}
 	ErrTokenInvalid      = &Errno{Code: 20103, Message: "The token was invalid."}
 	ErrPasswordIncorrect = &Errno{Code: 20104, Message: "The password was incorrect."}
-	ErrNeedUseramePassword = &Errno{Code: 20105, Message: "Need username,password to access"}
-	ErrNeedToken         = &Errno{Code: 20106,Message:"Need token to access"}
-	ErrTokenExpired      = &Errno{Code:20107,Message: "Token expired"}
-	ErrTokenRequired     = &Errno{Code:20108,Message:"Token required"}
-	ErrUsernamePasswordRequired =&Errno{Code:20109,Message:"Username and Password required"}
+	ErrNeedToken         = &Errno{Code: 20105,Message:"Need token to access"}
+	ErrTokenExpired      = &Errno{Code:20106,Message: "Token expired"}
+	ErrTokenRequired     = &Errno{Code:20107,Message:"Token required"}
+	ErrUsernamePasswordRequired =&Errno{Code:20108,Message:"Username and Password required"}
+	ErrUnauth           =&Errno{Code:20109,Message:"Unauthorized"}
 )

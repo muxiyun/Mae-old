@@ -39,9 +39,13 @@ func CreateUser(ctx iris.Context) {
 	}
 
 	if user.Role=="admin"{
-		casbin.AttachAdminToAdminRole(user.UserName)
-	}else {
-		casbin.AttachUserToUserRole(user.UserName)
+		fmt.Println("username",user.UserName)
+		casbin.AttachToAdmin(user.UserName)
+		casbin.AttachToUser(user.UserName)
+		casbin.AttachToAnonymous(user.UserName)
+	}else if user.Role=="user" {
+		casbin.AttachToUser(user.UserName)
+		casbin.AttachToAnonymous(user.UserName)
 	}
 
 	SendResponse(ctx, nil, iris.Map{"id": user.ID, "username": user.UserName})

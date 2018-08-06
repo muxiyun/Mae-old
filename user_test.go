@@ -1,3 +1,6 @@
+// user 增删改查测试文件
+
+
 package  main
 
 import (
@@ -13,16 +16,6 @@ func Test404(t *testing.T) {
 	e.GET("/a/unexist/url").Expect().Status(httptest.StatusNotFound)
 }
 
-func TestSystemCheck(t *testing.T) {
-	e:=httptest.New(t,newApp())
-	e.GET("/api/v1.0/sd/health").Expect().Status(httptest.StatusOK)
-
-	e.GET("/api/v1.0/sd/cpu").Expect().Status(httptest.StatusOK)
-
-	e.GET("/api/v1.0/sd/mem").Expect().Status(httptest.StatusOK)
-
-	e.GET("/api/v1.0/sd/disk").Expect().Status(httptest.StatusOK)
-}
 
 
 func TestCreateUser(t *testing.T) {
@@ -63,7 +56,16 @@ func TestDeleteUser(t *testing.T) {
 		"email":"3480437308@qq.com",
 	}).Expect().Body().Contains("OK")
 
-	e.DELETE("/api/v1.0/user/1").Expect().Body().Contains("OK")
+	e.DELETE("/api/v1.0/user/1").Expect().Status(httptest.StatusForbidden)
+
+	e.POST("/api/v1.0/user").WithJSON(map[string]interface{}{
+		"username":"andrewpqc",
+		"password":"123456",
+		"email":"andrewpqc@gmail.com",
+		"role":"admin",
+	}).Expect().Body().Contains("OK")
+
+	e.DELETE("/api/v1.0/user/1").WithBasicAuth("andrewpqc","123456").Expect().Body().Contains("OK")
 }
 
 func TestUpdateUser(t *testing.T) {
@@ -87,16 +89,23 @@ func TestUpdateUser(t *testing.T) {
 		"username":"andrew2",
 		"password":"ppppsssswwwwdddd",
 		"email":"andrewpqc@mails.ccnu.edu.cn",
-	}).Expect().Body().Contains("OK")
+	}).Expect().Status(httptest.StatusForbidden)
 
-	e.PUT("/api/v1.0/user/1").WithJSON(map[string]interface{}{
+	e.PUT("/api/v1.0/user/1").WithBasicAuth("andrew","123456").
+		WithJSON(map[string]interface{}{
 		"username":"jim",
 		"email":"jim@qq.com",
 	}).Expect().Body().Contains("Duplicate")
 
-	e.PUT("/api/v1.0/user/1000").WithJSON(map[string]interface{}{
+	e.PUT("/api/v1.0/user/1000").WithBasicAuth("andrew","123456").
+		WithJSON(map[string]interface{}{
 		"username":"hhh",
 	}).Expect().Body().Contains("not found")
+
+	e.PUT("/api/v1.0/user/1").WithBasicAuth("andrew","123456").
+		WithJSON(map[string]interface{}{
+			"username":"andrewpqc",
+	}).Expect().Body().Contains("OK")
 }
 
 
@@ -110,8 +119,9 @@ func TestGetUser(t *testing.T) {
 		"email":"3480437308@qq.com",
 	}).Expect().Body().Contains("OK")
 
-	e.GET("/api/v1.0/user/andrewpqc").Expect().Body().Contains("not found")
-	e.GET("/api/v1.0/user/andrew").Expect().Body().Contains("OK")
+	e.GET("/api/v1.0/user/andrewpqc").Expect().Status(httptest.StatusForbidden)
+	e.GET("/api/v1.0/user/andrew").WithBasicAuth("andrew","123456").
+		Expect().Body().Contains("OK")
 }
 
 
@@ -138,13 +148,24 @@ func TestGetUserList(t *testing.T) {
 		"username":"bob",
 		"password":"123456bobpass",
 		"email":"bob@qq.com",
+		"role":"admin",
 	}).Expect().Body().Contains("OK")
 
 	e.GET("/api/v1.0/user").WithQuery("limit",2).WithQuery("offsize",1).
-				Expect().Body().Contains("OK")
-	e.GET("/api/v1.0/user").WithQuery("limit",2).Expect().Body().Contains("OK")
-	e.GET("/api/v1.0/user").WithQuery("offsize",1).Expect().Body().Contains("OK")
-	e.GET("/api/v1.0/user").Expect().Body().Contains("OK")
+				Expect().Status(httptest.StatusForbidden)
+	e.GET("/api/v1.0/user").WithQuery("limit",2).Expect().Status(httptest.StatusForbidden)
+	e.GET("/api/v1.0/user").WithQuery("offsize",1).Expect().Status(httptest.StatusForbidden)
+	e.GET("/api/v1.0/user").Expect().Status(httptest.StatusForbidden)
+
+	e.GET("/api/v1.0/user").WithQuery("limit",2).WithQuery("offsize",1).
+		WithBasicAuth("bob","123456bobpass").Expect().Body().Contains("OK")
+	e.GET("/api/v1.0/user").WithQuery("limit",2).WithBasicAuth("bob","123456bobpass").
+		Expect().Body().Contains("OK")
+	e.GET("/api/v1.0/user").WithQuery("offsize",1).WithBasicAuth("bob","123456bobpass").
+		Expect().Body().Contains("OK")
+	e.GET("/api/v1.0/user").WithBasicAuth("bob","123456bobpass").
+		Expect().Body().Contains("OK")
+
 }
 
 func TestUserInfoDuplicateCheck(t *testing.T) {
