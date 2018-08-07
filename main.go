@@ -31,9 +31,8 @@ func pingServer() error {
 	return errors.New("Cannot connect to the router.")
 }
 
-
 //for test
-func newApp() *iris.Application{
+func newApp() *iris.Application {
 	//init the config and log
 	if err := config.Init("./conf/config.yaml"); err != nil {
 		panic(err)
@@ -42,6 +41,8 @@ func newApp() *iris.Application{
 	//init db
 	model.DB.Init()
 
+	// init casbin
+	casbin.Init()
 	//Mae app
 	app := iris.Default()
 
@@ -52,10 +53,10 @@ func newApp() *iris.Application{
 
 func main() {
 
-	app:=newApp()
-	addpolicy:=pflag.BoolP("addpolicy", "p", false, "add the init policy to database")
+	app := newApp()
+	addpolicy := pflag.BoolP("addpolicy", "p", false, "add the init policy to database")
 	pflag.Parse()
-	if (*addpolicy){
+	if (*addpolicy) {
 		casbin.InitPolicy()
 		return
 	}
@@ -74,7 +75,7 @@ func main() {
 	if cert != "" && key != "" {
 		go func() {
 			log.Infof("Start to listeni5ng the incoming requests on https address: %s", viper.GetString("tls.addr"))
-			log.Info(app.Run(iris.TLS(viper.GetString("tls.addr"), cert, key),iris.WithoutVersionChecker).Error())
+			log.Info(app.Run(iris.TLS(viper.GetString("tls.addr"), cert, key), iris.WithoutVersionChecker).Error())
 		}()
 	}
 
@@ -83,4 +84,3 @@ func main() {
 
 	model.DB.RWdb.Close()
 }
-
