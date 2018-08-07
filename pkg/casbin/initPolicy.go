@@ -6,13 +6,13 @@ import (
 
 //3个角色/分组(group): roleAdmin,roleUser,roleAnonymous
 
-func MyAddPolicy(group,domain,url,method string){
+func myAddPolicy(group,domain,url,method string){
 	if ok:=CasbinMiddleware.enforcer.AddPolicy(group,domain,url,method);!ok{
 		fmt.Println("[",group,domain,url,method,"]","already exist")
 	}
 }
 
-func AttachRoleDomain2User(username,rolename,domain string){
+func attachRoleDomain2User(username,rolename,domain string){
 	if ok:=CasbinMiddleware.enforcer.AddGroupingPolicy(username,rolename,domain);!ok{
 		fmt.Println("[",username,rolename,domain,"]","already exist")
 	}
@@ -29,7 +29,7 @@ func InitPolicy(){
 		[]string{"dom_sd","/api/v1.0/sd/disk","GET"},
 		[]string{"dom_sd","/api/v1.0/sd/mem","GET"},
 	}{
-		MyAddPolicy("roleAdmin",policy[0],policy[1],policy[2])
+		myAddPolicy("roleAdmin",policy[0],policy[1],policy[2])
 	}
 	fmt.Println("init roleAdmin policy----ok")
 
@@ -41,7 +41,7 @@ func InitPolicy(){
 		[]string{"dom_token","/api/v1.0/token","GET"},
 
 	}{
-		MyAddPolicy("roleUser",policy[0],policy[1],policy[2])
+		myAddPolicy("roleUser",policy[0],policy[1],policy[2])
 	}
 	fmt.Println("init roleUser policy----ok")
 
@@ -52,7 +52,7 @@ func InitPolicy(){
 
 		[]string{"dom_sd","/api/v1.0/sd/health","GET"},
 	}{
-		MyAddPolicy("roleAnonymous",policy[0],policy[1],policy[2])
+		myAddPolicy("roleAnonymous",policy[0],policy[1],policy[2])
 	}
 
 	fmt.Println("init roleAnonymous policy----ok")
@@ -65,7 +65,7 @@ func AttachToAdmin(username string) {
 		"dom_user",
 		"dom_sd",
 	} {
-		AttachRoleDomain2User(username, "roleAdmin", dom)
+		attachRoleDomain2User(username, "roleAdmin", dom)
 	}
 }
 
@@ -75,7 +75,7 @@ func AttachToUser(username string){
 		"dom_user",
 		"dom_token",
 	}{
-		AttachRoleDomain2User(username,"roleUser",dom)
+		attachRoleDomain2User(username,"roleUser",dom)
 	}
 }
 
@@ -85,7 +85,7 @@ func AttachToAnonymous(username string){
 		"dom_user",
 		"dom_sd",
 	}{
-		AttachRoleDomain2User(username,"roleAnonymous",dom)
+		attachRoleDomain2User(username,"roleAnonymous",dom)
 	}
 }
 
