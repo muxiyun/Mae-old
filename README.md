@@ -1,6 +1,5 @@
 # MAE:Muxi APP Engine
 
-[![Build Status](https://travis-ci.org/Andrewpqc/MAE.svg?branch=master)](https://travis-ci.org/Andrewpqc/MAE)
 
 An easier way to manipulate Kubernetes cluser.
 

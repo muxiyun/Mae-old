@@ -5,7 +5,6 @@ package main
 import (
 	"encoding/json"
 	"github.com/iris-contrib/httpexpect"
-	"fmt"
 )
 
 type token struct {
@@ -19,11 +18,13 @@ type tokenResponse struct{
 }
 
 //get token by username and password for test
-func GetTokenForTest(e *httpexpect.Expect,username,password string)string{
-	body:=e.GET("/api/v1.0/token").WithBasicAuth(username,password).Expect().Body().Raw()
+func GetTokenForTest(e *httpexpect.Expect,username,password string,ex int)string{
+	body:=e.GET("/api/v1.0/token").WithQuery("ex",ex).
+		WithBasicAuth(username,password).Expect().Body().Raw()
+
 	var mytokenResponse tokenResponse
 	json.Unmarshal([]byte(body), &mytokenResponse)
-	fmt.Println("tttttttttkkkkkkkk",mytokenResponse.Data.Token)
+
 	return mytokenResponse.Data.Token
 }
 

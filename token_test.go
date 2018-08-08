@@ -5,33 +5,41 @@ import (
 	"testing"
 	"github.com/kataras/iris/httptest"
 	"github.com/muxiyun/Mae/model"
+	"time"
 )
+
 
 func TestGetToken(t *testing.T){
 	e:=httptest.New(t,newApp(),httptest.URL("http://127.0.0.1:8080"))
 	defer model.DB.RWdb.DropTableIfExists("users")
 
-	//create a user
-	e.POST("/api/v1.0/user").WithJSON(map[string]interface{}{
-		"username":"andrew",
-		"password":"123456",
-		"email":"3480437308@qq.com",
-		"role":"user",//optional, default is 'user'
-	}).Expect().Body().Contains("OK")
-
-	//create admin
-	e.POST("/api/v1.0/user").WithJSON(map[string]interface{}{
-		"username":"andrew2",
-		"password":"ppppsssswwwwdddd",
-		"email":"andrewpqc@mails.ccnu.edu.cn",
-		"role":"admin",
-	}).Expect().Body().Contains("OK")
+	//create a user and an admin
+	CreateUserForTest(e,"andrew","123456","3480437308@qq.com")
+	CreateAdminForTest(e,"andrew2","ppppsssswwwwdddd","andrewpqc@mails.ccnu.edu.cn")
 
 	//Anonymous to get token
 	e.GET("/api/v1.0/token").Expect().Status(httptest.StatusForbidden)
+	//normal user to get token
 	e.GET("/api/v1.0/token").WithBasicAuth("andrew","123456").
 		WithQuery("ex",12*60*60).Expect().Body().Contains("OK")
-
+	//admin user to get token
 	e.GET("/api/v1.0/token").WithBasicAuth("andrew2","ppppsssswwwwdddd").
-		WithQuery("ex",5).Expect().Body().Contains("OK")
+		Expect().Body().Contains("OK")
+}
+
+
+func TestTokenExpire(t *testing.T){
+	e:=httptest.New(t,newApp(),httptest.URL("http://127.0.0.1:8080"))
+	defer model.DB.RWdb.DropTableIfExists("users")
+
+	CreateAdminForTest(e,"andrew","123456","3480437308@qq.com")
+	token:=GetTokenForTest(e,"andrew","123456",3)
+
+	time.Sleep(4*time.Second) //sleep for 4 seconds,wait for the token expires
+
+	//admin user can get the ns list,but the token expired,so it can not get the
+	//ns list now
+	e.GET("/api/v1.0/ns").WithBasicAuth(token,"").Expect().
+		Body().Contains("Token expired")
+
 }

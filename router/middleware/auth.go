@@ -14,79 +14,81 @@ import (
 	"github.com/muxiyun/Mae/pkg/token"
 )
 
-func TokenChecker(ctx iris.Context){
-	tokenStr:=ctx.GetHeader("Authorization")
-	if tokenStr==""{
-		ctx.Values().Set("current_user_name","")
-		ctx.Values().Set("token_used","0")
+func TokenChecker(ctx iris.Context) {
+	auth_info := ctx.GetHeader("Authorization")
+	if auth_info == "" {
+		ctx.Values().Set("current_user_name", "")
+		ctx.Values().Set("token_used", "0")
 		ctx.Next()
-	}else {
-		result, err := base64.StdEncoding.DecodeString(tokenStr[6:])
+		return
+	} else {
+		result, err := base64.StdEncoding.DecodeString(auth_info[6:])
 		if err != nil {
-			handler.SendResponse(ctx,errno.New(errno.ErrDecodeToken,err),nil)
+			handler.SendResponse(ctx, errno.New(errno.ErrDecodeToken, err), nil)
 			return
 		}
 		auth_strs := strings.Split(string(result), ":")
 		token_or_username := auth_strs[0]
 		password := auth_strs[1]
 		//fmt.Println("token_or_username:",token_or_username,"passwd",password)
-		if token_or_username==""{
-			ctx.Values().Set("current_user_name","")
-			ctx.Values().Set("token_used","0")
+		if token_or_username == "" {
+			ctx.Values().Set("current_user_name", "")
+			ctx.Values().Set("token_used", "0")
 			ctx.Next()
+			return
 		}
 
-		if password==""{
+		if password == "" {
 			//token
-			tk:=token.NewJWToken("")
-			tkinfo,err:=tk.ParseJWToken(token_or_username)
-			if err!=nil{
-				handler.SendResponse(ctx,errno.New(errno.ErrDecodeToken,nil),nil)
+			tk := token.NewJWToken("")
+			tkinfo, err := tk.ParseJWToken(token_or_username)
+			if err != nil {
+				handler.SendResponse(ctx, errno.New(errno.ErrDecodeToken, nil), nil)
 				return
 			}
 
-			username:=tkinfo["username"].(string)
-			signTime:=tkinfo["signTime"].(float64)
-			validdeltatime:=tkinfo["validdeltatime"].(float64)
+			username := tkinfo["username"].(string)
+			signTime := tkinfo["signTime"].(float64)
+			validdeltatime := tkinfo["validdeltatime"].(float64)
 
-			if time.Now().Unix()>int64(signTime+validdeltatime){
-				handler.SendResponse(ctx,errno.New(errno.ErrTokenExpired,errors.New("expired")),nil)
+			if time.Now().Unix() > int64(signTime+validdeltatime) {
+				handler.SendResponse(ctx, errno.New(errno.ErrTokenExpired, errors.New("expired")), nil)
 				return
 			}
 
-			user,err:=model.GetUserByName(username)
-			if err!=nil{
-				handler.SendResponse(ctx,errno.New(errno.ErrDatabase,err),nil)
+			user, err := model.GetUserByName(username)
+			if err != nil {
+				handler.SendResponse(ctx, errno.New(errno.ErrDatabase, err), nil)
 				return
 			}
 
-			ctx.Values().Set("current_user_role",user.Role)
-			ctx.Values().Set("current_user_id",string(user.ID))
-			ctx.Values().Set("current_user_name",username)
-			ctx.Values().Set("token_used","1")
+			ctx.Values().Set("current_user_role", user.Role)
+			ctx.Values().Set("current_user_id", string(user.ID))
+			ctx.Values().Set("current_user_name", user.UserName)
+			ctx.Values().Set("token_used", "1")
 			ctx.Next()
+			return
 		}
 
 		//username + password
-		user,err:=model.GetUserByName(token_or_username)
-		if err!=nil{
-			handler.SendResponse(ctx,errno.New(errno.ErrDatabase,err),nil)
+		user, err := model.GetUserByName(token_or_username)
+		if err != nil {
+			handler.SendResponse(ctx, errno.New(errno.ErrDatabase, err), nil)
 			return
 		}
 
-		if err:=user.Compare(password);err!=nil{
-			handler.SendResponse(ctx,errno.New(errno.ErrPasswordIncorrect,err),nil)
+		if err := user.Compare(password); err != nil {
+			handler.SendResponse(ctx, errno.New(errno.ErrPasswordIncorrect, err), nil)
 			return
 		}
-		ctx.Values().Set("current_user_name",user.UserName)
-		ctx.Values().Set("current_user_role",user.Role)
-		ctx.Values().Set("current_user_id",string(user.ID))
-		ctx.Values().Set("token_used","0")
+		ctx.Values().Set("current_user_name", user.UserName)
+		ctx.Values().Set("current_user_role", user.Role)
+		ctx.Values().Set("current_user_id", string(user.ID))
+		ctx.Values().Set("token_used", "0")
 		ctx.Next()
+		return
 	}
 }
-
-
 
 //
 //func UsernamePasswordRequired(ctx iris.Context){

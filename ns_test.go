@@ -22,12 +22,12 @@ func TestCreateAndDeleteNamespace(t *testing.T){
 		Expect().Status(httptest.StatusForbidden)
 
 	//test a user to create test-ns-2
-	andrew_token:=GetTokenForTest(e,"andrew","123456")
+	andrew_token:=GetTokenForTest(e,"andrew","123456",60*60)
 	e.POST("/api/v1.0/ns/{ns}").WithPath("ns","test-ns-2").
 		WithBasicAuth(andrew_token,"").Expect().Body().Contains("OK")
 
 	//test a admin to create test-ns-3
-	andrewadmin_token:=GetTokenForTest(e,"andrewadmin","123456")
+	andrewadmin_token:=GetTokenForTest(e,"andrewadmin","123456",60*60)
 	e.POST("/api/v1.0/ns/{ns}").WithPath("ns","test-ns-3").
 		WithBasicAuth(andrewadmin_token,"").Expect().Body().Contains("OK")
 
@@ -60,12 +60,12 @@ func TestListNamespace(t *testing.T){
 	e.GET("/api/v1.0/ns").Expect().Status(httptest.StatusForbidden)
 
 	//test a user to list namespaces
-	andrew_token:=GetTokenForTest(e,"andrew","123456")
+	andrew_token:=GetTokenForTest(e,"andrew","123456",60*60)
 	e.GET("/api/v1.0/ns").WithBasicAuth(andrew_token,"").Expect().
-		Body().Contains("OK").NotContains("kube-system")
+		Body().Contains("OK")
 
 	//test an admin to list namespaces
-	andrewadmin_token:=GetTokenForTest(e,"andrewadmin","123456")
+	andrewadmin_token:=GetTokenForTest(e,"andrewadmin","123456",60*60)
 	e.GET("/api/v1.0/ns").WithBasicAuth(andrewadmin_token,"").Expect().
 		Body().Contains("OK").Contains("kube-system")
 }
