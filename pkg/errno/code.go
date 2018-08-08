@@ -24,4 +24,9 @@ var (
 	ErrTokenRequired     = &Errno{Code:20107,Message:"Token required"}
 	ErrUsernamePasswordRequired =&Errno{Code:20108,Message:"Username and Password required"}
 	ErrUnauth           =&Errno{Code:20109,Message:"Unauthorized"}
+
+	ErrGetNamespace        =&Errno{Code:20201,Message:"Error occurred while get namespace"}
+	ErrNameSpaceExists    =&Errno{Code:20202,Message:"Namespace already exists"}
+	ErrCreateNamespace    =&Errno{Code:20203,Message:"Error occurred while create namespace"}
+	ErrDeleteNamespace    =&Errno{Code:20204,Message:"Error occurred while delete namespace"}
 )

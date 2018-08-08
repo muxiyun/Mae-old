@@ -39,7 +39,6 @@ func CreateUser(ctx iris.Context) {
 	}
 
 	if user.Role=="admin"{
-		fmt.Println("username",user.UserName)
 		casbin.AttachToAdmin(user.UserName)
 		casbin.AttachToUser(user.UserName)
 		casbin.AttachToAnonymous(user.UserName)
@@ -76,7 +75,6 @@ func GetUser(ctx iris.Context) {
 func UpdateUser(ctx iris.Context) {
 	var newuser model.User
 	ctx.ReadJSON(&newuser)
-	fmt.Println("newuser",newuser)
 
 	id, _ := ctx.Params().GetInt64("id")
 	user, err := model.GetUserByID(uint(id))

@@ -35,12 +35,19 @@ func Load(app *iris.Application) *iris.Application {
 		user_app.Get("/duplicate",handler.UserInfoDuplicateChecker)
 	}
 
-	sd_app:=app.Party("/api/v1.0/sd/")
+	sd_app:=app.Party("/api/v1.0/sd")
 	{
 		sd_app.Get("/health",handler.HealthCheck)
 		sd_app.Get("/cpu",handler.CPUCheck)
 		sd_app.Get("/disk",handler.DiskCheck)
 		sd_app.Get("/mem",handler.RAMCheck)
+	}
+
+	ns_app:=app.Party("/api/v1.0/ns")
+	{
+		ns_app.Get("",handler.ListNS)
+		ns_app.Post("/{ns:string}",handler.CreateNS)
+		ns_app.Delete("/{ns:string}",handler.DeleteNS)
 	}
 
 	app.Get("/api/v1.0/token",handler.SignToken)

@@ -46,14 +46,22 @@ func TokenChecker(ctx iris.Context){
 			}
 
 			username:=tkinfo["username"].(string)
-			signTime:=tkinfo["signTime"].(int64)
-			validdeltatime:=tkinfo["validdeltatime"].(int64)
+			signTime:=tkinfo["signTime"].(float64)
+			validdeltatime:=tkinfo["validdeltatime"].(float64)
 
-			if time.Now().Unix()>signTime+validdeltatime{
+			if time.Now().Unix()>int64(signTime+validdeltatime){
 				handler.SendResponse(ctx,errno.New(errno.ErrTokenExpired,errors.New("expired")),nil)
 				return
 			}
 
+			user,err:=model.GetUserByName(username)
+			if err!=nil{
+				handler.SendResponse(ctx,errno.New(errno.ErrDatabase,err),nil)
+				return
+			}
+
+			ctx.Values().Set("current_user_role",user.Role)
+			ctx.Values().Set("current_user_id",string(user.ID))
 			ctx.Values().Set("current_user_name",username)
 			ctx.Values().Set("token_used","1")
 			ctx.Next()

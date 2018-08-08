@@ -25,10 +25,20 @@ import:
   - disk
   - load
   - mem
+- package: github.com/spf13/pflag
+  version: ~1.0.1
 - package: github.com/spf13/viper
-  version: ~1.0.2
-- package: golang.org/x/crypto
-  subpackages:
-  - bcrypt
+  version: ~1.1.0
+- package: golang.org/x/crypto/bcrypt
 - package: gopkg.in/go-playground/validator.v9
   version: ~9.20.2
+- package: k8s.io/api
+  subpackages:
+  - core/v1
+- package: k8s.io/apimachinery
+  subpackages:
+  - pkg/apis/meta/v1
+- package: k8s.io/client-go
+  subpackages:
+  - kubernetes
+  - tools/clientcmd
