@@ -2,8 +2,8 @@ package middleware
 
 import (
 	"github.com/kataras/iris"
-	"time"
 	"net/http"
+	"time"
 )
 
 func NoCache(ctx iris.Context) {

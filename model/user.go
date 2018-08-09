@@ -2,20 +2,17 @@ package model
 
 import (
 	"github.com/jinzhu/gorm"
-	"gopkg.in/go-playground/validator.v9"
 	"golang.org/x/crypto/bcrypt"
+	"gopkg.in/go-playground/validator.v9"
 )
-
-
 
 type User struct {
 	gorm.Model
-	UserName string `json:"username" gorm:"column:username;not null;unique"`
-	Email string `json:"email" gorm:"column:email;not null;unique"`
+	UserName     string `json:"username" gorm:"column:username;not null;unique"`
+	Email        string `json:"email" gorm:"column:email;not null;unique"`
 	PasswordHash string `json:"password" gorm:"column:passwordhash;not null"`
-	Role string `json:"role" gorm:"column:role;default:'user'"`
+	Role         string `json:"role" gorm:"column:role;default:'user'"`
 }
-
 
 func (c *User) TableName() string {
 	return "users"
@@ -46,17 +43,17 @@ func GetUserByName(username string) (*User, error) {
 }
 
 // GetUser gets an user by the user's email.
-func GetUserByEmail(email string)(*User,error) {
+func GetUserByEmail(email string) (*User, error) {
 	u := &User{}
 	d := DB.RWdb.Where("email = ?", email).First(&u)
 	return u, d.Error
 }
 
 //GetUser gets an user by the user id
-func GetUserByID(id uint)(*User,error){
-	u:=&User{}
-	d:=DB.RWdb.Where("id = ?",id).First(&u)
-	return u,d.Error
+func GetUserByID(id uint) (*User, error) {
+	u := &User{}
+	d := DB.RWdb.Where("id = ?", id).First(&u)
+	return u, d.Error
 }
 
 // ListUser List all users
@@ -87,7 +84,7 @@ func (u *User) Encrypt() (err error) {
 	if err != nil {
 		return err
 	}
-	u.PasswordHash=string(hashedBytes)
+	u.PasswordHash = string(hashedBytes)
 	return nil
 }
 

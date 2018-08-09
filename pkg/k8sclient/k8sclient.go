@@ -7,10 +7,9 @@ import (
 	//"fmt"
 )
 
-
 var ClientSet *kubernetes.Clientset
 
-func init () {
+func init() {
 	//kubeconfig:=viper.GetString("kubeconfig")
 
 	config, err := clientcmd.BuildConfigFromFlags("", "conf/admin.kubeconfig")

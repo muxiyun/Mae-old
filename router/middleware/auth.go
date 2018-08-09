@@ -1,15 +1,15 @@
 package middleware
 
 import (
-	"time"
-	"strings"
 	"encoding/base64"
+	"strings"
+	"time"
 
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/core/errors"
 
-	"github.com/muxiyun/Mae/model"
 	"github.com/muxiyun/Mae/handler"
+	"github.com/muxiyun/Mae/model"
 	"github.com/muxiyun/Mae/pkg/errno"
 	"github.com/muxiyun/Mae/pkg/token"
 )

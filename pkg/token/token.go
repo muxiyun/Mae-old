@@ -1,11 +1,10 @@
 package token
 
 import (
+	"fmt"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/spf13/viper"
-	"fmt"
 )
-
 
 // JWToken jwt token
 type JWToken struct {
@@ -14,8 +13,8 @@ type JWToken struct {
 
 // NewJWToken 创建JWToken对象
 func NewJWToken(signString string) *JWToken {
-	if signString==""{
-		signString=viper.GetString("jwt_secret")
+	if signString == "" {
+		signString = viper.GetString("jwt_secret")
 	}
 	return &JWToken{SignString: signString}
 }

@@ -23,7 +23,7 @@ func (app *App) Create() error {
 
 // DeleteApp deletes the app by the user identifier.
 func DeleteApp(id uint) error {
-	app:= App{}
+	app := App{}
 	app.ID = id
 	return DB.RWdb.Delete(&app).Error
 }

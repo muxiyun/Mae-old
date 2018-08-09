@@ -29,7 +29,7 @@ func HealthCheck(c iris.Context) {
 	message := "OK"
 	c.ContentType("text/plain")
 	c.StatusCode(http.StatusOK)
-	c.WriteString("\n"+message)
+	c.WriteString("\n" + message)
 }
 
 // @Summary Checks the disk usage
@@ -62,7 +62,7 @@ func DiskCheck(c iris.Context) {
 	message := fmt.Sprintf("%s - Free space: %dMB (%dGB) / %dMB (%dGB) | Used: %d%%", text, usedMB, usedGB, totalMB, totalGB, usedPercent)
 	c.ContentType("text/plain")
 	c.StatusCode(status)
-	c.WriteString("\n"+message)
+	c.WriteString("\n" + message)
 }
 
 // @Summary Checks the cpu usage
@@ -94,7 +94,7 @@ func CPUCheck(c iris.Context) {
 	message := fmt.Sprintf("%s - Load average: %.2f, %.2f, %.2f | Cores: %d", text, l1, l5, l15, cores)
 	c.ContentType("text/plain")
 	c.StatusCode(status)
-	c.WriteString("\n"+message)
+	c.WriteString("\n" + message)
 }
 
 // @Summary Checks the ram usage
@@ -127,5 +127,5 @@ func RAMCheck(c iris.Context) {
 	message := fmt.Sprintf("%s - Free space: %dMB (%dGB) / %dMB (%dGB) | Used: %d%%", text, usedMB, usedGB, totalMB, totalGB, usedPercent)
 	c.ContentType("text/plain")
 	c.StatusCode(status)
-	c.WriteString("\n"+message)
+	c.WriteString("\n" + message)
 }

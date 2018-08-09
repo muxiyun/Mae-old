@@ -2,12 +2,12 @@ package main
 
 import (
 	"errors"
-	"net/http"
-	"time"
 	"github.com/muxiyun/Mae/config"
 	"github.com/muxiyun/Mae/model"
-	"github.com/muxiyun/Mae/router"
 	"github.com/muxiyun/Mae/pkg/casbin"
+	"github.com/muxiyun/Mae/router"
+	"net/http"
+	"time"
 
 	"github.com/kataras/iris"
 	"github.com/lexkong/log"

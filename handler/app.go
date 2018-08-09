@@ -69,7 +69,7 @@ func DeleteApp(ctx iris.Context) {
 	id, _ := ctx.Params().GetInt64("id")
 	if err := model.DeleteApp(uint(id)); err != nil {
 		SendResponse(ctx, errno.New(errno.ErrDatabase, err), nil)
-		return;
+		return
 	}
 	SendResponse(ctx, nil, iris.Map{"id": id})
 }

@@ -1,17 +1,14 @@
 package handler
 
-
 import (
-	"fmt"
 	"errors"
+	"fmt"
 
 	"github.com/kataras/iris"
 	"github.com/muxiyun/Mae/model"
-	"github.com/muxiyun/Mae/pkg/errno"
 	"github.com/muxiyun/Mae/pkg/casbin"
-
+	"github.com/muxiyun/Mae/pkg/errno"
 )
-
 
 func CreateUser(ctx iris.Context) {
 	var user model.User
@@ -38,11 +35,11 @@ func CreateUser(ctx iris.Context) {
 		return
 	}
 
-	if user.Role=="admin"{
+	if user.Role == "admin" {
 		casbin.AttachToAdmin(user.UserName)
 		casbin.AttachToUser(user.UserName)
 		casbin.AttachToAnonymous(user.UserName)
-	}else if user.Role=="user" {
+	} else if user.Role == "user" {
 		casbin.AttachToUser(user.UserName)
 		casbin.AttachToAnonymous(user.UserName)
 	}
@@ -50,16 +47,14 @@ func CreateUser(ctx iris.Context) {
 	SendResponse(ctx, nil, iris.Map{"id": user.ID, "username": user.UserName})
 }
 
-
 func DeleteUser(ctx iris.Context) {
 	id, _ := ctx.Params().GetInt64("id")
 	if err := model.DeleteUser(uint(id)); err != nil {
 		SendResponse(ctx, errno.New(errno.ErrDatabase, err), nil)
-		return;
+		return
 	}
 	SendResponse(ctx, nil, iris.Map{"id": id})
 }
-
 
 func GetUser(ctx iris.Context) {
 	username := ctx.Params().Get("username")
@@ -70,7 +65,6 @@ func GetUser(ctx iris.Context) {
 	}
 	SendResponse(ctx, nil, user)
 }
-
 
 func UpdateUser(ctx iris.Context) {
 	var newuser model.User
@@ -108,7 +102,6 @@ func UpdateUser(ctx iris.Context) {
 	SendResponse(ctx, nil, iris.Map{"id": user.ID})
 }
 
-
 func GetUserList(ctx iris.Context) {
 	limit := ctx.URLParamIntDefault("limit", 20)    //how many if limit=0,default=20
 	offsize := ctx.URLParamIntDefault("offsize", 0) // from where
@@ -121,11 +114,10 @@ func GetUserList(ctx iris.Context) {
 	SendResponse(ctx, nil, iris.Map{"count": count, "users": users})
 }
 
-
 func UserInfoDuplicateChecker(ctx iris.Context) {
 	username := ctx.URLParamDefault("username", "")
 	email := ctx.URLParamDefault("email", "")
-	//检查用户名是否占用　
+	//检查用户名是否占用
 	if username != "" {
 		user, _ := model.GetUserByName(username)
 		if user.UserName != "" {

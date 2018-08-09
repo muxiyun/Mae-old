@@ -25,17 +25,14 @@ service:
 	[]labels
 	[]selector
 	[]port
- */
+*/
 
 package handler
-
-
 
 import (
 	"github.com/kataras/iris"
 	//"github.com/muxiyun/Mae/model"
 )
-
 
 func CreateVersion(ctx iris.Context) {
 
