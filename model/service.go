@@ -19,3 +19,48 @@ type Service struct {
 func (c *Service) TableName() string {
 	return "services"
 }
+
+// Create creates a new Service.
+func (svc *Service) Create() error {
+	return DB.RWdb.Create(&svc).Error
+}
+
+// DeleteService deletes the service by the service id.
+func DeleteService(id uint) error {
+	svc:= Service{}
+	svc.ID = id
+	return DB.RWdb.Delete(&svc).Error
+}
+
+// Update updates a Service information.
+func (svc *Service) Update() error {
+	return DB.RWdb.Save(svc).Error
+}
+
+func GetServiceByName(svc_name string) (*Service, error) {
+	svc := &Service{}
+	d := DB.RWdb.Where("svc_name = ?", svc_name).First(&svc)
+	return svc, d.Error
+}
+
+func GetServiceByID(id int64) (*Service, error) {
+	svc := &Service{}
+	d := DB.RWdb.Where("id = ?", id).First(&svc)
+	return svc, d.Error
+}
+
+// ListService List all services
+func ListService(offset, limit int) ([]*Service, uint64, error) {
+
+	svcs := make([]*Service, 0)
+	var count uint64
+	if err := DB.RWdb.Model(&Service{}).Count(&count).Error; err != nil {
+		return svcs, count, err
+	}
+
+	if err := DB.RWdb.Offset(offset).Limit(limit).Order("id desc").Find(&svcs).Error; err != nil {
+		return svcs, count, err
+	}
+
+	return svcs, count, nil
+}
