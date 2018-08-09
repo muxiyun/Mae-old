@@ -32,6 +32,9 @@ func InitPolicy() {
 		[]string{"dom_ns", "/api/v1.0/ns/*", "DELETE"},
 
 		[]string{"dom_app", "/api/v1.0/app/*", "DELETE"},
+
+		[]string{"dom_service","/api/v1.0/service/*","DELETE"},
+
 	} {
 		myAddPolicy("roleAdmin", policy[0], policy[1], policy[2])
 	}
@@ -52,6 +55,14 @@ func InitPolicy() {
 		[]string{"dom_app", "/api/v1.0/app", "GET"},
 		[]string{"dom_app", "/api/v1.0/app/*", "PUT"},
 		[]string{"dom_app", "/api/v1.0/app/duplicate", "GET"},
+
+		[]string{"dom_service","/api/v1.0/service","POST"},
+		[]string{"dom_service","/api/v1.0/service/*","GET"},
+		[]string{"dom_service","/api/v1.0/service/*","PUT"},
+		[]string{"dom_service","/api/v1.0/service","GET"},
+
+
+
 	} {
 		myAddPolicy("roleUser", policy[0], policy[1], policy[2])
 	}
@@ -65,7 +76,6 @@ func InitPolicy() {
 		[]string{"dom_sd", "/api/v1.0/sd/health", "GET"},
 
 		//temp rule placed here for test
-
 	} {
 		myAddPolicy("roleAnonymous", policy[0], policy[1], policy[2])
 	}
@@ -80,6 +90,7 @@ func AttachToAdmin(username string) {
 		"dom_sd",
 		"dom_ns",
 		"dom_app",
+		"dom_service",
 	} {
 		attachRoleDomain2User(username, "roleAdmin", dom)
 	}
@@ -92,6 +103,7 @@ func AttachToUser(username string) {
 		"dom_token",
 		"dom_ns",
 		"dom_app",
+		"dom_service",
 	} {
 		attachRoleDomain2User(username, "roleUser", dom)
 	}

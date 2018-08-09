@@ -40,9 +40,7 @@ func setupDB(db *gorm.DB) {
 	db.LogMode(viper.GetBool("gormlog"))
 	db.DB().SetMaxOpenConns(20000) //用于设置最大打开的连接数，默认值为0表示不限制.设置最大的连接数，可以避免并发太高导致连接mysql出现too many connections的错误。
 	db.DB().SetMaxIdleConns(0)     // 用于设置闲置的连接数.设置闲置的连接数则当开启的一个连接使用完成后可以放在池里等候下一次使用。
-	db.AutoMigrate(&User{})
-	db.AutoMigrate(&App{})
-
+	db.AutoMigrate(&User{},&App{},&Service{})
 }
 
 // used for cli
