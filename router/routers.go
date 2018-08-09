@@ -3,13 +3,9 @@ package router
 import (
 	"github.com/kataras/iris"
 	"github.com/muxiyun/Mae/handler"
-	"github.com/muxiyun/Mae/router/middleware"
 	"github.com/muxiyun/Mae/pkg/casbin"
-
-	"net/http"
+	"github.com/muxiyun/Mae/router/middleware"
 )
-
-
 
 
 func Load(app *iris.Application) *iris.Application {
@@ -22,8 +18,9 @@ func Load(app *iris.Application) *iris.Application {
 
 
 	//routers setup here
+	app.OnErrorCode(iris.StatusNotFound, handler.Handle404)
+	app.Get("/api/v1.0/token",handler.SignToken)
 
-	app.OnErrorCode(http.StatusNotFound, handler.Handle404)
 
 	user_app:=app.Party("/api/v1.0/user")
 	{
@@ -60,8 +57,24 @@ func Load(app *iris.Application) *iris.Application {
 		app_app.Get("/duplicate",handler.AppNameDuplicateChecker)
 
 	}
-	app.Get("/api/v1.0/token",handler.SignToken)
 
+	service_app:=app.Party("/api/v1.0/service")
+	{
+		service_app.Post("",handler.CreateService)
+		service_app.Put("/{id:long}",handler.UpdateService)
+		service_app.Delete("/{id:long}",handler.DeleteService)
+		service_app.Get("/{svc_name:string}",handler.GetService)
+		service_app.Get("",handler.GetServiceList)
+	}
+
+	version_app:=app.Party("/api/v1.0/version")
+	{
+		version_app.Post("",handler.CreateVersion)
+		version_app.Put("/{id:long}",handler.UpdateVersion)
+		version_app.Delete("/{id:long}",handler.DeleteVersion)
+		version_app.Get("/{version_name:string}",handler.GetVersion)
+		version_app.Get("",handler.GetVersionList)
+	}
 
 	return app
 }
