@@ -110,7 +110,7 @@ func UpdateUser(ctx iris.Context) {
 
 
 func GetUserList(ctx iris.Context) {
-	limit := ctx.URLParamIntDefault("limit", 25)    //how many if limit=0,default=20
+	limit := ctx.URLParamIntDefault("limit", 20)    //how many if limit=0,default=20
 	offsize := ctx.URLParamIntDefault("offsize", 0) // from where
 
 	users, count, err := model.ListUser(offsize, limit)

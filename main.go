@@ -12,7 +12,6 @@ import (
 	"github.com/kataras/iris"
 	"github.com/lexkong/log"
 	"github.com/spf13/viper"
-	"github.com/spf13/pflag"
 )
 
 // pingServer pings the http server to make sure the router is working.
@@ -48,18 +47,16 @@ func newApp() *iris.Application {
 
 	//register routers to Mae app
 	app = router.Load(app)
+
+	//add init casbin policy to db
+	casbin.InitPolicy()
+
 	return app
 }
 
 func main() {
 
 	app := newApp()
-	addpolicy := pflag.BoolP("addpolicy", "p", false, "add the init policy to database")
-	pflag.Parse()
-	if (*addpolicy) {
-		casbin.InitPolicy()
-		return
-	}
 
 	// Ping the server to make sure the router is working.
 	go func() {

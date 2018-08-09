@@ -25,8 +25,14 @@ var (
 	ErrUsernamePasswordRequired =&Errno{Code:20108,Message:"Username and Password required"}
 	ErrUnauth           =&Errno{Code:20109,Message:"Unauthorized"}
 
+	//ns
 	ErrGetNamespace        =&Errno{Code:20201,Message:"Error occurred while get namespace"}
 	ErrNameSpaceExists    =&Errno{Code:20202,Message:"Namespace already exists"}
 	ErrCreateNamespace    =&Errno{Code:20203,Message:"Error occurred while create namespace"}
 	ErrDeleteNamespace    =&Errno{Code:20204,Message:"Error occurred while delete namespace"}
-)
+
+	//app
+	ErrCreateApp         =&Errno{Code:20301,Message:"Error occurred while create App"}
+	ErrGetApp            =&Errno{Code:20302,Message:"Error occurred while get app by app_name"}
+	ErrAppNameNotProvide =&Errno{Code:20303,Message:"AppName not provided"}
+	)

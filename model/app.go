@@ -33,6 +33,17 @@ func (app *App) Update() error {
 	return DB.RWdb.Save(app).Error
 }
 
+func GetAppByName(appname string) (*App, error) {
+	app := &App{}
+	d := DB.RWdb.Where("app_name = ?", appname).First(&app)
+	return app, d.Error
+}
+
+func GetAppByID(id int64) (*App, error) {
+	app := &App{}
+	d := DB.RWdb.Where("id = ?", id).First(&app)
+	return app, d.Error
+}
 
 // ListApp List all apps
 func ListApp(offset, limit int) ([]*App, uint64, error) {

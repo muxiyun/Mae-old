@@ -12,6 +12,7 @@ import (
 func TestGetToken(t *testing.T){
 	e:=httptest.New(t,newApp(),httptest.URL("http://127.0.0.1:8080"))
 	defer model.DB.RWdb.DropTableIfExists("users")
+	defer model.DB.RWdb.DropTableIfExists("casbin_rule")
 
 	//create a user and an admin
 	CreateUserForTest(e,"andrew","123456","3480437308@qq.com")
@@ -31,6 +32,7 @@ func TestGetToken(t *testing.T){
 func TestTokenExpire(t *testing.T){
 	e:=httptest.New(t,newApp(),httptest.URL("http://127.0.0.1:8080"))
 	defer model.DB.RWdb.DropTableIfExists("users")
+	defer model.DB.RWdb.DropTableIfExists("casbin_rule")
 
 	CreateAdminForTest(e,"andrew","123456","3480437308@qq.com")
 	token:=GetTokenForTest(e,"andrew","123456",3)
@@ -41,5 +43,4 @@ func TestTokenExpire(t *testing.T){
 	//ns list now
 	e.GET("/api/v1.0/ns").WithBasicAuth(token,"").Expect().
 		Body().Contains("Token expired")
-
 }

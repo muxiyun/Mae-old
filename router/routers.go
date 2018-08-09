@@ -50,6 +50,16 @@ func Load(app *iris.Application) *iris.Application {
 		ns_app.Delete("/{ns:string}",handler.DeleteNS)
 	}
 
+	app_app:=app.Party("/api/v1.0/app")
+	{
+		app_app.Post("",handler.CreateApp)
+		app_app.Put("/{id:long}",handler.UpdateApp)
+		app_app.Delete("/{id:long}",handler.DeleteApp)
+		app_app.Get("/{appname:string}",handler.GetApp)
+		app_app.Get("",handler.GetAppList)
+		app_app.Get("/duplicate",handler.AppNameDuplicateChecker)
+
+	}
 	app.Get("/api/v1.0/token",handler.SignToken)
 
 

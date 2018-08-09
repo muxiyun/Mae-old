@@ -12,7 +12,7 @@ import (
 )
 
 func Test404(t *testing.T) {
-	e:=httptest.New(t,newApp())
+	e:=httptest.New(t,newApp(),)
 	e.GET("/a/unexist/url").Expect().Status(httptest.StatusNotFound)
 }
 
@@ -21,6 +21,7 @@ func Test404(t *testing.T) {
 func TestCreateUser(t *testing.T) {
 	e := httptest.New(t, newApp(),httptest.URL("http://127.0.0.1:8080"))
 	defer model.DB.RWdb.DropTableIfExists("users")
+	defer model.DB.RWdb.DropTableIfExists("casbin_rule")
 
 
 	//test bad request
