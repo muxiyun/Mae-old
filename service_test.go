@@ -110,4 +110,13 @@ func TestServiceCRUD(t *testing.T) {
 
 	e.DELETE("/api/v1.0/service/{id}").WithPath("id", 1).WithBasicAuth(andrewadmin_token, "").
 		Expect().Body().Contains("OK")
+
+
+	// delete a app who has service
+	e.DELETE("/api/v1.0/app/{id}").WithPath("id", 1).WithBasicAuth(andrewadmin_token, "").
+		Expect().Body().Contains("OK")
+
+	//这里有一个问题：当app下面还存在service时，不影响app的删除，该app删除之后，对y的service依然存在于数据库中
+	//这不是我们想要的，这里应该是app删除之后对应的service也要删除。在service和version的情况中也应该是这样的，
+	//我们可以通过设置级联删除或者是在应用中来实现级联删除来达到上面的要求。
 }
