@@ -30,12 +30,18 @@ service:
 package handler
 
 import (
+	"encoding/json"
 	"github.com/kataras/iris"
-	//"github.com/muxiyun/Mae/model"
+	"github.com/muxiyun/Mae/model"
+	"fmt"
 )
 
 func CreateVersion(ctx iris.Context) {
-
+	var rv model.ReqVersion
+	ctx.ReadJSON(&rv)
+	b,_:=json.Marshal(rv)
+	fmt.Println(string(b))
+	ctx.WriteString("ok")
 }
 
 func GetVersion(ctx iris.Context) {

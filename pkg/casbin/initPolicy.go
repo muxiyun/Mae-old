@@ -76,6 +76,7 @@ func InitPolicy() {
 		[]string{"dom_sd", "/api/v1.0/sd/health", "GET"},
 
 		//temp rule placed here for test
+		[]string{"dom_version","/api/v1.0/version","POST"},
 	} {
 		myAddPolicy("roleAnonymous", policy[0], policy[1], policy[2])
 	}
