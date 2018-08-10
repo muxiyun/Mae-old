@@ -45,12 +45,15 @@ type MAEService struct{
 	SvcType string `json:"svc_type"` //clusterip,nodeport,loadbalancer 
 }
 
+type VersionConfig struct{
+	Deployment MAEDeployment `json:"deployment"`
+	Svc    MAEService `json:"svc"`  //此处的Svc指的是k8s中的Service的概念
+}
 type ReqVersion struct {
 	ServiceID uint `json:"svc_id"`
 	VersionName string `json:"version_name"`
 	VersionDesc string `json:"version_desc"`
-	Deployment MAEDeployment `json:"deployment"`
-	Svc    MAEService `json:"svc"`  //此处的Svc指的是k8s中的Service的概念
+	VersionConf VersionConfig `json:"version_conf"`
 }
 
 
