@@ -27,7 +27,7 @@ func TestCreateVersion(t *testing.T) {
 				"pod_labels":map[string]string{"run":"xueer-be","env":"test"},
 				"containers":[](map[string]interface{}){
 					map[string]interface{}{
-						"ctr_name":"xueer_be_v1_ct",
+						"ctr_name":"xueer-be-v1-ct",
 						"image_url":"pqcsdockerhub/kube-test",
 						"start_cmd":[]string{"python", "manage.py", "runserver"},
 						"envs":[](map[string]interface{}){
@@ -81,7 +81,10 @@ func TestCreateVersion(t *testing.T) {
 				"svc_type":"clusterip",
 			},
 		},
-
 	}).Expect().Body().Contains("OK")
+}
+
+
+func TestApplyVersion(t *testing.T){
 
 }

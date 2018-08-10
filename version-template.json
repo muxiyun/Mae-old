@@ -17,7 +17,7 @@
       },
       "containers":[
         {
-          "ctr_name":"xueer_be_v1_ct",
+          "ctr_name":"xueer-be-v1-ct",
           "image_url":"pqcsdockerhub/kube-test",
           "start_cmd":[
             "python",

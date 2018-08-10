@@ -84,6 +84,7 @@ func ApplyVersion(ctx iris.Context){
 					Labels:version_config.Deployment.Labels,
 				},
 				Spec:apiv1.PodSpec{
+					//err 87
 					Volumes:bindVolumeSource(version_config),
 					Containers:bindContainers(version_config),
 						},

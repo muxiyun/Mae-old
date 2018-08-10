@@ -4,6 +4,7 @@ package handler
 import (
 	apiv1 "k8s.io/api/core/v1"
 	"github.com/muxiyun/Mae/model"
+	"fmt"
 )
 
 // set all the volume
@@ -11,10 +12,13 @@ func bindVolumeSource(version_config model.VersionConfig)[]apiv1.Volume{
 	var volumes []apiv1.Volume
 	for _,ctx:=range version_config.Deployment.Containers{
 		for _,vol:=range ctx.Volumes{
-			var volume apiv1.Volume
-			volume.HostPath.Path=vol.HostPath
-			volume.HostPath.Type=&vol.HostPathType
+			 var volume  apiv1.Volume //初始化一下
+			 var hostpath apiv1.HostPathVolumeSource
+			hostpath.Path=vol.HostPath
+			hostpath.Type=&vol.HostPathType
 			volume.Name=vol.VolumeName
+			volume.HostPath=&hostpath
+
 			volumes=append(volumes,volume)
 		}
 	}

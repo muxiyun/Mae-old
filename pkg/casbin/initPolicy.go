@@ -77,6 +77,7 @@ func InitPolicy() {
 
 		//temp rule placed here for test
 		[]string{"dom_version","/api/v1.0/version","POST"},
+		[]string{"dom_version","/api/v1.0/version/apply","GET"},
 	} {
 		myAddPolicy("roleAnonymous", policy[0], policy[1], policy[2])
 	}
