@@ -4,7 +4,7 @@
   "version_desc":"xueer be version 1",
   "deployment":{
     "deploy_name":"xueer-be-v1-deployment",
-    "name_sapce":"",
+    "name_space":"test",
     "replicas":1,
     "labels":[
       "run=xueer-be",

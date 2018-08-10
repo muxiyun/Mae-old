@@ -32,7 +32,7 @@ type Container struct {
 
 type MAEDeployment struct{
 	DeployName string `json:"deploy_name"`
-	NameSapce string `json:"name_sapce"`
+	NameSapce string `json:"name_space"`
 	Replicas int `json:"replicas"`
 	Labels []string `json:"labels"`
 	PodLabels []string `json:"pod_labels"`
