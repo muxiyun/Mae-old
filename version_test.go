@@ -53,11 +53,11 @@ func TestCreateVersion(t *testing.T) {
 						"ports":[](map[string]interface{}){
 							map[string]interface{}{
 								"image_port":80,
-								"target_part":80,
+								"target_port":80,
 							},
 							map[string]interface{}{
 								"image_port":443,
-								"target_part":443,
+								"target_port":443,
 							},
 						},
 					},

@@ -43,11 +43,11 @@
           "ports":[
             {
               "image_port":80,
-              "target_port":0
+              "target_port":80
             },
             {
               "image_port":443,
-              "target_port":0
+              "target_port":443
             }
           ]
         }
