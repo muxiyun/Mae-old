@@ -7,11 +7,11 @@ Click here[http://zxc0328.github.io/2017/05/27/mae/](http://zxc0328.github.io/20
 
 TODO:
 - [x] api design
-- [x] Domain UML & Db UML
+- [x] domain UML & database UML
 - [x] user system
-- [x] Casbin
-- [x] application
-- [x] service
-- [x] version
+- [x] casbin access control
+- [x] application (abstract entity)
+- [x] service (abstract entity)
+- [x] version (abstract entity)
 - [ ] log query
 - [ ] web terminal
