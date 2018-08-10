@@ -23,8 +23,8 @@ func TestCreateVersion(t *testing.T) {
 				"deploy_name":"xueer-be-v1-deployment",
 				"name_space":"test",
 				"replicas":1,
-				"labels":[]string{"run=xueer-be","env=test"},
-				"pod_labels":[]string{"run=xueer-be","env=test"},
+				"labels":map[string]string{"run":"xueer-be","env":"test"},
+				"pod_labels":map[string]string{"run":"xueer-be","env":"test"},
 				"containers":[](map[string]interface{}){
 					map[string]interface{}{
 						"ctr_name":"xueer_be_v1_ct",
@@ -66,10 +66,10 @@ func TestCreateVersion(t *testing.T) {
 			},
 			"svc":map[string]interface{}{
 				"svc_name":"xueer-be-v1-service",
-				"selector":[]string{"run=xueer-be"},
+				"selector":map[string]string{"run":"xueer-be"},
 				"svc_type":"clusterip",
 			},
 		},
 
-	}).Expect().Body().Contains("ok")
+	}).Expect().Body().Contains("OK")
 }

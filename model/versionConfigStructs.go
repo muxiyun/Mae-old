@@ -34,14 +34,14 @@ type MAEDeployment struct{
 	DeployName string `json:"deploy_name"`
 	NameSapce string `json:"name_space"`
 	Replicas int `json:"replicas"`
-	Labels []string `json:"labels"`
-	PodLabels []string `json:"pod_labels"`
+	Labels map[string]string `json:"labels"`
+	PodLabels map[string]string `json:"pod_labels"`
 	Containers []Container `json:"containers"`
 }
 
 type MAEService struct{
 	SvcName string `json:"svc_name"`
-	Selector []string `json:"selector"`
+	Selector map[string]string `json:"selector"`
 	SvcType string `json:"svc_type"` //clusterip,nodeport,loadbalancer 
 }
 

@@ -7,14 +7,14 @@
       "deploy_name":"xueer-be-v1-deployment",
       "name_space":"test",
       "replicas":1,
-      "labels":[
-        "run=xueer-be",
-        "env=test"
-      ],
-      "pod_labels":[
-        "run=xueer-be",
-        "env=test"
-      ],
+      "labels":{
+        "env":"test",
+        "run":"xueer-be"
+      },
+      "pod_labels":{
+        "env":"test",
+        "run":"xueer-be"
+      },
       "containers":[
         {
           "ctr_name":"xueer_be_v1_ct",
@@ -55,9 +55,9 @@
     },
     "svc":{
       "svc_name":"xueer-be-v1-service",
-      "selector":[
-        "run=xueer-be"
-      ],
+      "selector":{
+        "run":"xueer-be"
+      },
       "svc_type":"clusterip"
     }
   }
