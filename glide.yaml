@@ -1,40 +1,31 @@
 package: github.com/muxiyun/Mae
 import:
 - package: github.com/casbin/casbin
-  version: ~1.5.0
 - package: github.com/casbin/gorm-adapter
 - package: github.com/dgrijalva/jwt-go
-  version: ~3.2.0
 - package: github.com/fsnotify/fsnotify
-  version: ~1.4.7
 - package: github.com/go-sql-driver/mysql
-  version: ~1.4.0
+- package: github.com/iris-contrib/httpexpect
 - package: github.com/jinzhu/gorm
-  version: ~1.9.1
   subpackages:
   - dialects/mysql
 - package: github.com/kataras/iris
-  version: ~10.6.7
   subpackages:
   - core/errors
 - package: github.com/lexkong/log
 - package: github.com/shirou/gopsutil
-  version: ~2.18.7
   subpackages:
   - cpu
   - disk
   - load
   - mem
-- package: github.com/spf13/pflag
-  version: ~1.0.1
 - package: github.com/spf13/viper
-  version: ~1.1.0
 - package: golang.org/x/crypto/bcrypt
 - package: gopkg.in/go-playground/validator.v9
-  version: ~9.20.2
 - package: k8s.io/api
   subpackages:
   - core/v1
+  - extensions/v1beta1
 - package: k8s.io/apimachinery
   subpackages:
   - pkg/apis/meta/v1

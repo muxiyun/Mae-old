@@ -84,7 +84,7 @@ func ApplyVersion(ctx iris.Context){
 					Labels:version_config.Deployment.Labels,
 				},
 				Spec:apiv1.PodSpec{
-					//err 87
+					
 					Volumes:bindVolumeSource(version_config),
 					Containers:bindContainers(version_config),
 						},
@@ -98,6 +98,10 @@ func ApplyVersion(ctx iris.Context){
 		SendResponse(ctx,errno.New(errno.ErrCreateDeployment,err),nil)
 		return
 	}
+
+	//go deploymentClient.Create(deployment)
+	//监听deployment
+	//startWatchDeployment(deploymentClient)
 
 	// update the service's current_version field
 	service,err:=model.GetServiceByID(int64(v.ServiceID))

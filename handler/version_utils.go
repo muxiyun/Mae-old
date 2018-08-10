@@ -3,6 +3,9 @@ package handler
 
 import (
 	apiv1 "k8s.io/api/core/v1"
+	"k8s.io/client-go/kubernetes/typed/apps/v1beta1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+
 	"github.com/muxiyun/Mae/model"
 	"fmt"
 )
@@ -70,5 +73,18 @@ func bindContainers( version_config model.VersionConfig)([]apiv1.Container){
 		containers=append(containers,container)
 	}
 	return containers
+}
+
+
+
+//监听Deployment变化
+func startWatchDeployment(deploymentsClient v1beta1.DeploymentInterface) {
+	w, _ := deploymentsClient.Watch(metav1.ListOptions{})
+	for {
+		select {
+		case e, _ := <-w.ResultChan():
+			fmt.Println(e.Type, e.Object)
+		}
+	}
 }
 
