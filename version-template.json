@@ -19,7 +19,11 @@
         {
           "ctr_name":"xueer_be_v1_ct",
           "image_url":"pqcsdockerhub/kube-test",
-          "start_cmd":"python manage.py runserver",
+          "start_cmd":[
+            "python",
+            "manage.py",
+            "runserver"
+          ],
           "envs":[
             {
               "env_key":"MYSQL_ORM",
@@ -32,22 +36,32 @@
           ],
           "volumes":[
             {
-              "host_path":"/path/in/host",
-              "target_path":"/path/in/container"
+              "volume_name":"volume1",
+              "read_only":true,
+              "host_path":"/path/in/host/",
+              "host_path_type":"DirectoryOrCreate",
+              "target_path":"/path/in/container/"
             },
             {
-              "host_path":"/path/in/host2",
-              "target_path":"/path/in/container2"
+              "volume_name":"volume2",
+              "read_only":false,
+              "host_path":"/path/in/host.conf",
+              "host_path_type":"FileOrCreate",
+              "target_path":"/path/in/container.conf"
             }
           ],
           "ports":[
             {
+              "port_name":"http",
               "image_port":80,
-              "target_port":80
+              "target_port":80,
+              "protocol":"TCP"
             },
             {
+              "port_name":"https",
               "image_port":443,
-              "target_port":443
+              "target_port":443,
+              "protocol":"TCP"
             }
           ]
         }

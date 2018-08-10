@@ -44,25 +44,31 @@ func TestCreateVersion(t *testing.T) {
 							map[string]interface{}{
 								"volume_name":"volume1",
 								"read_only":true,
-								"host_path":"/path/in/host",
-								"target_path":"/path/in/container",
+								"host_path":"/path/in/host/",
+								"host_path_type":"DirectoryOrCreate",
+								"target_path":"/path/in/container/",
 
 							},
 							map[string]interface{}{
 								"volume_name":"volume2",
 								"read_only":false,
-								"host_path":"/path/in/host2",
-								"target_path":"/path/in/container2",
+								"host_path":"/path/in/host.conf",
+								"host_path_type":"FileOrCreate",
+								"target_path":"/path/in/container.conf",
 							},
 						},
 						"ports":[](map[string]interface{}){
 							map[string]interface{}{
+								"port_name":"http",
 								"image_port":80,
 								"target_port":80,
+								"protocol":"TCP",
 							},
 							map[string]interface{}{
+								"port_name":"https",
 								"image_port":443,
 								"target_port":443,
+								"protocol":"TCP",
 							},
 						},
 					},
