@@ -2,6 +2,9 @@
 
 package model
 
+import (
+	apiv1 "k8s.io/api/core/v1"
+)
 
 type Env struct{
 	EnvKey string `json:"env_key"`
@@ -9,23 +12,31 @@ type Env struct{
 }
 
 type Volume struct {
+	VolumeName string `json:"volume_name"`
+	ReadOnly bool `json:"read_only"`
 	HostPath string `json:"host_path"`
+
+	//https://kubernetes.io/docs/concepts/storage/volumes/#hostpath
+	HostPathType apiv1.HostPathType `json:"host_path_type"`
+
 	TargetPath string `json:"target_path"`
 }
 
 
 
 type PortPair struct{
-	ImagePort uint `json:"image_port"`
-	TargetPort uint `json:"target_port"`
+	PortName  string `json:"port_name"`  // this name can be referred by service
+	ImagePort int32 `json:"image_port"`
+	TargetPort int32 `json:"target_port"`
+	Protocol apiv1.Protocol `json:"protocol"` // TCP or UDP
 }
 
 type Container struct {
 	CtrName string `json:"ctr_name"`
 	ImageURL string `json:"image_url"`
-	StartCmd string `json:"start_cmd"`
+	StartCmd []string `json:"start_cmd"`
 	Envs []Env `json:"envs"`
-	Volumes []Volume `json:"volumes"` 
+	Volumes []Volume `json:"volumes"`
 	Ports []PortPair `json:"ports"`
 }
 

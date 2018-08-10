@@ -29,7 +29,7 @@ func TestCreateVersion(t *testing.T) {
 					map[string]interface{}{
 						"ctr_name":"xueer_be_v1_ct",
 						"image_url":"pqcsdockerhub/kube-test",
-						"start_cmd":"python manage.py runserver",
+						"start_cmd":[]string{"python", "manage.py", "runserver"},
 						"envs":[](map[string]interface{}){
 							map[string]interface{}{
 								"env_key":"MYSQL_ORM",
@@ -42,10 +42,15 @@ func TestCreateVersion(t *testing.T) {
 						},
 						"volumes":[](map[string]interface{}){
 							map[string]interface{}{
+								"volume_name":"volume1",
+								"read_only":true,
 								"host_path":"/path/in/host",
 								"target_path":"/path/in/container",
+
 							},
 							map[string]interface{}{
+								"volume_name":"volume2",
+								"read_only":false,
 								"host_path":"/path/in/host2",
 								"target_path":"/path/in/container2",
 							},
@@ -72,4 +77,5 @@ func TestCreateVersion(t *testing.T) {
 		},
 
 	}).Expect().Body().Contains("OK")
+
 }

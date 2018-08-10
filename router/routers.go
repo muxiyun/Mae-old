@@ -71,6 +71,8 @@ func Load(app *iris.Application) *iris.Application {
 		version_app.Delete("/{id:long}", handler.DeleteVersion)
 		version_app.Get("/{version_name:string}", handler.GetVersion)
 		version_app.Get("", handler.GetVersionList)
+		//version_app.Get("/apply",handler.ApplyVersion)
+		version_app.Get("/unapply",handler.UnapplyVersion)
 	}
 
 	return app

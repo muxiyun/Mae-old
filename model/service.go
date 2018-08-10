@@ -9,7 +9,7 @@ type Service struct {
 	AppID   uint   `json:"app_id" gorm:"column:app_id;not null"`
 	SvcName string `json:"svc_name" gorm:"column:svc_name;not null;unique;type:varchar(50)"`
 	SvcDesc string `json:"svc_desc" gorm:"column:svc_desc;type:varchar(512)"`
-
+	CurrentVersion string `json:"current_version" gorm:"column:current_version"`
 	Versions []Version `gorm:"foreignkey:ServiceID"` //service表不会多任何字段，Version表多一个ServiceID
 }
 

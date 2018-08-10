@@ -42,4 +42,6 @@ var (
 	//Version
 	ErrVersionConfigMarshal = &Errno{Code:20501,Message:"Error occurred when marshal version config"}
 	ErrCreateVersion        =&Errno{Code:20502,Message:"Error occurred while create version to db"}
+	ErrVersionNameEmpty     =&Errno{Code:20503,Message:"Version name  is empty"}
+	ErrCreateDeployment    =&Errno{Code:20504,Message:"Error occurred when create deployment"}
 )
