@@ -44,4 +44,7 @@ var (
 	ErrCreateVersion        =&Errno{Code:20502,Message:"Error occurred while create version to db"}
 	ErrVersionNameEmpty     =&Errno{Code:20503,Message:"Version name  is empty"}
 	ErrCreateDeployment    =&Errno{Code:20504,Message:"Error occurred when create deployment"}
+	ErrDeleteDeployment   =&Errno{Code:20505,Message:"Error occurred when delete a k8s deployment"}
+	ErrDeleteService      =&Errno{Code:20506,Message:"Error occurred when delete a k8s service"}
+
 )

@@ -3,11 +3,11 @@ package handler
 
 import (
 	apiv1 "k8s.io/api/core/v1"
-	"k8s.io/client-go/kubernetes/typed/apps/v1beta1"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	//"k8s.io/client-go/kubernetes/typed/apps/v1beta1"
+	//metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
 	"github.com/muxiyun/Mae/model"
-	"fmt"
+	"k8s.io/apimachinery/pkg/util/intstr"
 )
 
 // set all the volume
@@ -77,14 +77,17 @@ func bindContainers( version_config model.VersionConfig)([]apiv1.Container){
 
 
 
-//监听Deployment变化
-func startWatchDeployment(deploymentsClient v1beta1.DeploymentInterface) {
-	w, _ := deploymentsClient.Watch(metav1.ListOptions{})
-	for {
-		select {
-		case e, _ := <-w.ResultChan():
-			fmt.Println(e.Type, e.Object)
+func bindServicePort(version_config model.VersionConfig)([]apiv1.ServicePort){
+	var ports []apiv1.ServicePort
+	for _, ctr:=range version_config.Deployment.Containers{
+		for _,port :=range ctr.Ports{
+			var svcport apiv1.ServicePort
+			svcport.Protocol=port.Protocol
+			svcport.TargetPort=intstr.IntOrString{IntVal:int32(port.TargetPort), StrVal:string(port.TargetPort)}
+			svcport.Name=port.PortName
+			svcport.Port=port.ImagePort
+			ports=append(ports,svcport)
 		}
 	}
+	return ports
 }
-

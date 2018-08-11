@@ -46,14 +46,14 @@ type MAEDeployment struct{
 	NameSapce string `json:"name_space"`
 	Replicas int `json:"replicas"`
 	Labels map[string]string `json:"labels"`
-	PodLabels map[string]string `json:"pod_labels"`
 	Containers []Container `json:"containers"`
 }
 
 type MAEService struct{
 	SvcName string `json:"svc_name"`
 	Selector map[string]string `json:"selector"`
-	SvcType string `json:"svc_type"` //clusterip,nodeport,loadbalancer 
+	SvcType apiv1.ServiceType `json:"svc_type"` //clusterip,nodeport,loadbalancer
+	Labels map[string]string `json:"labels"`
 }
 
 type VersionConfig struct{
