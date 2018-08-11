@@ -1,19 +1,13 @@
-// this file's ugly code need to be refactored later
-
 package handler
 
 import (
+	"fmt"
 	"encoding/json"
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/core/errors"
 	"github.com/muxiyun/Mae/model"
 	"github.com/muxiyun/Mae/pkg/errno"
 	"github.com/muxiyun/Mae/pkg/k8sclient"
-
-	"fmt"
-	apiv1 "k8s.io/api/core/v1"
-	appsv1b1 "k8s.io/api/extensions/v1beta1"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 // the CreateVersion handler just to create a version config and store it to database
@@ -71,25 +65,8 @@ func ApplyVersion(ctx iris.Context) {
 	deploymentClient := k8sclient.ClientSet.ExtensionsV1beta1().
 		Deployments(version_config.Deployment.NameSapce)
 
-	// config a deployment
-	deployment := &appsv1b1.Deployment{
-		ObjectMeta: metav1.ObjectMeta{
-			Name: version_config.Deployment.DeployName,
-		},
-		Spec: appsv1b1.DeploymentSpec{
-			Replicas: int32Ptr(int32(version_config.Deployment.Replicas)),
-			Template: apiv1.PodTemplateSpec{
-				ObjectMeta: metav1.ObjectMeta{
-					Labels: version_config.Deployment.Labels,
-				},
-				Spec: apiv1.PodSpec{
-
-					Volumes:    bindVolumeSource(version_config),
-					Containers: bindContainers(version_config),
-				},
-			},
-		},
-	}
+	// config the deployment with the version_config struct
+	deployment := ConfigDeployment(version_config)
 
 	// create the deployment
 	deploy_result, err := deploymentClient.Create(deployment)
@@ -98,26 +75,20 @@ func ApplyVersion(ctx iris.Context) {
 		return
 	}
 
+	// get the k8s service client of a specified namespace
 	ServiceClient := k8sclient.ClientSet.CoreV1().Services(version_config.Deployment.NameSapce)
-	svc := &apiv1.Service{
-		ObjectMeta: metav1.ObjectMeta{
-			Name:      version_config.Svc.SvcName,
-			Namespace: version_config.Deployment.NameSapce,
-			Labels:    version_config.Svc.Labels,
-		},
-		Spec: apiv1.ServiceSpec{
-			Type:     version_config.Svc.SvcType,
-			Ports:    bindServicePort(version_config),
-			Selector: version_config.Svc.Selector,
-		},
-	}
+
+	// config the ks8 service with the version_config struct
+	svc := ConfigService(version_config)
+
+	// create the k8s service
 	svc_result, err := ServiceClient.Create(svc)
 	if err != nil {
 		SendResponse(ctx, errno.New(errno.ErrCreateService, err), nil)
 		return
 	}
 
-	// update the service's current_version field
+	// update the mae service's current_version field
 	service, err := model.GetServiceByID(int64(v.ServiceID))
 	if err != nil {
 		SendResponse(ctx, errno.New(errno.ErrDatabase, err), nil)

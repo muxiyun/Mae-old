@@ -5,6 +5,8 @@ import (
 	apiv1 "k8s.io/api/core/v1"
 	//"k8s.io/client-go/kubernetes/typed/apps/v1beta1"
 	//metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	appsv1b1 "k8s.io/api/extensions/v1beta1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
 	"github.com/muxiyun/Mae/model"
 	"k8s.io/apimachinery/pkg/util/intstr"
@@ -90,4 +92,47 @@ func bindServicePort(version_config model.VersionConfig)([]apiv1.ServicePort){
 		}
 	}
 	return ports
+}
+
+// config the Deployment with version_config struct and return the pointer
+// of the deployment object
+func ConfigDeployment(version_config model.VersionConfig)(*appsv1b1.Deployment){
+	deployment := &appsv1b1.Deployment{
+		ObjectMeta: metav1.ObjectMeta{
+			Name: version_config.Deployment.DeployName,
+		},
+		Spec: appsv1b1.DeploymentSpec{
+			Replicas: int32Ptr(int32(version_config.Deployment.Replicas)),
+			Template: apiv1.PodTemplateSpec{
+				ObjectMeta: metav1.ObjectMeta{
+					Labels: version_config.Deployment.Labels,
+				},
+				Spec: apiv1.PodSpec{
+
+					Volumes:    bindVolumeSource(version_config),
+					Containers: bindContainers(version_config),
+				},
+			},
+		},
+	}
+return deployment
+}
+
+
+// config the service with the version_config struct and return the pointer
+// of the service object
+func ConfigService(version_config model.VersionConfig)(*apiv1.Service){
+	svc := &apiv1.Service{
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      version_config.Svc.SvcName,
+			Namespace: version_config.Deployment.NameSapce,
+			Labels:    version_config.Svc.Labels,
+		},
+		Spec: apiv1.ServiceSpec{
+			Type:     version_config.Svc.SvcType,
+			Ports:    bindServicePort(version_config),
+			Selector: version_config.Svc.Selector,
+		},
+	}
+	return svc
 }
