@@ -1,14 +1,12 @@
 //version 版本配置增删改查
 package main
 
-
 import (
 	"github.com/kataras/iris/httptest"
 	"github.com/muxiyun/Mae/model"
 	"testing"
 	//"fmt"
 )
-
 
 func TestCreateApplyUnapplyVersion(t *testing.T) {
 	e := httptest.New(t, newApp(), httptest.URL("http://127.0.0.1:8080"))
@@ -77,7 +75,6 @@ func TestCreateApplyUnapplyVersion(t *testing.T) {
 		},
 	}).Expect().Status(httptest.StatusForbidden)
 
-
 	// normal user  to create a version which belongs to xueer_be
 	e.POST("/api/v1.0/version").WithJSON(map[string]interface{}{
 		"svc_id":       1,
@@ -110,7 +107,7 @@ func TestCreateApplyUnapplyVersion(t *testing.T) {
 				"labels":   map[string]string{"run": "xueer-be"},
 			},
 		},
-	}).WithBasicAuth(andrew_token,"").Expect().Body().Contains("OK")
+	}).WithBasicAuth(andrew_token, "").Expect().Body().Contains("OK")
 
 	//Anonymous to apply xueer-be-v1
 	e.GET("/api/v1.0/version/apply").WithQuery("version_name", "xueer-be-v1").
@@ -118,7 +115,7 @@ func TestCreateApplyUnapplyVersion(t *testing.T) {
 
 	// a normal user to apply xueer-be-v1
 	e.GET("/api/v1.0/version/apply").WithQuery("version_name", "xueer-be-v1").
-		.WithBasicAuth(andrew_token,"").Expect().Body().Contains("OK")
+		WithBasicAuth(andrew_token, "").Expect().Body().Contains("OK")
 
 	// an admin user create another version which belongs to xueer_be
 	e.POST("/api/v1.0/version").WithJSON(map[string]interface{}{
@@ -152,11 +149,11 @@ func TestCreateApplyUnapplyVersion(t *testing.T) {
 				"labels":   map[string]string{"run": "xueer-be"},
 			},
 		},
-	}).WithBasicAuth(admin_token,"").Expect().Body().Contains("OK")
+	}).WithBasicAuth(admin_token, "").Expect().Body().Contains("OK")
 
 	// an admin user to apply xueer-be-v2
 	e.GET("/api/v1.0/version/apply").WithQuery("version_name", "xueer-be-v2").
-		.WithBasicAuth(admin_token,"").Expect().Body().Contains("OK")
+		WithBasicAuth(admin_token, "").Expect().Body().Contains("OK")
 
 	// Anonymous to  unapply xueer-be-v2
 	e.GET("/api/v1.0/version/unapply").WithQuery("version_name", "xueer-be-v2").
@@ -164,13 +161,12 @@ func TestCreateApplyUnapplyVersion(t *testing.T) {
 
 	// a normal user to unapply xueer-be-v2
 	e.GET("/api/v1.0/version/unapply").WithQuery("version_name", "xueer-be-v2").
-		WithBasicAuth(andrew_token,"").Expect().Body().Contains("OK")
+		WithBasicAuth(andrew_token, "").Expect().Body().Contains("OK")
 
 	// a admin user to delete mae-test namespace to clear the test context.
 	e.DELETE("/api/v1.0/ns/{ns}").WithPath("ns", "mae-test").WithBasicAuth(admin_token, "").
 		Expect().Body().Contains("OK")
 }
-
 
 func TestDeleteVersion(t *testing.T) {
 	e := httptest.New(t, newApp(), httptest.URL("http://127.0.0.1:8080"))
@@ -237,11 +233,11 @@ func TestDeleteVersion(t *testing.T) {
 				"labels":   map[string]string{"run": "xueer-be"},
 			},
 		},
-	}).WithBasicAuth(andrew_token,"").Expect().Body().Contains("OK")
+	}).WithBasicAuth(andrew_token, "").Expect().Body().Contains("OK")
 
 	// apply the version xueer-be-v1
 	e.GET("/api/v1.0/version/apply").WithQuery("version_name", "xueer-be-v1").
-		WithBasicAuth(andrew_token,"").Expect().Body().Contains("OK")
+		WithBasicAuth(andrew_token, "").Expect().Body().Contains("OK")
 
 	// create another version xueer-be-v2 which belongs to service xueer-be
 	e.POST("/api/v1.0/version").WithJSON(map[string]interface{}{
@@ -275,39 +271,38 @@ func TestDeleteVersion(t *testing.T) {
 				"labels":   map[string]string{"run": "xueer-be"},
 			},
 		},
-	}).WithBasicAuth(andrew_token,"").Expect().Body().Contains("OK")
+	}).WithBasicAuth(andrew_token, "").Expect().Body().Contains("OK")
 
 	// apply xueer-be-v2
 	e.GET("/api/v1.0/version/apply").WithQuery("version_name", "xueer-be-v2").
-		WithBasicAuth(andrew_token,"").Expect().Body().Contains("OK")
+		WithBasicAuth(andrew_token, "").Expect().Body().Contains("OK")
 
 	// anonymous to delete an undeployed version(just to delete the database record)
 	e.DELETE("/api/v1.0/version/{id}").WithPath("id", 1).Expect().Status(httptest.StatusForbidden)
 
 	// a normal user to delete an undeployed version(just to delete the database record)
-	e.DELETE("/api/v1.0/version/{id}").WithPath("id",1).WithBasicAuth(andrew_token,"").
+	e.DELETE("/api/v1.0/version/{id}").WithPath("id", 1).WithBasicAuth(andrew_token, "").
 		Expect().Status(httptest.StatusForbidden)
 
 	// an admin user to delete an undeployed version(just to delete the database record)
-	e.DELETE("/api/v1.0/version/{id}").WithPath("id",1).WithPath(admin_token,"").
+	e.DELETE("/api/v1.0/version/{id}").WithPath("id", 1).WithBasicAuth(admin_token, "").
 		Expect().Body().Contains("OK")
 
 	// anonymous to delete a deployed version(delete the deployment,service in cluster and delete the database record)
 	e.DELETE("/api/v1.0/version/{id}").WithPath("id", 1).Expect().Status(httptest.StatusForbidden)
 
 	// a normal user to delete a deployed version(delete the deployment,service in cluster and delete the database record)
-	e.DELETE("/api/v1.0/version/{id}").WithPath("id",2).WithBasicAuth(andrew_token,"").
+	e.DELETE("/api/v1.0/version/{id}").WithPath("id", 2).WithBasicAuth(andrew_token, "").
 		Expect().Status(httptest.StatusForbidden)
 
 	// an admin user to delete a deployed version(delete the deployment,service in cluster and delete the database record)
-	e.DELETE("/api/v1.0/version/{id}").WithPath("id",2).WithPath(admin_token,"").
+	e.DELETE("/api/v1.0/version/{id}").WithPath("id", 2).WithBasicAuth(admin_token, "").
 		Expect().Body().Contains("OK")
 
 	// delete namespace mae-test to clear the test context
 	e.DELETE("/api/v1.0/ns/{ns}").WithPath("ns", "mae-test").WithBasicAuth(admin_token, "").
 		Expect().Body().Contains("OK")
 }
-
 
 func TestGetVersionAndGetVersionList(t *testing.T) {
 	e := httptest.New(t, newApp(), httptest.URL("http://127.0.0.1:8080"))
@@ -345,7 +340,6 @@ func TestGetVersionAndGetVersionList(t *testing.T) {
 		"svc_desc": "the frontend part of xueer",
 	}).WithBasicAuth(andrew_token, "").Expect().Body().Contains("OK")
 
-
 	// create a namespace mae-test
 	e.POST("/api/v1.0/ns/{ns}").WithPath("ns", "mae-test").
 		WithBasicAuth(andrew_token, "").Expect().Body().Contains("OK")
@@ -382,11 +376,11 @@ func TestGetVersionAndGetVersionList(t *testing.T) {
 				"labels":   map[string]string{"run": "xueer-be"},
 			},
 		},
-	}).WithBasicAuth(andrew_token,"").Expect().Body().Contains("OK")
+	}).WithBasicAuth(andrew_token, "").Expect().Body().Contains("OK")
 
 	//apply version "xueer-be-v1"
 	e.GET("/api/v1.0/version/apply").WithQuery("version_name", "xueer-be-v1").
-		WithBasicAuth(andrew_token,"").Expect().Body().Contains("OK")
+		WithBasicAuth(andrew_token, "").Expect().Body().Contains("OK")
 
 	//create a version which belongs to service xueer_fe
 	e.POST("/api/v1.0/version").WithJSON(map[string]interface{}{
@@ -420,53 +414,52 @@ func TestGetVersionAndGetVersionList(t *testing.T) {
 				"labels":   map[string]string{"run": "xueer-fe"},
 			},
 		},
-	}).WithBasicAuth(andrew_token,"").Expect().Body().Contains("OK")
+	}).WithBasicAuth(andrew_token, "").Expect().Body().Contains("OK")
 
 	// apply version 'xueer-fe-v1'
 	e.GET("/api/v1.0/version/apply").WithQuery("version_name", "xueer-fe-v1").
-		Expect().Body().Contains("OK")
+		WithBasicAuth(andrew_token,"").Expect().Body().Contains("OK")
 
 	// anonymous get a single version's information
 	e.GET("/api/v1.0/version/{version_name}").WithPath("version_name", "xueer-be-v1").
 		Expect().Status(httptest.StatusForbidden)
 
 	// a normal user to get a single version's information
-	e.GET("/api/v1.0/version/{version_name}").WithBasicAuth(andrew_token,"").
-		WithPath("version_name","xueer-be-v1").Expect().Body().Contains("OK")
+	e.GET("/api/v1.0/version/{version_name}").WithBasicAuth(andrew_token, "").
+		WithPath("version_name", "xueer-be-v1").Expect().Body().Contains("OK")
 
 	// an admin user to get  a single version's information
-	e.GET("/api/v1.0/version/{version_name}").WithBasicAuth(admin_token,"").
-		WithPath("version_name","xueer-be-v1").Expect().Body().Contains("OK")
-
+	e.GET("/api/v1.0/version/{version_name}").WithBasicAuth(admin_token, "").
+		WithPath("version_name", "xueer-be-v1").Expect().Body().Contains("OK")
 
 	//anonymous get all the versions which are belongs to service xueer_be
 	e.GET("/api/v1.0/version").WithQuery("service_id", 1).
 		Expect().Status(httptest.StatusForbidden)
 
 	// a normal user to get all the versions which are belongs to service xueer_be
-	e.GET("/api/v1.0/version").WithQuery("service_id", 1).WithBasicAuth(andrew_token,"").
+	e.GET("/api/v1.0/version").WithQuery("service_id", 1).WithBasicAuth(andrew_token, "").
 		Expect().Body().Contains("OK")
 
 	// an admin user to get all the versions which are belongs to service xueer_be
-	e.GET("/api/v1.0/version").WithQuery("service_id", 1).WithBasicAuth(admin_token,"").
+	e.GET("/api/v1.0/version").WithQuery("service_id", 1).WithBasicAuth(admin_token, "").
 		Expect().Body().Contains("OK")
 
 	// anonymous get all the versions in database
 	e.GET("/api/v1.0/version").Expect().Status(httptest.StatusForbidden)
 
 	// a normal user to get all the versions in the database
-	e.GET("/api/v1.0/version").WithBasicAuth(andrew_token,"").Expect().Status(httptest.StatusForbidden)
+	e.GET("/api/v1.0/version").WithBasicAuth(andrew_token, "").Expect().Status(httptest.StatusForbidden)
 
 	// an admin user to get all the versions in the database
-	e.GET("/api/v1.0/version").WithBasicAuth(admin_token,"").Expect().Body().Contains("OK")
+	e.GET("/api/v1.0/version").WithBasicAuth(admin_token, "").Expect().Body().Contains("OK")
 
 	// to unapply xueer-be-v1 (that is to delete the deploy and svc of xueer-be-v1 in the cluster)
 	e.GET("/api/v1.0/version/unapply").WithQuery("version_name", "xueer-be-v1").
-		WithBasicAuth(andrew_token,"").Expect().Body().Contains("OK")
+		WithBasicAuth(andrew_token, "").Expect().Body().Contains("OK")
 
 	// to unapply xueer-fe-v1 (that is to delete the deploy and svc of xueer-fe-v1 in the cluster)
 	e.GET("/api/v1.0/version/unapply").WithQuery("version_name", "xueer-fe-v1").
-		WithBasicAuth(andrew_token,"").Expect().Body().Contains("OK")
+		WithBasicAuth(andrew_token, "").Expect().Body().Contains("OK")
 
 	// delete namespace mae-test to clear the test context
 	e.DELETE("/api/v1.0/ns/{ns}").WithPath("ns", "mae-test").WithBasicAuth(admin_token, "").
