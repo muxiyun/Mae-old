@@ -85,9 +85,9 @@ func bindServicePort(version_config model.VersionConfig)([]apiv1.ServicePort){
 		for _,port :=range ctr.Ports{
 			var svcport apiv1.ServicePort
 			svcport.Protocol=port.Protocol
-			svcport.TargetPort=intstr.IntOrString{IntVal:int32(port.TargetPort), StrVal:string(port.TargetPort)}
+			svcport.TargetPort=intstr.IntOrString{IntVal:int32(port.ImagePort), StrVal:string(port.ImagePort)}
 			svcport.Name=port.PortName
-			svcport.Port=port.ImagePort
+			svcport.Port=port.TargetPort
 			ports=append(ports,svcport)
 		}
 	}
