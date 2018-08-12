@@ -35,6 +35,9 @@ func InitPolicy() {
 
 		[]string{"dom_service","/api/v1.0/service/*","DELETE"},
 
+		[]string{"dom_version","/api/v1.0/version/*","DELETE"},
+
+
 	} {
 		myAddPolicy("roleAdmin", policy[0], policy[1], policy[2])
 	}
@@ -61,6 +64,12 @@ func InitPolicy() {
 		[]string{"dom_service","/api/v1.0/service/*","PUT"},
 		[]string{"dom_service","/api/v1.0/service","GET"},
 
+		[]string{"dom_version","/api/v1.0/version","POST"},
+		[]string{"dom_version","/api/v1.0/version/apply","GET"},
+		[]string{"dom_version","/api/v1.0/version/unapply","GET"},
+		[]string{"dom_version","/api/v1.0/version/*","GET"},
+		[]string{"dom_version","/api/v1.0/version/*","UPDATE"},
+		[]string{"dom_version","/api/v1.0/version","GET"},
 
 
 	} {
@@ -76,13 +85,8 @@ func InitPolicy() {
 		[]string{"dom_sd", "/api/v1.0/sd/health", "GET"},
 
 		//temp rule placed here for test
-		[]string{"dom_version","/api/v1.0/version","POST"},
-		[]string{"dom_version","/api/v1.0/version/apply","GET"},
-		[]string{"dom_version","/api/v1.0/version/unapply","GET"},
-		[]string{"dom_version","/api/v1.0/version/*","GET"},
-		[]string{"dom_version","/api/v1.0/version/*","UPDATE"},
-		[]string{"dom_version","/api/v1.0/version/*","DELETE"},
-		[]string{"dom_version","/api/v1.0/version","GET"},
+
+		[]string{"dom_log","/api/v1.0/log","GET"},
 
 	} {
 		myAddPolicy("roleAnonymous", policy[0], policy[1], policy[2])
@@ -99,6 +103,7 @@ func AttachToAdmin(username string) {
 		"dom_ns",
 		"dom_app",
 		"dom_service",
+		"dom_version",
 	} {
 		attachRoleDomain2User(username, "roleAdmin", dom)
 	}
@@ -112,6 +117,7 @@ func AttachToUser(username string) {
 		"dom_ns",
 		"dom_app",
 		"dom_service",
+		"dom_version",
 	} {
 		attachRoleDomain2User(username, "roleUser", dom)
 	}
