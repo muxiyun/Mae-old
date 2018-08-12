@@ -78,6 +78,12 @@ func InitPolicy() {
 		//temp rule placed here for test
 		[]string{"dom_version","/api/v1.0/version","POST"},
 		[]string{"dom_version","/api/v1.0/version/apply","GET"},
+		[]string{"dom_version","/api/v1.0/version/unapply","GET"},
+		[]string{"dom_version","/api/v1.0/version/*","GET"},
+		[]string{"dom_version","/api/v1.0/version/*","UPDATE"},
+		[]string{"dom_version","/api/v1.0/version/*","DELETE"},
+		[]string{"dom_version","/api/v1.0/version","GET"},
+
 	} {
 		myAddPolicy("roleAnonymous", policy[0], policy[1], policy[2])
 	}
