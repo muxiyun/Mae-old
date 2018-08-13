@@ -54,4 +54,8 @@ var (
 	//pod
 	ErrListPods          =&Errno{Code:20701,Message:"Error occurred while list pods"}
 
+
+	ErrorGetWSConn       =&Errno{Code:20801,Message:"Error occurred wihle get websocket connection"}
+	ErrPush              =&Errno{Code:20802,Message:"Error occurred while push msg to client"}
+
 )
