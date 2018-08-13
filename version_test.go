@@ -418,7 +418,7 @@ func TestGetVersionAndGetVersionList(t *testing.T) {
 
 	// apply version 'xueer-fe-v1'
 	e.GET("/api/v1.0/version/apply").WithQuery("version_name", "xueer-fe-v1").
-		WithBasicAuth(andrew_token,"").Expect().Body().Contains("OK")
+		WithBasicAuth(andrew_token, "").Expect().Body().Contains("OK")
 
 	// anonymous get a single version's information
 	e.GET("/api/v1.0/version/{version_name}").WithPath("version_name", "xueer-be-v1").

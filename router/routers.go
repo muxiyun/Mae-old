@@ -18,9 +18,9 @@ func Load(app *iris.Application) *iris.Application {
 	//routers setup here
 	app.OnErrorCode(iris.StatusNotFound, handler.Handle404)
 	app.Get("/api/v1.0/token", handler.SignToken)
-	app.Get("/api/v1.0/pod/{ns}",handler.GetPod)
-	app.Get("/api/v1.0/log/{ns}/{pod_name}/{container_name}",handler.GetLog)
-	app.Get("/api/v1.0/terminal/{ns}/{pod_name}/{container_name}",handler.Terminal)
+	app.Get("/api/v1.0/pod/{ns}", handler.GetPod)
+	app.Get("/api/v1.0/log/{ns}/{pod_name}/{container_name}", handler.GetLog)
+	app.Get("/api/v1.0/terminal/{ns}/{pod_name}/{container_name}", handler.Terminal)
 
 	user_app := app.Party("/api/v1.0/user")
 	{
@@ -74,8 +74,8 @@ func Load(app *iris.Application) *iris.Application {
 		version_app.Delete("/{id:long}", handler.DeleteVersion)
 		version_app.Get("/{version_name:string}", handler.GetVersion)
 		version_app.Get("", handler.GetVersionList)
-		version_app.Get("/apply",handler.ApplyVersion)
-		version_app.Get("/unapply",handler.UnapplyVersion)
+		version_app.Get("/apply", handler.ApplyVersion)
+		version_app.Get("/unapply", handler.UnapplyVersion)
 	}
 
 	return app

@@ -1,8 +1,8 @@
 package handler
 
 import (
-	"fmt"
 	"encoding/json"
+	"fmt"
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/core/errors"
 	"github.com/muxiyun/Mae/model"
@@ -70,13 +70,13 @@ func ApplyVersion(ctx iris.Context) {
 	//  (service.CurrentVersion!="") &&(service.CurrentVersion!=v.VersionName) 切换版本
 
 	//重复apply,什么都不做，直接返回
-	if service.CurrentVersion==v.VersionName {
-		SendResponse(ctx,nil,nil)
+	if service.CurrentVersion == v.VersionName {
+		SendResponse(ctx, nil, nil)
 		return
 	}
 
 	//切换版本，需要首先删除旧版本的deployment,service
-	if (service.CurrentVersion!="") &&(service.CurrentVersion!=v.VersionName){
+	if (service.CurrentVersion != "") && (service.CurrentVersion != v.VersionName) {
 		old_version, err := model.GetVersionByName(service.CurrentVersion)
 		if err != nil {
 			SendResponse(ctx, errno.New(errno.ErrDatabase, err), nil)
@@ -90,7 +90,7 @@ func ApplyVersion(ctx iris.Context) {
 		//get the deploymentClient and delete the old deployment
 		deploymentClient := k8sclient.ClientSet.ExtensionsV1beta1().
 			Deployments(old_version_config.Deployment.NameSapce)
-		err=deploymentClient.Delete(old_version_config.Deployment.DeployName,nil)
+		err = deploymentClient.Delete(old_version_config.Deployment.DeployName, nil)
 		if err != nil {
 			SendResponse(ctx, errno.New(errno.ErrDeleteDeployment, err), nil)
 			return
@@ -98,20 +98,19 @@ func ApplyVersion(ctx iris.Context) {
 
 		// get the serviceClient and delete the old service
 		ServiceClient := k8sclient.ClientSet.CoreV1().Services(old_version_config.Deployment.NameSapce)
-		err=ServiceClient.Delete(old_version_config.Svc.SvcName, nil)
+		err = ServiceClient.Delete(old_version_config.Svc.SvcName, nil)
 		if err != nil {
 			SendResponse(ctx, errno.New(errno.ErrDeleteService, err), nil)
 			return
 		}
 
 		// turn old_version's active field to false
-		old_version.Active=false
+		old_version.Active = false
 		if err = old_version.Update(); err != nil {
 			SendResponse(ctx, errno.New(errno.ErrDatabase, err), nil)
 			return
 		}
 	}
-
 
 	//部署新版本
 	var version_config model.VersionConfig
@@ -339,6 +338,5 @@ func GetVersionList(ctx iris.Context) {
 	}
 	SendResponse(ctx, nil, iris.Map{"count": count, "versions": versions})
 }
-
 
 func int32Ptr(i int32) *int32 { return &i }

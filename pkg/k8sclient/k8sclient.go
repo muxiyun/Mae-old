@@ -1,26 +1,21 @@
 package k8sclient
 
 import (
-	"k8s.io/client-go/kubernetes"
-	"k8s.io/client-go/tools/clientcmd"
-	"k8s.io/client-go/rest"
 	"fmt"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/schema"
-	"k8s.io/client-go/kubernetes/scheme"
 	"k8s.io/apimachinery/pkg/runtime/serializer"
+	"k8s.io/client-go/kubernetes"
+	"k8s.io/client-go/kubernetes/scheme"
+	"k8s.io/client-go/rest"
+	"k8s.io/client-go/tools/clientcmd"
 )
-
-
-
 
 var (
-	Config *rest.Config
-	ClientSet *kubernetes.Clientset
-	Restclient  *rest.RESTClient
+	Config     *rest.Config
+	ClientSet  *kubernetes.Clientset
+	Restclient *rest.RESTClient
 )
-
-
 
 func init() {
 
@@ -49,7 +44,7 @@ func init() {
 
 	//get restclient
 	Restclient, err = rest.RESTClientFor(Config)
-	if err!=nil{
+	if err != nil {
 		panic(err.Error())
 	}
 	fmt.Println("get restclient success")

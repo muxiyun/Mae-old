@@ -1,6 +1,5 @@
 package main
 
-
 import (
 	"github.com/kataras/iris/httptest"
 	"testing"

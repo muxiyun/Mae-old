@@ -35,27 +35,25 @@ var (
 	ErrAppNameNotProvide = &Errno{Code: 20303, Message: "AppName not provided"}
 
 	//Service
-	ServiceNameEmptyorAppIDTypeError = &Errno{Code:20401,Message:"Error Service Name can't be empty and app_id should be int but not string "}
-	ErrCreateService    = &Errno{Code:20402,Message:"Error occurred while create service"}
-	ErrGetService       = &Errno{Code:20403,Message:"Error occurred while get service"}
+	ServiceNameEmptyorAppIDTypeError = &Errno{Code: 20401, Message: "Error Service Name can't be empty and app_id should be int but not string "}
+	ErrCreateService                 = &Errno{Code: 20402, Message: "Error occurred while create service"}
+	ErrGetService                    = &Errno{Code: 20403, Message: "Error occurred while get service"}
 
 	//Version
-	ErrVersionConfigMarshal = &Errno{Code:20501,Message:"Error occurred when marshal version config"}
-	ErrCreateVersion        = &Errno{Code:20502,Message:"Error occurred while create version to db"}
-	ErrVersionNameEmpty     = &Errno{Code:20503,Message:"Version name  is empty"}
-	ErrCreateDeployment    = &Errno{Code:20504,Message:"Error occurred when create deployment"}
-	ErrDeleteDeployment   = &Errno{Code:20505,Message:"Error occurred when delete a k8s deployment"}
-	ErrDeleteService      = &Errno{Code:20506,Message:"Error occurred when delete a k8s service"}
+	ErrVersionConfigMarshal = &Errno{Code: 20501, Message: "Error occurred when marshal version config"}
+	ErrCreateVersion        = &Errno{Code: 20502, Message: "Error occurred while create version to db"}
+	ErrVersionNameEmpty     = &Errno{Code: 20503, Message: "Version name  is empty"}
+	ErrCreateDeployment     = &Errno{Code: 20504, Message: "Error occurred when create deployment"}
+	ErrDeleteDeployment     = &Errno{Code: 20505, Message: "Error occurred when delete a k8s deployment"}
+	ErrDeleteService        = &Errno{Code: 20506, Message: "Error occurred when delete a k8s service"}
 
 	//terminal
-	ErrInitExecutor      = &Errno{Code:20601,Message:"Failed to init executor"}
-	ErrCannotExec        = &Errno{Code:20602,Message:"Could not execute"}
+	ErrInitExecutor = &Errno{Code: 20601, Message: "Failed to init executor"}
+	ErrCannotExec   = &Errno{Code: 20602, Message: "Could not execute"}
 
 	//pod
-	ErrListPods          =&Errno{Code:20701,Message:"Error occurred while list pods"}
+	ErrListPods = &Errno{Code: 20701, Message: "Error occurred while list pods"}
 
-
-	ErrorGetWSConn       =&Errno{Code:20801,Message:"Error occurred wihle get websocket connection"}
-	ErrPush              =&Errno{Code:20802,Message:"Error occurred while push msg to client"}
-
+	ErrorGetWSConn = &Errno{Code: 20801, Message: "Error occurred wihle get websocket connection"}
+	ErrPush        = &Errno{Code: 20802, Message: "Error occurred while push msg to client"}
 )

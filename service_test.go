@@ -111,7 +111,6 @@ func TestServiceCRUD(t *testing.T) {
 	e.DELETE("/api/v1.0/service/{id}").WithPath("id", 1).WithBasicAuth(andrewadmin_token, "").
 		Expect().Body().Contains("OK")
 
-
 	// delete a app who has service
 	e.DELETE("/api/v1.0/app/{id}").WithPath("id", 1).WithBasicAuth(andrewadmin_token, "").
 		Expect().Body().Contains("OK")

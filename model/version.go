@@ -6,10 +6,10 @@ import (
 
 type Version struct {
 	gorm.Model
-	ServiceID   uint   `json:"svc_id" gorm:"column:svc_id;not null"`
-	Active bool `json:"active" gorm:"column:active;default:false"`
-	VersionName string `json:"version_name" gorm:"column:version_name;type:varchar(50)"`
-	VersionDesc string `json:"version_desc" gorm:"column:version_desc;type:varchar(512)"`
+	ServiceID     uint   `json:"svc_id" gorm:"column:svc_id;not null"`
+	Active        bool   `json:"active" gorm:"column:active;default:false"`
+	VersionName   string `json:"version_name" gorm:"column:version_name;type:varchar(50)"`
+	VersionDesc   string `json:"version_desc" gorm:"column:version_desc;type:varchar(512)"`
 	VersionConfig string `json:"version_conf" gorm:"column:version_conf;type:varchar(4096)"`
 }
 
@@ -18,7 +18,6 @@ type Version struct {
 func (c *Version) TableName() string {
 	return "versions"
 }
-
 
 // Create creates a new Version.
 func (v *Version) Create() error {
@@ -66,14 +65,14 @@ func ListVersion(offset, limit int) ([]*Version, uint64, error) {
 }
 
 // List　all versions belongs to a service
-func ListVersionByServiceID(offset,limit int,service_id uint)([]*Version, uint64, error){
+func ListVersionByServiceID(offset, limit int, service_id uint) ([]*Version, uint64, error) {
 	vs := make([]*Version, 0)
 	var count uint64
-	if err := DB.RWdb.Model(&Version{}).Where("svc_id = ?",service_id).Count(&count).Error; err != nil {
+	if err := DB.RWdb.Model(&Version{}).Where("svc_id = ?", service_id).Count(&count).Error; err != nil {
 		return vs, count, err
 	}
 
-	if err := DB.RWdb.Where("svc_id = ?",service_id).Offset(offset).Limit(limit).Order("id desc").Find(&vs).Error; err != nil {
+	if err := DB.RWdb.Where("svc_id = ?", service_id).Offset(offset).Limit(limit).Order("id desc").Find(&vs).Error; err != nil {
 		return vs, count, err
 	}
 

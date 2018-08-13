@@ -2,11 +2,11 @@ package handler
 
 import (
 	//"fmt"
+	"fmt"
 	"github.com/kataras/iris"
+	"github.com/kataras/iris/core/errors"
 	"github.com/muxiyun/Mae/model"
 	"github.com/muxiyun/Mae/pkg/errno"
-	"github.com/kataras/iris/core/errors"
-	"fmt"
 )
 
 // create a service
@@ -14,28 +14,28 @@ func CreateService(ctx iris.Context) {
 	var svc model.Service
 	ctx.ReadJSON(&svc)
 
-	if svc.AppID==0 || svc.SvcName==""{
-		SendResponse(ctx,errno.New(errno.ServiceNameEmptyorAppIDTypeError,errors.New("")),nil)
+	if svc.AppID == 0 || svc.SvcName == "" {
+		SendResponse(ctx, errno.New(errno.ServiceNameEmptyorAppIDTypeError, errors.New("")), nil)
 		return
 	}
 
-	if err:=svc.Create();err!=nil{
-		SendResponse(ctx,errno.New(errno.ErrCreateService,err),nil)
+	if err := svc.Create(); err != nil {
+		SendResponse(ctx, errno.New(errno.ErrCreateService, err), nil)
 	}
 
-	SendResponse(ctx,nil,iris.Map{"id":svc.ID})
+	SendResponse(ctx, nil, iris.Map{"id": svc.ID})
 }
 
 // get a service info by svc_name
 func GetService(ctx iris.Context) {
-	svc_name:=ctx.Params().Get("svc_name")
+	svc_name := ctx.Params().Get("svc_name")
 	fmt.Println(svc_name)
-	svc,err:=model.GetServiceByName(svc_name)
-	if err!=nil{
+	svc, err := model.GetServiceByName(svc_name)
+	if err != nil {
 		SendResponse(ctx, errno.New(errno.ErrGetService, err), nil)
 		return
 	}
-	SendResponse(ctx,nil,svc)
+	SendResponse(ctx, nil, svc)
 }
 
 // update app_id or/and svc_name or/and svc_desc
@@ -51,8 +51,8 @@ func UpdateService(ctx iris.Context) {
 	}
 
 	//update the app_id of a service(move a service to another app)
-	if newsvc.AppID!=0{
-		svc.AppID=newsvc.AppID
+	if newsvc.AppID != 0 {
+		svc.AppID = newsvc.AppID
 	}
 
 	//update service name
@@ -87,23 +87,23 @@ func DeleteService(ctx iris.Context) {
 func GetServiceList(ctx iris.Context) {
 	limit := ctx.URLParamIntDefault("limit", 20)    //how many if limit=0,default=20
 	offsize := ctx.URLParamIntDefault("offsize", 0) // from where
-	app_id :=ctx.URLParamIntDefault ("app_id",0)
+	app_id := ctx.URLParamIntDefault("app_id", 0)
 
-	var(
-		svcs []*model.Service
-	    count uint64
-	    err error
+	var (
+		svcs  []*model.Service
+		count uint64
+		err   error
 	)
 
-	if app_id==0{//list all, admin only
-		if ctx.Values().GetString("current_user_role")=="admin" {
+	if app_id == 0 { //list all, admin only
+		if ctx.Values().GetString("current_user_role") == "admin" {
 			svcs, count, err = model.ListService(offsize, limit)
-		}else{
+		} else {
 			ctx.StatusCode(iris.StatusForbidden)
 			return
 		}
-	}else{// list service belongs to an app,login only
-		svcs, count, err = model.ListServiceByAppID(offsize, limit,uint(app_id))
+	} else { // list service belongs to an app,login only
+		svcs, count, err = model.ListServiceByAppID(offsize, limit, uint(app_id))
 	}
 
 	if err != nil {
@@ -112,4 +112,3 @@ func GetServiceList(ctx iris.Context) {
 	}
 	SendResponse(ctx, nil, iris.Map{"count": count, "svcs": svcs})
 }
-

@@ -6,11 +6,11 @@ import (
 
 type Service struct {
 	gorm.Model
-	AppID   uint   `json:"app_id" gorm:"column:app_id;not null"`
-	SvcName string `json:"svc_name" gorm:"column:svc_name;not null;unique;type:varchar(50)"`
-	SvcDesc string `json:"svc_desc" gorm:"column:svc_desc;type:varchar(512)"`
-	CurrentVersion string `json:"current_version" gorm:"column:current_version"`
-	Versions []Version `gorm:"foreignkey:ServiceID"` //service表不会多任何字段，Version表多一个ServiceID
+	AppID          uint      `json:"app_id" gorm:"column:app_id;not null"`
+	SvcName        string    `json:"svc_name" gorm:"column:svc_name;not null;unique;type:varchar(50)"`
+	SvcDesc        string    `json:"svc_desc" gorm:"column:svc_desc;type:varchar(512)"`
+	CurrentVersion string    `json:"current_version" gorm:"column:current_version"`
+	Versions       []Version `gorm:"foreignkey:ServiceID"` //service表不会多任何字段，Version表多一个ServiceID
 }
 
 func (c *Service) TableName() string {
@@ -63,14 +63,14 @@ func ListService(offset, limit int) ([]*Service, uint64, error) {
 }
 
 // List　all service belongs to an app
-func ListServiceByAppID(offset,limit int,app_id uint)([]*Service, uint64, error){
+func ListServiceByAppID(offset, limit int, app_id uint) ([]*Service, uint64, error) {
 	svcs := make([]*Service, 0)
 	var count uint64
-	if err := DB.RWdb.Model(&Service{}).Where("app_id = ?",app_id).Count(&count).Error; err != nil {
+	if err := DB.RWdb.Model(&Service{}).Where("app_id = ?", app_id).Count(&count).Error; err != nil {
 		return svcs, count, err
 	}
 
-	if err := DB.RWdb.Where("app_id = ?",app_id).Offset(offset).Limit(limit).Order("id desc").Find(&svcs).Error; err != nil {
+	if err := DB.RWdb.Where("app_id = ?", app_id).Offset(offset).Limit(limit).Order("id desc").Find(&svcs).Error; err != nil {
 		return svcs, count, err
 	}
 
