@@ -15,25 +15,17 @@ import (
 
 
 var (
+	Config *rest.Config
 	ClientSet *kubernetes.Clientset
 	Restclient  *rest.RESTClient
-	Config *rest.Config
 )
 
-//var Cluster K8sCluster
-//
-//type K8sCluster struct{
-//	ClientSet *kubernetes.Clientset
-//	Restclient  *rest.RESTClient
-//	Config *rest.Config
-//}
+
 
 func init() {
-	//kubeconfig:=viper.GetString("kubeconfig")
 
- 	var err error
-	// get config
-	Config, err := clientcmd.BuildConfigFromFlags("", "conf/admin.kubeconfig")
+	var err error
+	Config, err = clientcmd.BuildConfigFromFlags("", "conf/admin.kubeconfig")
 	if err != nil {
 		panic(err.Error())
 	}
@@ -47,14 +39,13 @@ func init() {
 	fmt.Println("get clientset success")
 
 	groupversion := schema.GroupVersion{
-		Group:   "k8s.io",
+		Group:   "",
 		Version: "v1",
 	}
 	Config.GroupVersion = &groupversion
-	Config.APIPath = "/apis"
+	Config.APIPath = "/api"
 	Config.ContentType = runtime.ContentTypeJSON
 	Config.NegotiatedSerializer = serializer.DirectCodecFactory{CodecFactory: scheme.Codecs}
-	Config.WrapTransport=nil
 
 	//get restclient
 	Restclient, err = rest.RESTClientFor(Config)

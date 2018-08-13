@@ -1,3 +1,5 @@
+// xterm.js 与ws，将输入输出写入到websocket流中即可，还是很简单
+
 package handler
 
 import (
@@ -11,6 +13,8 @@ import (
 	"k8s.io/client-go/kubernetes/scheme"
 	"k8s.io/client-go/tools/remotecommand"
 )
+
+
 
 func Terminal(ctx iris.Context) {
 
@@ -27,12 +31,11 @@ func Terminal(ctx iris.Context) {
 
 	req.VersionedParams(&v1.PodExecOptions{
 		Container: "kube-test-ct",
-		Command:   []string{"ls -a"},
+		Command:   []string{"ls","-al"},
 		Stdout:    true,
 		Stderr:    true,
 	}, scheme.ParameterCodec)
 
-	fmt.Println("--------->",k8sclient.Config.WrapTransport)
 	exec, err := remotecommand.NewSPDYExecutor(k8sclient.Config, "POST", req.URL())
 	if err != nil {
 		SendResponse(ctx, errno.New(errno.ErrInitExecutor, err), nil)
