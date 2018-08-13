@@ -18,6 +18,9 @@ func Load(app *iris.Application) *iris.Application {
 	//routers setup here
 	app.OnErrorCode(iris.StatusNotFound, handler.Handle404)
 	app.Get("/api/v1.0/token", handler.SignToken)
+	app.Get("/api/v1.0/pod/{ns}",handler.GetPod)
+	app.Get("/api/v1.0/log/{ns}/{pod_name}/{container_name}",handler.GetLog)
+	app.Get("/api/v1.0/terminal",handler.Terminal)
 
 	user_app := app.Party("/api/v1.0/user")
 	{

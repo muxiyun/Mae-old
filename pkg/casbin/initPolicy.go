@@ -71,6 +71,11 @@ func InitPolicy() {
 		[]string{"dom_version","/api/v1.0/version/*","UPDATE"},
 		[]string{"dom_version","/api/v1.0/version","GET"},
 
+		[]string{"dom_pod","/api/v1.0/pod/*","GET"},
+
+		[]string{"dom_log","/api/v1.0/log/*/*/*","GET"},
+
+
 
 	} {
 		myAddPolicy("roleUser", policy[0], policy[1], policy[2])
@@ -85,8 +90,8 @@ func InitPolicy() {
 		[]string{"dom_sd", "/api/v1.0/sd/health", "GET"},
 
 		//temp rule placed here for test
+		[]string{"dom_terminal","/api/v1.0/terminal","GET"},
 
-		[]string{"dom_log","/api/v1.0/log","GET"},
 
 	} {
 		myAddPolicy("roleAnonymous", policy[0], policy[1], policy[2])
@@ -118,6 +123,8 @@ func AttachToUser(username string) {
 		"dom_app",
 		"dom_service",
 		"dom_version",
+		"dom_pod",
+		"dom_log",
 	} {
 		attachRoleDomain2User(username, "roleUser", dom)
 	}

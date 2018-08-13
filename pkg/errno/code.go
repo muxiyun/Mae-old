@@ -41,10 +41,17 @@ var (
 
 	//Version
 	ErrVersionConfigMarshal = &Errno{Code:20501,Message:"Error occurred when marshal version config"}
-	ErrCreateVersion        =&Errno{Code:20502,Message:"Error occurred while create version to db"}
-	ErrVersionNameEmpty     =&Errno{Code:20503,Message:"Version name  is empty"}
-	ErrCreateDeployment    =&Errno{Code:20504,Message:"Error occurred when create deployment"}
-	ErrDeleteDeployment   =&Errno{Code:20505,Message:"Error occurred when delete a k8s deployment"}
-	ErrDeleteService      =&Errno{Code:20506,Message:"Error occurred when delete a k8s service"}
+	ErrCreateVersion        = &Errno{Code:20502,Message:"Error occurred while create version to db"}
+	ErrVersionNameEmpty     = &Errno{Code:20503,Message:"Version name  is empty"}
+	ErrCreateDeployment    = &Errno{Code:20504,Message:"Error occurred when create deployment"}
+	ErrDeleteDeployment   = &Errno{Code:20505,Message:"Error occurred when delete a k8s deployment"}
+	ErrDeleteService      = &Errno{Code:20506,Message:"Error occurred when delete a k8s service"}
+
+	//terminal
+	ErrInitExecutor      = &Errno{Code:20601,Message:"Failed to init executor"}
+	ErrCannotExec        = &Errno{Code:20602,Message:"Could not execute"}
+
+	//pod
+	ErrListPods          =&Errno{Code:20701,Message:"Error occurred while list pods"}
 
 )

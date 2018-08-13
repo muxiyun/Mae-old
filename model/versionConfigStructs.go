@@ -22,8 +22,6 @@ type Volume struct {
 	TargetPath string `json:"target_path"`
 }
 
-
-
 type PortPair struct{
 	PortName  string `json:"port_name"`  // this name can be referred by service
 	ImagePort int32 `json:"image_port"`
@@ -39,7 +37,6 @@ type Container struct {
 	Volumes []Volume `json:"volumes"`
 	Ports []PortPair `json:"ports"`
 }
-
 
 type MAEDeployment struct{
 	DeployName string `json:"deploy_name"`
@@ -60,6 +57,7 @@ type VersionConfig struct{
 	Deployment MAEDeployment `json:"deployment"`
 	Svc    MAEService `json:"svc"`  //此处的Svc指的是k8s中的Service的概念
 }
+
 type ReqVersion struct {
 	ServiceID uint `json:"svc_id"`
 	VersionName string `json:"version_name"`
