@@ -13,5 +13,5 @@ TODO:
 - [x] application (abstract entity)
 - [x] service (abstract entity)
 - [x] version (abstract entity)
-- [ ] log query
-- [ ] web terminal
+- [x] log query
+- [x] web terminal
