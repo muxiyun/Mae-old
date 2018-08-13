@@ -4,7 +4,6 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/iris-contrib/httpexpect"
 	"github.com/muxiyun/Mae/handler"
 )
@@ -50,6 +49,7 @@ func CreateAdminForTest(e *httpexpect.Expect, username, password, email string) 
 	}).Expect().Body().Contains("OK")
 }
 
+
 type NsResopnse struct {
 	Code uint                 `json:"code"`
 	Data []handler.PodMessage `json:"data"`
@@ -63,8 +63,6 @@ func GetPodAndContainerNameForTest(e *httpexpect.Expect, ns, token string) (stri
 
 	var res NsResopnse
 	json.Unmarshal([]byte(body), &res)
-	fmt.Println(">>>>res:", res)
-	fmt.Println("------------->", res.Data[0].PodName, res.Data[0].Containers[0])
 	return res.Data[0].PodName, res.Data[0].Containers[0]
 
 }
