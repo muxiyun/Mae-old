@@ -21,7 +21,7 @@ type PodMessage struct {
 }
 
 // select useful message from pod list
-func selectMessage(pods *v1.PodList) []PodMessage {
+func selectMessageFromPodList(pods *v1.PodList) []PodMessage {
 	var podmsgs []PodMessage
 	for _, item := range pods.Items {
 		var podmsg PodMessage
@@ -59,5 +59,5 @@ func GetPod(ctx iris.Context) {
 		return
 	}
 
-	SendResponse(ctx, nil, selectMessage(pods))
+	SendResponse(ctx, nil, selectMessageFromPodList(pods))
 }
