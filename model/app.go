@@ -1,11 +1,18 @@
 package model
 
 import (
-	"github.com/jinzhu/gorm"
+	"time"
 )
 
+
+type BasicModel struct {
+	ID        uint `gorm:"primary_key"`
+	CreatedAt time.Time
+	UpdatedAt time.Time
+}
+
 type App struct {
-	gorm.Model
+	BasicModel
 	AppName string `json:"app_name" gorm:"column:app_name;not null;unique;type:varchar(50)"`
 	AppDesc string `json:"app_desc" gorm:"column:app_desc;type:varchar(512)"`
 

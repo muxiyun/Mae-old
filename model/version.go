@@ -1,11 +1,9 @@
 package model
 
-import (
-	"github.com/jinzhu/gorm"
-)
+
 
 type Version struct {
-	gorm.Model
+	BasicModel
 	ServiceID     uint   `json:"svc_id" gorm:"column:svc_id;not null"`
 	Active        bool   `json:"active" gorm:"column:active;default:false"`
 	VersionName   string `json:"version_name" gorm:"column:version_name;type:varchar(50)"`

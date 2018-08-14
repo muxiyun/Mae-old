@@ -1,13 +1,12 @@
 package model
 
 import (
-	"github.com/jinzhu/gorm"
 	"golang.org/x/crypto/bcrypt"
 	"gopkg.in/go-playground/validator.v9"
 )
 
 type User struct {
-	gorm.Model
+	BasicModel
 	UserName     string `json:"username" gorm:"column:username;not null;unique"`
 	Email        string `json:"email" gorm:"column:email;not null;unique"`
 	PasswordHash string `json:"password" gorm:"column:passwordhash;not null"`

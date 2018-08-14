@@ -1,11 +1,8 @@
 package model
 
-import (
-	"github.com/jinzhu/gorm"
-)
 
 type Service struct {
-	gorm.Model
+	BasicModel
 	AppID          uint      `json:"app_id" gorm:"column:app_id;not null"`
 	SvcName        string    `json:"svc_name" gorm:"column:svc_name;not null;unique;type:varchar(50)"`
 	SvcDesc        string    `json:"svc_desc" gorm:"column:svc_desc;type:varchar(512)"`
