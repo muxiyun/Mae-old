@@ -17,12 +17,14 @@ func TestSystemCheck(t *testing.T) {
 
 	//anonymous
 	e.GET("/api/v1.0/sd/health").Expect().Status(httptest.StatusOK)
-	time.Sleep(1*time.Second)
+	time.Sleep(2*time.Second)
 	e.GET("/api/v1.0/sd/cpu").Expect().Status(httptest.StatusForbidden)
-	time.Sleep(1*time.Second)
+	time.Sleep(2*time.Second)
 	e.GET("/api/v1.0/sd/mem").Expect().Status(httptest.StatusForbidden)
-	time.Sleep(1*time.Second)
+	time.Sleep(2*time.Second)
 	e.GET("/api/v1.0/sd/disk").Expect().Status(httptest.StatusForbidden)
+
+	time.Sleep(2*time.Second)
 
 	//user, first to register a user
 	CreateUserForTest(e, "andrew", "123456", "3480437308@qq.com")
@@ -30,27 +32,29 @@ func TestSystemCheck(t *testing.T) {
 
 	e.GET("/api/v1.0/sd/health").WithBasicAuth(andrew_token, "").
 		Expect().Status(httptest.StatusOK)
-	time.Sleep(1*time.Second)
+	time.Sleep(2*time.Second)
 	e.GET("/api/v1.0/sd/cpu").WithBasicAuth(andrew_token, "").
 		Expect().Status(httptest.StatusForbidden)
-	time.Sleep(1*time.Second)
+	time.Sleep(2*time.Second)
 	e.GET("/api/v1.0/sd/mem").WithBasicAuth(andrew_token, "").
 		Expect().Status(httptest.StatusForbidden)
-	time.Sleep(1*time.Second)
+	time.Sleep(2*time.Second)
 	e.GET("/api/v1.0/sd/disk").WithBasicAuth(andrew_token, "").
 		Expect().Status(httptest.StatusForbidden)
+
+	time.Sleep(2*time.Second)
 
 	CreateAdminForTest(e, "andrewadmin", "123456", "admin@qq.com")
 	andrewadmin_token := GetTokenForTest(e, "andrewadmin", "123456", 60*60)
 	e.GET("/api/v1.0/sd/health").WithBasicAuth(andrewadmin_token, "").
 		Expect().Status(httptest.StatusOK)
-	time.Sleep(1*time.Second)
+	time.Sleep(2*time.Second)
 	e.GET("/api/v1.0/sd/cpu").WithBasicAuth(andrewadmin_token, "").
 		Expect().Status(httptest.StatusOK)
-	time.Sleep(1*time.Second)
+	time.Sleep(2*time.Second)
 	e.GET("/api/v1.0/sd/mem").WithBasicAuth(andrewadmin_token, "").
 		Expect().Status(httptest.StatusOK)
-	time.Sleep(1*time.Second)
+	time.Sleep(2*time.Second)
 	e.GET("/api/v1.0/sd/disk").WithBasicAuth(andrewadmin_token, "").
 		Expect().Status(httptest.StatusOK)
 }

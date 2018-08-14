@@ -10,6 +10,7 @@ import (
 
 
 func TestGetLog(t *testing.T) {
+	time.Sleep(5*time.Second)
 	e := httptest.New(t, newApp(), httptest.URL("http://127.0.0.1:8080"))
 	defer model.DB.RWdb.DropTableIfExists("users")
 	defer model.DB.RWdb.DropTableIfExists("casbin_rule")
@@ -36,8 +37,8 @@ func TestGetLog(t *testing.T) {
 		"svc_desc": "the backend part of xueer",
 	}).WithBasicAuth(andrew_token, "").Expect().Body().Contains("OK")
 
-	// create a namespace mae-test
-	e.POST("/api/v1.0/ns/{ns}").WithPath("ns", "mae-test").
+	// create a namespace mae-test-a
+	e.POST("/api/v1.0/ns/{ns}").WithPath("ns", "mae-test-a").
 		WithBasicAuth(andrew_token, "").Expect().Body().Contains("OK")
 
 	//create a version which belongs to service xueer_be
@@ -48,7 +49,7 @@ func TestGetLog(t *testing.T) {
 		"version_conf": map[string]interface{}{
 			"deployment": map[string]interface{}{
 				"deploy_name": "xueer-be-v1-deployment",
-				"name_space":  "mae-test",
+				"name_space":  "mae-test-a",
 				"replicas":    1,
 				"labels":      map[string]string{"run": "xueer-be"},
 				"containers": [](map[string]interface{}){
@@ -80,15 +81,15 @@ func TestGetLog(t *testing.T) {
 
 	time.Sleep(5*time.Second)
 	//get a pod's name and a container's name in mae-test namespace
-	mae_test_pod_name, mae_test_container_name := GetPodAndContainerNameForTest(e, "mae-test", andrew_token)
+	mae_test_pod_name, mae_test_container_name := GetPodAndContainerNameForTest(e, "mae-test-a", andrew_token)
 
 	//anonymous to query log in mae-test namespace
-	e.GET("/api/v1.0/log/{ns}/{pod_name}/{container_name}").WithPath("ns", "mae-test").
+	e.GET("/api/v1.0/log/{ns}/{pod_name}/{container_name}").WithPath("ns", "mae-test-a").
 		WithPath("pod_name", mae_test_pod_name).WithPath("container_name", mae_test_container_name).
 		Expect().Status(httptest.StatusForbidden)
 
 	//a normal user to query log in mae-test namespace
-	e.GET("/api/v1.0/log/{ns}/{pod_name}/{container_name}").WithPath("ns", "mae-test").
+	e.GET("/api/v1.0/log/{ns}/{pod_name}/{container_name}").WithPath("ns", "mae-test-a").
 		WithPath("pod_name", mae_test_pod_name).WithPath("container_name", mae_test_container_name).
 		WithBasicAuth(andrew_token, "").Expect().Body().Contains("OK")
 
@@ -101,7 +102,7 @@ func TestGetLog(t *testing.T) {
 		WithBasicAuth(andrew_token, "").Expect().Status(httptest.StatusForbidden)
 
 	// an admin user to query log in mae-test namespace
-	e.GET("/api/v1.0/log/{ns}/{pod_name}/{container_name}").WithPath("ns", "mae-test").
+	e.GET("/api/v1.0/log/{ns}/{pod_name}/{container_name}").WithPath("ns", "mae-test-a").
 		WithPath("pod_name", mae_test_pod_name).WithPath("container_name", mae_test_container_name).
 		WithBasicAuth(admin_token, "").Expect().Body().Contains("OK")
 
@@ -115,6 +116,6 @@ func TestGetLog(t *testing.T) {
 		WithBasicAuth(andrew_token, "").Expect().Body().Contains("OK")
 
 	// delete namespace mae-test to clear test context
-	e.DELETE("/api/v1.0/ns/{ns}").WithPath("ns", "mae-test").WithBasicAuth(admin_token, "").
+	e.DELETE("/api/v1.0/ns/{ns}").WithPath("ns", "mae-test-a").WithBasicAuth(admin_token, "").
 		Expect().Body().Contains("OK")
 }

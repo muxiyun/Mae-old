@@ -4,9 +4,11 @@ import (
 	"github.com/kataras/iris/httptest"
 	"github.com/muxiyun/Mae/model"
 	"testing"
+	"time"
 )
 
 func TestTerminal(t *testing.T) {
+	time.Sleep(5*time.Second)
 	e := httptest.New(t, newApp(), httptest.URL("http://127.0.0.1:8080"))
 	defer model.DB.RWdb.DropTableIfExists("users")
 	defer model.DB.RWdb.DropTableIfExists("casbin_rule")
@@ -34,7 +36,7 @@ func TestTerminal(t *testing.T) {
 	}).WithBasicAuth(andrew_token, "").Expect().Body().Contains("OK")
 
 	// create a namespace mae-test
-	e.POST("/api/v1.0/ns/{ns}").WithPath("ns", "mae-test").
+	e.POST("/api/v1.0/ns/{ns}").WithPath("ns", "mae-test-c").
 		WithBasicAuth(andrew_token, "").Expect().Body().Contains("OK")
 
 	//create a version which belongs to service xueer_be
@@ -45,7 +47,7 @@ func TestTerminal(t *testing.T) {
 		"version_conf": map[string]interface{}{
 			"deployment": map[string]interface{}{
 				"deploy_name": "xueer-be-v1-deployment",
-				"name_space":  "mae-test",
+				"name_space":  "mae-test-c",
 				"replicas":    1,
 				"labels":      map[string]string{"run": "xueer-be"},
 				"containers": [](map[string]interface{}){
@@ -75,11 +77,13 @@ func TestTerminal(t *testing.T) {
 	e.GET("/api/v1.0/version/apply").WithQuery("version_name", "xueer-be-v1").
 		WithBasicAuth(andrew_token, "").Expect().Body().Contains("OK")
 
+	time.Sleep(15*time.Second)
+
 	//get a pod's name and a container's name in mae-test namespace
-	mae_test_pod_name, mae_test_container_name := GetPodAndContainerNameForTest(e, "mae-test", andrew_token)
+	mae_test_pod_name, mae_test_container_name := GetPodAndContainerNameForTest(e, "mae-test-c", andrew_token)
 
 	//anonymous to open the terminal of a container in mae-test namespace
-	e.GET("/api/v1.0/terminal/{ns}/{pod_name}/{container_name}").WithPath("ns", "mae-test").
+	e.GET("/api/v1.0/terminal/{ns}/{pod_name}/{container_name}").WithPath("ns", "mae-test-c").
 		WithPath("pod_name", mae_test_pod_name).WithPath("container_name", mae_test_container_name).
 		Expect().Status(httptest.StatusForbidden)
 
@@ -100,6 +104,6 @@ func TestTerminal(t *testing.T) {
 		WithBasicAuth(andrew_token, "").Expect().Body().Contains("OK")
 
 	// delete namespace mae-test to clear test context
-	e.DELETE("/api/v1.0/ns/{ns}").WithPath("ns", "mae-test").WithBasicAuth(admin_token, "").
+	e.DELETE("/api/v1.0/ns/{ns}").WithPath("ns", "mae-test-c").WithBasicAuth(admin_token, "").
 		Expect().Body().Contains("OK")
 }

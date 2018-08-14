@@ -34,11 +34,11 @@ func TestCreateAndDeleteNamespace(t *testing.T) {
 	e.DELETE("/api/v1.0/ns/{ns}").WithPath("ns", "test-ns-2").Expect().
 		Status(httptest.StatusForbidden)
 
-	time.Sleep(3*time.Second)
-
 	//test a normal user to delete test-ns-2
 	e.DELETE("/api/v1.0/ns/{ns}").WithPath("ns", "test-ns-2").WithBasicAuth(andrew_token, "").
 		Expect().Status(httptest.StatusForbidden)
+
+	time.Sleep(5*time.Second)
 
 	// test an admin user to delete test-ns-2 and test-ns-3
 	e.DELETE("/api/v1.0/ns/{ns}").WithPath("ns", "test-ns-2").WithBasicAuth(andrewadmin_token, "").

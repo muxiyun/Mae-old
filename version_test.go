@@ -10,7 +10,7 @@ import (
 )
 
 func TestCreateApplyUnapplyVersion(t *testing.T) {
-	time.Sleep(15*time.Second)
+	time.Sleep(5*time.Second)
 	e := httptest.New(t, newApp(), httptest.URL("http://127.0.0.1:8080"))
 	defer model.DB.RWdb.DropTableIfExists("users")
 	defer model.DB.RWdb.DropTableIfExists("casbin_rule")
@@ -39,8 +39,8 @@ func TestCreateApplyUnapplyVersion(t *testing.T) {
 		"svc_desc": "the backend part of xueer",
 	}).WithBasicAuth(andrew_token, "").Expect().Body().Contains("OK")
 
-	// create a namespace mae-test
-	e.POST("/api/v1.0/ns/{ns}").WithPath("ns", "mae-test").
+	// create a namespace mae-test-d
+	e.POST("/api/v1.0/ns/{ns}").WithPath("ns", "mae-test-d").
 		WithBasicAuth(andrew_token, "").Expect().Body().Contains("OK")
 
 	// Anonymous to create a version
@@ -51,7 +51,7 @@ func TestCreateApplyUnapplyVersion(t *testing.T) {
 		"version_conf": map[string]interface{}{
 			"deployment": map[string]interface{}{
 				"deploy_name": "xueer-be-v1-deployment",
-				"name_space":  "mae-test",
+				"name_space":  "mae-test-d",
 				"replicas":    1,
 				"labels":      map[string]string{"run": "xueer-be"},
 				"containers": [](map[string]interface{}){
@@ -85,7 +85,7 @@ func TestCreateApplyUnapplyVersion(t *testing.T) {
 		"version_conf": map[string]interface{}{
 			"deployment": map[string]interface{}{
 				"deploy_name": "xueer-be-v1-deployment",
-				"name_space":  "mae-test",
+				"name_space":  "mae-test-d",
 				"replicas":    1,
 				"labels":      map[string]string{"run": "xueer-be"},
 				"containers": [](map[string]interface{}){
@@ -127,7 +127,7 @@ func TestCreateApplyUnapplyVersion(t *testing.T) {
 		"version_conf": map[string]interface{}{
 			"deployment": map[string]interface{}{
 				"deploy_name": "xueer-be-v2-deployment",
-				"name_space":  "mae-test",
+				"name_space":  "mae-test-d",
 				"replicas":    2,
 				"labels":      map[string]string{"run": "xueer-be"},
 				"containers": [](map[string]interface{}){
@@ -166,12 +166,12 @@ func TestCreateApplyUnapplyVersion(t *testing.T) {
 		WithBasicAuth(andrew_token, "").Expect().Body().Contains("OK")
 
 	// a admin user to delete mae-test namespace to clear the test context.
-	e.DELETE("/api/v1.0/ns/{ns}").WithPath("ns", "mae-test").WithBasicAuth(admin_token, "").
+	e.DELETE("/api/v1.0/ns/{ns}").WithPath("ns", "mae-test-d").WithBasicAuth(admin_token, "").
 		Expect().Body().Contains("OK")
 }
 
 func TestDeleteVersion(t *testing.T) {
-	time.Sleep(15*time.Second)
+	time.Sleep(5*time.Second)
 	e := httptest.New(t, newApp(), httptest.URL("http://127.0.0.1:8080"))
 	defer model.DB.RWdb.DropTableIfExists("users")
 	defer model.DB.RWdb.DropTableIfExists("casbin_rule")
@@ -200,8 +200,9 @@ func TestDeleteVersion(t *testing.T) {
 		"svc_desc": "the backend part of xueer",
 	}).WithBasicAuth(andrew_token, "").Expect().Body().Contains("OK")
 
-	// create a namespace mae-test
-	e.POST("/api/v1.0/ns/{ns}").WithPath("ns", "mae-test").
+
+	// create a namespace mae-test-e
+	e.POST("/api/v1.0/ns/{ns}").WithPath("ns", "mae-test-e").
 		WithBasicAuth(andrew_token, "").Expect().Body().Contains("OK")
 
 	// create a version which belongs to xueer_be
@@ -212,7 +213,7 @@ func TestDeleteVersion(t *testing.T) {
 		"version_conf": map[string]interface{}{
 			"deployment": map[string]interface{}{
 				"deploy_name": "xueer-be-v1-deployment",
-				"name_space":  "mae-test",
+				"name_space":  "mae-test-e",
 				"replicas":    1,
 				"labels":      map[string]string{"run": "xueer-be"},
 				"containers": [](map[string]interface{}){
@@ -250,7 +251,7 @@ func TestDeleteVersion(t *testing.T) {
 		"version_conf": map[string]interface{}{
 			"deployment": map[string]interface{}{
 				"deploy_name": "xueer-be-v2-deployment",
-				"name_space":  "mae-test",
+				"name_space":  "mae-test-e",
 				"replicas":    1,
 				"labels":      map[string]string{"run": "xueer-be"},
 				"containers": [](map[string]interface{}){
@@ -303,12 +304,12 @@ func TestDeleteVersion(t *testing.T) {
 		Expect().Body().Contains("OK")
 
 	// delete namespace mae-test to clear the test context
-	e.DELETE("/api/v1.0/ns/{ns}").WithPath("ns", "mae-test").WithBasicAuth(admin_token, "").
+	e.DELETE("/api/v1.0/ns/{ns}").WithPath("ns", "mae-test-e").WithBasicAuth(admin_token, "").
 		Expect().Body().Contains("OK")
 }
 
 func TestGetVersionAndGetVersionList(t *testing.T) {
-	time.Sleep(15*time.Second)
+	time.Sleep(5*time.Second)
 	e := httptest.New(t, newApp(), httptest.URL("http://127.0.0.1:8080"))
 	defer model.DB.RWdb.DropTableIfExists("users")
 	defer model.DB.RWdb.DropTableIfExists("casbin_rule")
@@ -344,8 +345,8 @@ func TestGetVersionAndGetVersionList(t *testing.T) {
 		"svc_desc": "the frontend part of xueer",
 	}).WithBasicAuth(andrew_token, "").Expect().Body().Contains("OK")
 
-	// create a namespace mae-test
-	e.POST("/api/v1.0/ns/{ns}").WithPath("ns", "mae-test").
+	// create a namespace mae-test-f
+	e.POST("/api/v1.0/ns/{ns}").WithPath("ns", "mae-test-f").
 		WithBasicAuth(andrew_token, "").Expect().Body().Contains("OK")
 
 	//create a version which belongs to service xueer_be
@@ -356,7 +357,7 @@ func TestGetVersionAndGetVersionList(t *testing.T) {
 		"version_conf": map[string]interface{}{
 			"deployment": map[string]interface{}{
 				"deploy_name": "xueer-be-v1-deployment",
-				"name_space":  "mae-test",
+				"name_space":  "mae-test-f",
 				"replicas":    1,
 				"labels":      map[string]string{"run": "xueer-be"},
 				"containers": [](map[string]interface{}){
@@ -394,7 +395,7 @@ func TestGetVersionAndGetVersionList(t *testing.T) {
 		"version_conf": map[string]interface{}{
 			"deployment": map[string]interface{}{
 				"deploy_name": "xueer-fe-v1-deployment",
-				"name_space":  "mae-test",
+				"name_space":  "mae-test-f",
 				"replicas":    1,
 				"labels":      map[string]string{"run": "xueer-fe"},
 				"containers": [](map[string]interface{}){
@@ -466,6 +467,6 @@ func TestGetVersionAndGetVersionList(t *testing.T) {
 		WithBasicAuth(andrew_token, "").Expect().Body().Contains("OK")
 
 	// delete namespace mae-test to clear the test context
-	e.DELETE("/api/v1.0/ns/{ns}").WithPath("ns", "mae-test").WithBasicAuth(admin_token, "").
+	e.DELETE("/api/v1.0/ns/{ns}").WithPath("ns", "mae-test-f").WithBasicAuth(admin_token, "").
 		Expect().Body().Contains("OK")
 }

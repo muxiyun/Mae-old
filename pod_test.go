@@ -8,7 +8,7 @@ import (
 )
 
 func TestListPod(t *testing.T) {
-	time.Sleep(10*time.Second)
+	time.Sleep(5*time.Second)
 	e := httptest.New(t, newApp(), httptest.URL("http://127.0.0.1:8080"))
 	defer model.DB.RWdb.DropTableIfExists("users")
 	defer model.DB.RWdb.DropTableIfExists("casbin_rule")
@@ -36,7 +36,7 @@ func TestListPod(t *testing.T) {
 	}).WithBasicAuth(andrew_token, "").Expect().Body().Contains("OK")
 
 	// create a namespace mae-test
-	e.POST("/api/v1.0/ns/{ns}").WithPath("ns", "mae-test").
+	e.POST("/api/v1.0/ns/{ns}").WithPath("ns", "mae-test-b").
 		WithBasicAuth(andrew_token, "").Expect().Body().Contains("OK")
 
 	//create a version which belongs to service xueer_be
@@ -47,7 +47,7 @@ func TestListPod(t *testing.T) {
 		"version_conf": map[string]interface{}{
 			"deployment": map[string]interface{}{
 				"deploy_name": "xueer-be-v1-deployment",
-				"name_space":  "mae-test",
+				"name_space":  "mae-test-b",
 				"replicas":    1,
 				"labels":      map[string]string{"run": "xueer-be"},
 				"containers": [](map[string]interface{}){
@@ -77,11 +77,13 @@ func TestListPod(t *testing.T) {
 	e.GET("/api/v1.0/version/apply").WithQuery("version_name", "xueer-be-v1").
 		WithBasicAuth(andrew_token, "").Expect().Body().Contains("OK")
 
+	time.Sleep(5*time.Second)
+
 	// anonymous to get pods in kube-test namespace
-	e.GET("/api/v1.0/pod/{ns}").WithPath("ns", "mae-test").Expect().Status(httptest.StatusForbidden)
+	e.GET("/api/v1.0/pod/{ns}").WithPath("ns", "mae-test-b").Expect().Status(httptest.StatusForbidden)
 
 	// a normal user to get pods in kube-test namespace
-	e.GET("/api/v1.0/pod/{ns}").WithPath("ns", "mae-test").WithBasicAuth(andrew_token, "").
+	e.GET("/api/v1.0/pod/{ns}").WithPath("ns", "mae-test-b").WithBasicAuth(andrew_token, "").
 		Expect().Body().Contains("OK")
 
 	// a normal user to get pods in kube-public namespace
@@ -89,7 +91,7 @@ func TestListPod(t *testing.T) {
 		Expect().Status(httptest.StatusForbidden)
 
 	// an admin user to get pods in kube-test namespace
-	e.GET("/api/v1.0/pod/{ns}").WithPath("ns", "mae-test").WithBasicAuth(admin_token, "").
+	e.GET("/api/v1.0/pod/{ns}").WithPath("ns", "mae-test-b").WithBasicAuth(admin_token, "").
 		Expect().Body().Contains("OK")
 
 	// an admin user to get pods in kube-public namespace
@@ -101,6 +103,6 @@ func TestListPod(t *testing.T) {
 		WithBasicAuth(andrew_token, "").Expect().Body().Contains("OK")
 
 	// delete namespace mae-test to clear test context
-	e.DELETE("/api/v1.0/ns/{ns}").WithPath("ns", "mae-test").WithBasicAuth(admin_token, "").
+	e.DELETE("/api/v1.0/ns/{ns}").WithPath("ns", "mae-test-b").WithBasicAuth(admin_token, "").
 		Expect().Body().Contains("OK")
 }
