@@ -17,5 +17,8 @@ TODO:
 - [x] web terminal
 
 NEXT:
-在业务逻辑中实现app,service的级联删除
-即删除一个app时
+1.在业务逻辑中实现app,service的级联删除. 即删除一个app或者service时，删除该app或service下的所有资源
+
+2.优化int类型的使用，重构部分代码
+
+3.文档
