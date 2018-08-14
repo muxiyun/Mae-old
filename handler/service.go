@@ -1,12 +1,13 @@
 package handler
 
 import (
-	//"fmt"
 	"fmt"
+	"encoding/json"
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/core/errors"
 	"github.com/muxiyun/Mae/model"
 	"github.com/muxiyun/Mae/pkg/errno"
+	"github.com/muxiyun/Mae/pkg/k8sclient"
 )
 
 // create a service
@@ -73,15 +74,77 @@ func UpdateService(ctx iris.Context) {
 	SendResponse(ctx, nil, iris.Map{"message": "update ok"})
 }
 
-// delete a service by id
+// delete a service by id, dangerous action. If the service has active version,
+// then we will delete the active version's deployment and service in the cluster,
+// and all the version records of the service including the service record itself.
+// If the service not have a active version,that is to say there is no deployment
+// and service of the service that asked to delete in the cluster, so we will just
+// to delete all the version records of the service including the service record
+// itself.
 func DeleteService(ctx iris.Context) {
-	id, _ := ctx.Params().GetInt64("id")
-	if err := model.DeleteService(uint(id)); err != nil {
+	service_id, _ := ctx.Params().GetInt64("id")
+
+	// get the current service object
+	service,err:=model.GetServiceByID(service_id)
+	if err!=nil{
+		SendResponse(ctx,errno.New(errno.ErrDatabase,err),nil)
+		return
+	}
+
+	// current service have active version
+	if service.CurrentVersion!=""{
+		version:=&model.Version{}
+		d := model.DB.RWdb.Where("version_name = ?", service.CurrentVersion).First(&version)
+
+		if d.Error==nil{
+			SendResponse(ctx,errno.New(errno.ErrDatabase,d.Error),nil)
+			return
+		}
+
+		//unmarshal the config
+		var version_config model.VersionConfig
+		json.Unmarshal([]byte(version.VersionConfig), &version_config)
+
+		// delete the deployment
+		deploymentClient := k8sclient.ClientSet.ExtensionsV1beta1().
+			Deployments(version_config.Deployment.NameSapce)
+		if err := deploymentClient.Delete(version_config.Deployment.DeployName, nil);err != nil {
+			SendResponse(ctx, errno.New(errno.ErrDeleteDeployment, err), nil)
+			return
+		}
+
+		//delete the service
+		ServiceClient := k8sclient.ClientSet.CoreV1().Services(version_config.Deployment.NameSapce)
+		if err:=ServiceClient.Delete(version_config.Svc.SvcName, nil);err != nil {
+			SendResponse(ctx, errno.New(errno.ErrDeleteService, err), nil)
+			return
+		}
+	}
+
+	// get the versions that belongs to current_service and delete the database record
+	var versions []model.Version
+	d := model.DB.RWdb.Where("svc_id = ?", service.ID).Find(&versions)
+	if d.Error!=nil{
+		SendResponse(ctx,errno.New(errno.ErrDatabase,d.Error),nil)
+		return
+	}
+
+	//delete versions which belongs to current service
+	d=model.DB.RWdb.Unscoped().Delete(model.Version{}, "svc_id = ?", service_id)
+	if d.Error!=nil{
+		SendResponse(ctx,errno.New(errno.ErrDatabase,d.Error),nil)
+		return
+	}
+
+	//delete the service record itself
+	if err := model.DeleteService(uint(service_id)); err != nil {
 		SendResponse(ctx, errno.New(errno.ErrDatabase, err), nil)
 		return
 	}
-	SendResponse(ctx, nil, iris.Map{"id": id})
+
+	SendResponse(ctx, nil, iris.Map{"id": service_id})
 }
+
 
 //get all services or services that belongs to an app
 func GetServiceList(ctx iris.Context) {
