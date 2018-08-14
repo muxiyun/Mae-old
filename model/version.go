@@ -26,7 +26,7 @@ func (v *Version) Create() error {
 func DeleteVersion(id uint) error {
 	v := Version{}
 	v.ID = id
-	return DB.RWdb.Delete(&v).Error
+	return DB.RWdb.Unscoped().Delete(&v).Error
 }
 
 // Update updates a Version information.

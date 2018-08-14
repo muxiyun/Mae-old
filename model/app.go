@@ -32,7 +32,7 @@ func (app *App) Create() error {
 func DeleteApp(id uint) error {
 	app := App{}
 	app.ID = id
-	return DB.RWdb.Delete(&app).Error
+	return DB.RWdb.Unscoped().Delete(&app).Error
 }
 
 // Update updates an App information.

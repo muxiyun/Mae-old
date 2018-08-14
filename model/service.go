@@ -1,6 +1,7 @@
 package model
 
 
+
 type Service struct {
 	BasicModel
 	AppID          uint      `json:"app_id" gorm:"column:app_id;not null"`
@@ -23,7 +24,7 @@ func (svc *Service) Create() error {
 func DeleteService(id uint) error {
 	svc := Service{}
 	svc.ID = id
-	return DB.RWdb.Delete(&svc).Error
+	return DB.RWdb.Unscoped().Delete(&svc).Error
 }
 
 // Update updates a Service information.

@@ -26,7 +26,7 @@ func (u *User) Create() error {
 func DeleteUser(id uint) error {
 	user := User{}
 	user.ID = id
-	return DB.RWdb.Delete(&user).Error
+	return DB.RWdb.Unscoped().Delete(&user).Error
 }
 
 // Update updates an user account information.
