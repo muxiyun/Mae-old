@@ -15,3 +15,7 @@ TODO:
 - [x] version (abstract entity)
 - [x] log query
 - [x] web terminal
+
+NEXT:
+在业务逻辑中实现app,service的级联删除
+即删除一个app时
