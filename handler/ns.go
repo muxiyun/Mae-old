@@ -1,10 +1,10 @@
 package handler
 
 import (
-	//"github.com/muxiyun/Mae/model"
 	"github.com/kataras/iris"
 	"github.com/muxiyun/Mae/pkg/errno"
 	"github.com/muxiyun/Mae/pkg/k8sclient"
+
 	"k8s.io/api/core/v1"
 	meta_v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -32,6 +32,32 @@ func DeleteNS(ctx iris.Context) {
 	SendResponse(ctx, nil, iris.Map{"message": "delete ns " + ns_name})
 }
 
+
+
+type Nsmsg struct {
+	Name string `json:"name"`
+	Status v1.NamespacePhase `json:"status"`
+	CreateTime string `json:"create_time"`
+}
+
+
+func selectMsgFromNsList(nsList *v1.NamespaceList,current_user_role string)([]Nsmsg) {
+	var nsMsgs []Nsmsg
+	for _, item := range nsList.Items {
+		// normal user can not see 'default','kube-system','kube-public' namespace
+		if current_user_role == "user" && (item.Name == "default" || item.Name == "kube-system" || item.Name == "kube-public") {
+			continue
+		}
+		var nsMsg Nsmsg
+		nsMsg.Name=item.Name
+		nsMsg.Status=item.Status.Phase
+		nsMsg.CreateTime=item.CreationTimestamp.String()
+		nsMsgs=append(nsMsgs,nsMsg)
+	}
+	return nsMsgs
+}
+
+
 func ListNS(ctx iris.Context) {
 	ns, err := k8sclient.ClientSet.CoreV1().Namespaces().List(metav1.ListOptions{})
 	if err != nil {
@@ -39,10 +65,7 @@ func ListNS(ctx iris.Context) {
 		return
 	}
 
-	//removee default kube-public kube-system if not a admin
-	if ctx.Values().GetString("current_user_role") != "admin" {
-		ns.Items = ns.Items[3:]
-	}
+	current_user_role:=ctx.Values().GetString("current_user_role")
 
-	SendResponse(ctx, nil, ns)
+	SendResponse(ctx, nil, selectMsgFromNsList(ns,current_user_role))
 }
