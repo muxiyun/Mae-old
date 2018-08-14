@@ -4,6 +4,7 @@ import (
 	"github.com/kataras/iris/httptest"
 	"github.com/muxiyun/Mae/model"
 	"testing"
+	"time"
 )
 
 
@@ -77,6 +78,7 @@ func TestGetLog(t *testing.T) {
 	e.GET("/api/v1.0/version/apply").WithQuery("version_name", "xueer-be-v1").
 		WithBasicAuth(andrew_token, "").Expect().Body().Contains("OK")
 
+	time.Sleep(5*time.Second)
 	//get a pod's name and a container's name in mae-test namespace
 	mae_test_pod_name, mae_test_container_name := GetPodAndContainerNameForTest(e, "mae-test", andrew_token)
 

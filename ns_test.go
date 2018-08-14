@@ -4,6 +4,7 @@ import (
 	"github.com/kataras/iris/httptest"
 	"github.com/muxiyun/Mae/model"
 	"testing"
+	"time"
 )
 
 func TestCreateAndDeleteNamespace(t *testing.T) {
@@ -33,6 +34,8 @@ func TestCreateAndDeleteNamespace(t *testing.T) {
 	e.DELETE("/api/v1.0/ns/{ns}").WithPath("ns", "test-ns-2").Expect().
 		Status(httptest.StatusForbidden)
 
+	time.Sleep(3*time.Second)
+
 	//test a normal user to delete test-ns-2
 	e.DELETE("/api/v1.0/ns/{ns}").WithPath("ns", "test-ns-2").WithBasicAuth(andrew_token, "").
 		Expect().Status(httptest.StatusForbidden)
@@ -40,6 +43,7 @@ func TestCreateAndDeleteNamespace(t *testing.T) {
 	// test an admin user to delete test-ns-2 and test-ns-3
 	e.DELETE("/api/v1.0/ns/{ns}").WithPath("ns", "test-ns-2").WithBasicAuth(andrewadmin_token, "").
 		Expect().Body().Contains("OK")
+
 	e.DELETE("/api/v1.0/ns/{ns}").WithPath("ns", "test-ns-3").WithBasicAuth(andrewadmin_token, "").
 		Expect().Body().Contains("OK")
 
@@ -60,7 +64,7 @@ func TestListNamespace(t *testing.T) {
 	//test a user to list namespaces
 	andrew_token := GetTokenForTest(e, "andrew", "123456", 60*60)
 	e.GET("/api/v1.0/ns").WithBasicAuth(andrew_token, "").Expect().
-		Body().Contains("OK")
+		Body().Contains("OK").NotContains("kube-system")
 
 	//test an admin to list namespaces
 	andrewadmin_token := GetTokenForTest(e, "andrewadmin", "123456", 60*60)

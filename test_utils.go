@@ -64,5 +64,4 @@ func GetPodAndContainerNameForTest(e *httpexpect.Expect, ns, token string) (stri
 	var res NsResopnse
 	json.Unmarshal([]byte(body), &res)
 	return res.Data[0].PodName, res.Data[0].Containers[0]
-
 }
