@@ -104,20 +104,11 @@ func DeleteService(ctx iris.Context) {
 		var version_config model.VersionConfig
 		json.Unmarshal([]byte(version.VersionConfig), &version_config)
 
-		// delete the deployment
-		deploymentClient := k8sclient.ClientSet.ExtensionsV1beta1().
-			Deployments(version_config.Deployment.NameSapce)
-		if err := deploymentClient.Delete(version_config.Deployment.DeployName, nil);err != nil {
-			SendResponse(ctx, errno.New(errno.ErrDeleteDeployment, err), nil)
+		if err:=DeleteDeploymentAndServiceInCluster(version_config);err!=nil{
+			SendResponse(ctx,errno.New(errno.ErrDeleteResourceInCluster,err),nil)
 			return
 		}
 
-		//delete the service
-		ServiceClient := k8sclient.ClientSet.CoreV1().Services(version_config.Deployment.NameSapce)
-		if err:=ServiceClient.Delete(version_config.Svc.SvcName, nil);err != nil {
-			SendResponse(ctx, errno.New(errno.ErrDeleteService, err), nil)
-			return
-		}
 	}
 
 	//delete versions which belongs to current service

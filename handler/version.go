@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"fmt"
 	"encoding/json"
 
 	"github.com/kataras/iris"
@@ -85,18 +84,8 @@ func ApplyVersion(ctx iris.Context) {
 		var old_version_config model.VersionConfig
 		json.Unmarshal([]byte(old_version.VersionConfig), &old_version_config)
 
-		deploymentClient := k8sclient.ClientSet.ExtensionsV1beta1().
-			Deployments(old_version_config.Deployment.NameSapce)
-		err = deploymentClient.Delete(old_version_config.Deployment.DeployName, nil)
-		if err != nil {
-			SendResponse(ctx, errno.New(errno.ErrDeleteDeployment, err), nil)
-			return
-		}
-
-		ServiceClient := k8sclient.ClientSet.CoreV1().Services(old_version_config.Deployment.NameSapce)
-		err = ServiceClient.Delete(old_version_config.Svc.SvcName, nil)
-		if err != nil {
-			SendResponse(ctx, errno.New(errno.ErrDeleteService, err), nil)
+		if err:=DeleteDeploymentAndServiceInCluster(old_version_config);err!=nil{
+			SendResponse(ctx,errno.New(errno.ErrDeleteResourceInCluster,err),nil)
 			return
 		}
 
@@ -166,16 +155,8 @@ func UnapplyVersion(ctx iris.Context) {
 	var version_config model.VersionConfig
 	json.Unmarshal([]byte(v.VersionConfig), &version_config)
 
-	deploymentClient := k8sclient.ClientSet.ExtensionsV1beta1().
-		Deployments(version_config.Deployment.NameSapce)
-	if err := deploymentClient.Delete(version_config.Deployment.DeployName, nil);err != nil {
-		SendResponse(ctx, errno.New(errno.ErrDeleteDeployment, err), nil)
-		return
-	}
-
-	ServiceClient := k8sclient.ClientSet.CoreV1().Services(version_config.Deployment.NameSapce)
-	if err:=ServiceClient.Delete(version_config.Svc.SvcName, nil);err != nil {
-		SendResponse(ctx, errno.New(errno.ErrDeleteService, err), nil)
+	if err:=DeleteDeploymentAndServiceInCluster(version_config);err!=nil{
+		SendResponse(ctx,errno.New(errno.ErrDeleteResourceInCluster,err),nil)
 		return
 	}
 
@@ -243,16 +224,8 @@ func DeleteVersion(ctx iris.Context) {
 	// the service and the database record together,
 	// else just to delete the database record.
 	if version.Active == true {
-		deploymentClient := k8sclient.ClientSet.ExtensionsV1beta1().
-			Deployments(version_config.Deployment.NameSapce)
-		if err := deploymentClient.Delete(version_config.Deployment.DeployName, nil);err != nil {
-			SendResponse(ctx, errno.New(errno.ErrDeleteDeployment, err), nil)
-			return
-		}
-
-		ServiceClient := k8sclient.ClientSet.CoreV1().Services(version_config.Deployment.NameSapce)
-		if err:=ServiceClient.Delete(version_config.Svc.SvcName, nil);err != nil {
-			SendResponse(ctx, errno.New(errno.ErrDeleteService, err), nil)
+		if err:=DeleteDeploymentAndServiceInCluster(version_config);err!=nil{
+			SendResponse(ctx,errno.New(errno.ErrDeleteResourceInCluster,err),nil)
 			return
 		}
 

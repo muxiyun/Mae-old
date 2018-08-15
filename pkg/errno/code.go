@@ -46,6 +46,7 @@ var (
 	ErrCreateDeployment     = &Errno{Code: 20504, Message: "Error occurred when create deployment"}
 	ErrDeleteDeployment     = &Errno{Code: 20505, Message: "Error occurred when delete a k8s deployment"}
 	ErrDeleteService        = &Errno{Code: 20506, Message: "Error occurred when delete a k8s service"}
+	ErrDeleteResourceInCluster =&Errno{Code:20507,Message:"Error occurred when delete resource in cluster"}
 
 	//terminal
 	ErrInitExecutor = &Errno{Code: 20601, Message: "Failed to init executor"}
