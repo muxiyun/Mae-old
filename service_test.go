@@ -3,9 +3,10 @@
 package main
 
 import (
-	"github.com/kataras/iris/httptest"
-	"github.com/muxiyun/Mae/model"
 	"testing"
+	"github.com/muxiyun/Mae/model"
+	"github.com/kataras/iris/httptest"
+	"time"
 )
 
 func TestServiceCRUD(t *testing.T) {
@@ -14,6 +15,8 @@ func TestServiceCRUD(t *testing.T) {
 	defer model.DB.RWdb.DropTableIfExists("casbin_rule")
 	defer model.DB.RWdb.DropTableIfExists("apps")
 	defer model.DB.RWdb.DropTableIfExists("services")
+	defer model.DB.RWdb.DropTableIfExists("versions")
+
 
 	// create two users and get their token
 	CreateUserForTest(e, "andrew", "andrew123", "andrewpqc@mails.ccnu.edu.cn")
@@ -108,6 +111,7 @@ func TestServiceCRUD(t *testing.T) {
 	e.DELETE("/api/v1.0/service/{id}").WithPath("id", 1).WithBasicAuth(andrew_token, "").
 		Expect().Status(httptest.StatusForbidden)
 
+	// an admin user to delete a service
 	e.DELETE("/api/v1.0/service/{id}").WithPath("id", 1).WithBasicAuth(andrewadmin_token, "").
 		Expect().Body().Contains("OK")
 
@@ -115,7 +119,100 @@ func TestServiceCRUD(t *testing.T) {
 	e.DELETE("/api/v1.0/app/{id}").WithPath("id", 1).WithBasicAuth(andrewadmin_token, "").
 		Expect().Body().Contains("OK")
 
-	//这里有一个问题：当app下面还存在service时，不影响app的删除，该app删除之后，对y的service依然存在于数据库中
-	//这不是我们想要的，这里应该是app删除之后对应的service也要删除。在service和version的情况中也应该是这样的，
-	//我们可以通过设置级联删除或者是在应用中来实现级联删除来达到上面的要求。
 }
+
+
+func TestRecursiveDeleteService(t *testing.T){
+	e := httptest.New(t, newApp(), httptest.URL("http://127.0.0.1:8080"))
+	//defer model.DB.RWdb.DropTableIfExists("users")
+	//defer model.DB.RWdb.DropTableIfExists("casbin_rule")
+	//defer model.DB.RWdb.DropTableIfExists("apps")
+	//defer model.DB.RWdb.DropTableIfExists("versions")
+	//defer model.DB.RWdb.DropTableIfExists("services")
+
+	CreateUserForTest(e, "andrew", "andrew123", "andrewpqc@mails.ccnu.edu.cn")
+	CreateAdminForTest(e, "andrewadmin", "andrewadmin123", "3480437308@qq.com")
+	andrew_token := GetTokenForTest(e, "andrew", "andrew123", 60*60)
+	andrewadmin_token := GetTokenForTest(e, "andrewadmin", "andrewadmin123", 60*60)
+
+	//a normal user to create an app
+	e.POST("/api/v1.0/app").WithJSON(map[string]interface{}{
+		"app_name": "学而1",
+		"app_desc": "华师课程挖掘机",
+	}).WithBasicAuth(andrew_token, "").Expect().Body().Contains("OK")
+
+
+	// a normal user to create a service
+	e.POST("/api/v1.0/service").WithJSON(map[string]interface{}{
+		"app_id":   1,
+		"svc_name": "xueer_be",
+		"svc_desc": "the backend part of xueer",
+	}).WithBasicAuth(andrew_token, "").Expect().Body().Contains("OK")
+
+	// an admin to create a service
+	e.POST("/api/v1.0/service").WithJSON(map[string]interface{}{
+		"app_id":   1,
+		"svc_name": "xueer_fe",
+		"svc_desc": "frontend part of xueer",
+	}).WithBasicAuth(andrewadmin_token, "").Expect().Body().Contains("OK")
+
+
+	// create a namespace mae-test-g
+	e.POST("/api/v1.0/ns/{ns}").WithPath("ns", "mae-test-h").
+		WithBasicAuth(andrew_token, "").Expect().Body().Contains("OK")
+
+	time.Sleep(3*time.Second)
+
+	//create a version which belongs to service xueer_be
+	e.POST("/api/v1.0/version").WithJSON(map[string]interface{}{
+		"svc_id":       1,
+		"version_name": "xueer-be-v1",
+		"version_desc": "xueer be version 1",
+		"version_conf": map[string]interface{}{
+			"deployment": map[string]interface{}{
+				"deploy_name": "xueer-be-v1-deployment",
+				"name_space":  "mae-test-h",
+				"replicas":    1,
+				"labels":      map[string]string{"run": "xueer-be"},
+				"containers": [](map[string]interface{}){
+					map[string]interface{}{
+						"ctr_name":  "xueer-be-v1-ct",
+						"image_url": "pqcsdockerhub/kube-test",
+						"start_cmd": []string{"gunicorn", "app:app", "-b", "0.0.0.0:8080", "--log-level", "DEBUG"},
+						"ports": [](map[string]interface{}){
+							map[string]interface{}{
+								"image_port":  8080,
+								"target_port": 8090,
+								"protocol":    "TCP",
+							},
+						},
+					},
+				},
+			},
+			"svc": map[string]interface{}{
+				"svc_name": "xueer-be-v1-service",
+				"selector": map[string]string{"run": "xueer-be"},
+				"labels":   map[string]string{"run": "xueer-be"},
+			},
+		},
+	}).WithBasicAuth(andrew_token, "").Expect().Body().Contains("OK")
+
+	//apply version "xueer-be-v1"
+	e.GET("/api/v1.0/version/apply").WithQuery("version_name", "xueer-be-v1").
+		WithBasicAuth(andrew_token, "").Expect().Body().Contains("OK")
+
+	time.Sleep(3*time.Second)
+
+	// an admin user to delete a service
+	e.DELETE("/api/v1.0/service/{id}").WithPath("id", 2).WithBasicAuth(andrewadmin_token, "").
+		Expect().Body().Contains("OK")
+
+	// an admin user to delete a service
+	e.DELETE("/api/v1.0/service/{id}").WithPath("id", 1).WithBasicAuth(andrewadmin_token, "").
+		Expect().Body().Contains("OK")
+
+	e.DELETE("/api/v1.0/ns/{ns}").WithPath("ns", "mae-test-h").WithBasicAuth(andrewadmin_token, "").
+		Expect().Body().Contains("OK")
+}
+
+
