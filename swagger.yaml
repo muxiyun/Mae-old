@@ -2,772 +2,463 @@ swagger: "2.0"
 
 info:
   version: 1.0.0
-  title: MAE API Document
-  description: Muxi App Engine API Document
+  title: Mae api Documentation
+  description: Muxi Application Engine API Documentation
 
 schemes:
   - https
+  - http
 host: simple.api
-basePath: /api
+basePath: /api/v1.0
 
 tags:
 - name: "auth"
-  description:  登录
-- name: "admin"
-  description: 权限管理
-- name: "main"
-  description: 主API
+  description: auth manage
+- name: "app"
+  description:  application manage
+- name: "service"
+  description: service manage
+- name: "version"
+  description: version manage
+- name: "user"
+  description: user manage
+- name: "log"
+  description: log manage
+- name: "terminal"
+  description: Web terminal
+- name: "pod"
+  description: pod manage
+- name: "ns"
+  descripton: namespace manage
+- name: "sd"
+  description: system status
+
 
 paths:
-
-##############################以下为登录部分######################################
-
-  /auth/:
-    post:
+  /token:
+    get:
       tags: 
       - "auth"
-      summary: MAE登录API
-      description: login
+      summary: 登录获取token
+      description: 用户名密码获取token　 
       parameters: 
-      - name: logininfo
-        in: body
-        description: 登录所需用户名密码
+      - name: ex
+        in: query
+        type: integer
+        description: 有效期时长，单位秒，可选,默认为60*60秒
+        required: false
+      - name: Authorization
+        in: header
+        description: Basic Auth验证头，内容为base64.encode(username:password).
         required: true
-        schema:
-          required: 
-            - username
-            - password
-          properties:
-            password:
-              type: string
-            username:
-              type: string
       responses:
-        200:
-          description: 登录成功
-          schema:
-            required: 
-              - uid
-              - token
-            properties:
-              uid:
-                type: integer
-              token:
-                type: string
-        401:
-          description: 密码错误 or 用户不存在
+        0:
+          description: OK
+        20002:
+          description: 用户名不存在
+        20104:
+          description: 密码校验失败
+        20003:
+          description: 生成token错误
+        20108:
+          description: 需要用户名和密码登录，但是服务器端接收到token
+        20109:
+          description: unauthorized(未提供Authorization请求头)
   
-#####################################以下为权限管理部分#######################################
-  
-  /admin/users/:
-    get:
-      tags:
-        - "admin"
-      summary: 获取用户列表
-      parameters: 
-        - in: header
-          name: token
-          description:  标识身份的Token
-          required: true
-          type: string
-      responses:
-        200:
-          description: a list of users
-          schema:
-            type: array
-            items:
-              required: 
-                - username
-                - uid
-              properties:
-                username:
-                  type: string
-                uid:
-                  type: integer
-        403:
-          description: Forbidden
-  
-  /admin/user/{uid}/:
+  /user:
     post:
       tags:
-        - "admin"
-      summary: 更改用户角色
-      description: 用户角色包括:超级管理员(对用户和应用拥有全部权限)， 管理员(对所有应用拥有全部权限), 普通用户(对所有应用拥有查看权限)，游客(无任何权限).
+        - "user"
+      summary: 创建用户
+      description: username,password,email必选，role可选("user" or "admin"),默认为'user' 
       parameters: 
-        - in: header
-          name: token
-          description:  标识身份的Token
-          required: true
-          type: string
-        - in: path
-          name: uid
-          description: 用户id
-          required: true
-          type: integer
         - in: body
-          name: info
+          name: POST DATA
+          description: json请求体
           required: true
-          description: 可选superadmin admin average visitor
+          type: object
           schema:
             properties:
+              password:
+                type: string
+              username:
+                type: string
+              email:
+                type: string
               role:
                 type: string
       responses:
-        200:
+        0:
           description: OK
-        403:
-          description: Forbidden
-    
-  /app/{appid}/service/{svcid}/admin/:
+        20002:
+          description: 用户名或邮箱重复
     get:
       tags:
-        - "admin"
-      summary: 获取该服务用户列表
-      parameters:
-        - in: header
-          name: token
-          description:  标识身份的Token
-          required: true
-          type: string
-        - in: path
-          name: appid
-          description: 应用id
-          required: true
-          type: integer
-        - in: path
-          name: svcid
-          description: 服务id
-          required: true
-          type: integer
-      responses:
-        200:
-          description: OK
-          schema:
-            properties:
-              adminlist:
-                type: array
-                description: 管理员列表
-                items:
-                  type: string
-              creatorlist:
-                type: array
-                description: 创建权限用户列表
-                items:
-                  type: string
-              deletorlist:
-                type: array
-                description: 删除权限用户列表
-                items:
-                  type: string
-        403:
-          description: Forbidden
-          
-    post:
-      tags:
-        - "admin"
-      summary: 管理用户对应用的权限
-      description: 每个应用有adminlist, creatorlist, deletorlist,分别存放拥有管理权限（增删和用户赋权),创建权限和删除权限的用户.
+        - "user"
+      summary: 获取用户列表
+      description: 管理员操作
       parameters: 
-        - in: header
-          name: token
-          description:  标识身份的Token
-          required: true
-          type: string
-        - in: path
-          name: appid
-          description: 应用id
-          required: true
+        - name: limit
+          in: query
           type: integer
-        - in: path
-          name: svcid
-          description: 服务id
-          required: true
+          description: 获取的用户信息条数，可选，默认20条
+          required: false
+        - name: offsize
+          in: query
           type: integer
-        - in: body
-          name: postinfo
-          description: post Body
-          required: true
-          schema:
-            properties:
-              listtype:
-                type: string
-                description: 可选admin creator deletor
-              uid:
-                type: integer
+          description: 从第几条开始获取，可选，默认为0,即从第一条开始获取
+          required: false
       responses:
-        200:
+        0:
+          description: OK
+        20002:
+          description: offsize超出总条数
+  /user/{username}:
+    get:
+      tags:
+        - "user"
+      summary: 根据用户名获取单个用户信息
+      description: 携带token操作
+      parameters: 
+        - in: path
+          name: username
+          type: string
+          description: 用户名
+          required: true
+      responses:
+        0:
           description: OK
         403:
           description: Forbidden
-        409:
-          description: 用户已在列表中
-        
+        20002:
+          description: 用户名不存在
+          
+  /user/{id}:
     delete:
       tags:
-        - "admin"
-      summary: 删除用户对应用的权限
+        - "user"
+      summary: 根据id删除用户
+      description: 携带token,且管理员才可操作
       parameters: 
-        - in: header
-          name: token
-          description:  标识身份的Token
-          required: true
-          type: string
         - in: path
-          name: appid
-          description: 应用id
-          required: true
+          name: id
           type: integer
-        - in: path
-          name: svcid
-          description: 服务id
+          description: 用户id
           required: true
-          type: integer
-        - in: body
-          name: deleteinfo
-          description: delete Body
-          required: true
-          schema:
-            properties:
-              listtype:
-                type: string
-                description: 可选admin creator deletor
-              uid:
-                type: integer
       responses:
-        200:
+        0:
           description: OK
         403:
           description: Forbidden
-        409:
-          description: 用户本不在列表中
-        
-      
-                  
-#################################以下为主API部分#########################################
-  
-  /apps/:
+        20002:
+          description: 该id的用户不存在
+    
+    put:
+      tags: 
+        - "user"
+      summary: 根据id更新用户信息
+      description: 需登录操作，支持修改username,password,email
+      parameters: 
+        - in: path
+          name: id
+          type: integer
+          description: 用户id
+          required: true
+        - in: body
+          name: POST DATA
+          description:　包含需更新字段的对象
+          required: true
+          type: object
+          schema:
+            properties:
+              password:
+                type: string
+              username:
+                type: string
+              email:
+                type: string
+      responses:
+        0:
+          description: OK
+        403:
+          description: Forbidden
+        20002:
+          description: 用户名或邮箱已存在
+
+  /user/duplicate:
     get:
       tags:
-        - "main"
-      summary: 获取应用列表
+        - "user"
+      summary: 检查邮箱或用户名是否已被占用
+      description: 注册新用户时，动态的检测用户输入的用户名，邮箱是否可用。一次只可传username,email中的一个，若两个都传默认检测username是否存在
       parameters: 
-        - in: header
-          name: token
-          description:  标识身份的Token
-          required: true
+        - in: query
+          name: username
           type: string
+          description: 待检测用户名
+          required: false
+        - in: query
+          name: email
+          type: string
+          description: 待检测邮箱
+          required: false
       responses:
         200:
-          description: a \*list* of apps
-          schema:
-            type: array
-            items:
-              required: 
-                - appname
-                - appid
-              properties:
-                appid:
-                  type: integer
-                appname:
-                  type: string
-
-
-  /app/:
+          description: 检测项已存在于数据库中，即不可用
+        404:
+          description: 待检测项可用
+  /app:
     post:
       tags:
-        - "main"
+         - "app"
       summary: 创建一个应用
-      parameters: 
+      description: 登录操作　　 
+      parameters:
         - in: body
-          name: appname
+          name: POST DATA
+          description:　包含一个应用数据的对象
           required: true
+          type: object
           schema:
-            required:
-              - appname
             properties:
-              appname:
+              app_name:
                 type: string
-        - in: header
-          name: token
-          required: true
-          type: string
+              app_desc:
+                type: string
       responses:
-        200:
+        0:
           description: OK
-          schema:
-            required: 
-              - appid
-            properties:
-              appid:
-                type: integer
-        403:
-          description: Forbidden
-        
-                
-  /app/{appid}/services/:
+        20301:
+          description: app_name重复
     get:
       tags:
-        - "main"
-      summary: 获取一个app内所有服务
-      parameters: 
-        - in: header
-          name: token
-          description: 标识身份
-          required: true
-          type: string
-        - in: path
-          name: appid
-          required: true
+        - "app"
+      summary: 获取app列表
+      description: 登录操作
+      parameters:
+        - in: query
+          name: limit
+          description: 一次获取app个数，可选，默认20
+          required: false
+          type: integer
+        - in: query
+          name: offsize
+          description: 从哪里开始获取，可选，默认从0开始，即第一条开始
+          required: false
           type: integer
       responses:
-        200:
+        0:
           description: OK
-          schema:
-            type: array
-            items:
-              required: 
-                - svcid
-                - svcname
-              properties:
-                svcid:
-                  type: integer
-                svcname:
-                  type: string
-        403:
-          description: Forbidden
-  
-  /app/{appid}/service/:      
-    post:
-      tags:
-        - "main"
-      summary: 创建一个服务(默认创建一个版本)
-      description: 一个service在k8s内创建一个相应service, 并可以代理多个版本(灰度发布)
-      parameters: 
-        - in: path
-          name: appid
-          description: APP id
-          required: true
-          type: integer
-        - in: header
-          name: token
-          description: 标识身份
-          required: true
-          type: string
-        - in: body
-          name: svcinfo
-          description: 服务信息：包括name与port
-          required: true
-          schema:
-            required: 
-              - svcname
-              - port
-              - version
-            properties:
-              svcname:
-                type: string
-              port:
-                type: integer
-              version:
-                $ref: '#/definitions/VersionCreate'
-              
-      responses:
-        200:
-          description: OK
-          schema:
-            required: 
-              - svcid
-            properties:
-              appid:
-                type: integer
-        403:
-          description: Forbidden
-  
-  
-    
-  /app/{appid}/service/{svcid}/versions/:
+        20002:
+          description: offsize超出app总数目
+
+
+  /app/{appname}:
     get:
       tags:
-        - "main"
-      summary: 获取一个服务所有版本.
+        - "app"
+      summary: 根据appname获取app信息
+      description: 登录方可操作
       parameters:
         - in: path
-          name: appid
-          description: 应用 ID
-          required: true
-          type: integer
-        - in: path
-          name: svcid
-          description: 服务 ID
-          required: true
-          type: integer
-        - in: header
-          name: token
+          name: appname
+          description: 应用名称
           required: true
           type: string
-          
       responses:
-        200:
+        0:
           description: OK
-          schema:
-            type: array
-            items:
-              $ref: '#/definitions/Version'
-        403:
-          description: Forbidden
-              
-  /app/{appid}/service/{svcid}/version/:
-    post:
+        20302:
+          description: appname不存在
+  /app/{id}:
+    put:
       tags:
-        - "main"
-      summary: 创建一个服务的某个版本
-      parameters: 
+        - "app"
+      summary: 根据id更新app信息
+      description: 登录操作，可更新的字段为app_name,app_desc，更新则传，不更新不传
+      parameters:
         - in: path
-          name: appid
-          description: 应用 ID
-          required: true
+          name: id
           type: integer
-        - in: path
-          name: svcid
-          description: 服务 ID
+          description: 需更新的app的id
           required: true
-          type: integer
-        - in: header
-          name: token
-          required: true
-          type: string
         - in: body
-          name: version_create_info
+          name: POST DATA
+          description:　包含更新字段的对象
+          required: true
+          type: object
           schema:
-            $ref: '#/definitions/VersionCreate'
-            
-      responses:
-        200:
-          description: OK
-          schema:
-            required:
-              - versionid
             properties:
-              versionid:
-                type: integer
-        403:
-          description: Forbidden
-                
-  /app/{appid}/service/{svcid}/version/{versionid}/:
-    get:
-      tags:
-        - "main"
-      summary: 激活&停用某版本
-      parameters: 
-        - in: path
-          name: appid
-          description: 应用 ID
-          required: true
-          type: integer
-        - in: path
-          name: svcid
-          description: 服务 ID
-          required: true
-          type: integer
-        - in: path
-          name: versionid
-          required: true
-          description: 版本 ID
-          type: integer
-        - in: header
-          name: token
-          required: true
-          type: string
-        - in: query
-          name: action
-          description: 可选action有active deactive
-          required: true
-          type: string
-          
-      responses:
-        200:
-          description: OK
-        403:
-          description: Forbidden
-        409:
-          description: Conflict,原本已经active 或 deactive
-
-    post:
-      tags:
-        - "main"
-      summary: 重建某版本
-      parameters: 
-        - in: path
-          name: appid
-          description: 应用 ID
-          required: true
-          type: integer
-        - in: path
-          name: svcid
-          description: 服务 ID
-          required: true
-          type: integer
-        - in: path
-          name: versionid
-          required: true
-          description: 版本 ID
-          type: integer
-        - in: header
-          name: token
-          required: true
-          type: string
-        - in: body
-          name: RebuildInfo
-          required: true
-          schema:
-            required: 
-              - imageurl
-              - imagetag
-            properties:
-              imageurl:
+              app_name:
                 type: string
-              imagetag:
+              app_desc:
                 type: string
       responses:
-        200:
+        0:
           description: OK
-        403:
-          description: Forbidden
-       
+        20002:
+          description: 传入id不存在或者app_name重复
     delete:
       tags:
-        - "main"
-      summary: 删除某个版本
+        - "app"
+      summary: 根据id删除app
+      description: 管理员操作。该行为会删除该app下的所有附属资源，如app下的所有service对象，以及service对象下的所有version对象，如果某一个version对象在cluster中有对应资源，则也会在集群中删除对应资源。总之，该操作属于危险操作。
       parameters:
-        - in: path
-          name: appid
-          description: 应用 ID
-          required: true
-          type: integer
-        - in: path
-          name: svcid
-          description: 服务 ID
-          required: true
-          type: integer
-        - in: path
-          name: versionid
-          required: true
-          description: 版本 ID
-          type: integer
-        - in: header
-          name: token
-          required: true
-          type: string
+      - in: path
+        name: id
+        type: integer
+        description: 需删除的app的id
+        required: true
       responses:
-        200:
+        0:
+          description: OK
+        20002:
+          description:　id不存在或其他数据库相关错误
+        20507:
+          description: 删除集群资源出错
+  /app/duplicate:
+    get:
+      tags:
+      - "app"
+      summary: 检测appname是否可用
+      description:　登录操作
+      parameters:
+      - in: query
+        name: appname
+        description: 待检测应用名
+        required: true
+        type: string
+      responses:
+        0:
+          description: 检测项已存在于数据库中，即不可用
+        20002:
+          description: 待检测项可用
+  /service:
+    post:
+      tags:
+      - "service"
+      summary: 创建service
+      description: 登录操作
+      parameters:
+        - in: body
+          name: POST DATA
+          description:　包含创建service的字段信息的对象
+          required: true
+          type: object
+          schema:
+            properties:
+              app_id:
+                type: string
+              svc_name:
+                type: string
+              svc_desc:
+                type: string
+      responses:
+        0:
+          description: OK
+        20402:
+          description: svc_name重复
+    get:
+      tags:
+      - "service"
+      summary: 获取service列表
+      description: 获取某一app下的service列表为登录用户操作,获取系统全部service的列表需要管理员操作，若传app_id参数为获取app下的service列表，不传app_id则为获取系统全部service的列表
+      parameters:
+        - in: query
+          name: offsize
+          type: integer
+          description:　从哪里开始获取，默认为从第一条开始获取
+          required: false
+        - in: query
+          name: limit
+          type: integer
+          description: 获取多少条，默认一次获取20条
+          required: false
+        - in: query
+          name: app_id
+          type: integer
+          description: 若获取某一app的service列表，需传该参数；获取系统所有service则不传
+          required: false
+      responses:
+        0:
           description: OK
         403:
           description: Forbidden
+        20002:
+          description:　offsize超范围或者app_id不存在
 
-  /app/{appid}/service/{svcid}/version/{versionid}/logs:
+
+
+  /service/{svc_name}:
     get:
       tags:
-        - "main"
-      summary: 获取Log
+      - "service"
+      summary: 根据svc_name获取service信息
+      description: 登录操作
       parameters:
         - in: path
-          name: appid
-          description: 应用 ID
-          required: true
-          type: integer
-        - in: path
-          name: svcid
-          description: 服务 ID
-          required: true
-          type: integer
-        - in: path
-          name: versionid
-          required: true
-          description: 版本 ID
-          type: integer
-        - in: query
-          name: tail
-          description: log从后往前的行数,0为全部
-          type: integer
-          required: true
-        - in: header
-          name: token
+          name: svc_name
+          description:　服务名称
           required: true
           type: string
       responses:
-        200:
+        0:
           description: OK
-          schema:
-            $ref: '#/definitions/Log'
-  
-  /app/{appid}/net/:
-    post:
-      tags:
-        - "main"
-      summary: 为app提供简单反向代理支持
-      parameters: 
-        - in: path
-          name: appid
-          description: 应用 ID
-          required: true
-          type: integer
-        - in: header
-          name: token
-          required: true
-          type: string
-        - in: body
-          name: nginxconf
-          schema:
-            $ref: '#/definitions/NginxServer'
-          required: true
-      responses:
-        200:
-          description: OK
-    
-          
-          
-definitions:
-  Version:
-    required: 
-      - appname
-      - svcname
-      - version
-      - status
-    properties:
-      appname:
-        description: app名字
-        type: string
-      svcname:
-        description: svc名字
-        type: string
-      version:
-        description: 版本名
-        type: string
-      status:
-        description: 状态:是否正在使用
-        type: string
-  
-  VersionCreate:
-    required: 
-      - appname
-      - servicename
-      - versionname
-      - containers
-    properties:
-      appname:
-        description: App名字, 不需要用户填写，由前端自己传
-        type: string
-      servicename:
-        description: 服务名，不需要用户填写，由前端自己传
-      versionname:
-        description: App 版本号
-        type: string
-      replicas:
-        description: 副本数量
-        type: integer
-        default: 1
-      containers:
-        description: 容器信息
-        type: array
-        items:
-          $ref: "#/definitions/Container"
-          
-  Container:
-    required: 
-      - containername
-      - imageurl
-      
-    properties:
-      containername:
-        description: container名字
-        type: string
-      imageurl:
-        description: 镜像地址
-        type: string
-      imagetag:
-        description: 镜像版本号
-        type: string
-        default: latest
-      runcmd:
-        description: 容器运行命令
-        type: string
-        default: 空
-      envs:
-        description: 环境变量键值对
-        type: array
-        items:
-          $ref: '#/definitions/ENVpair'
-      port:
-        description: 容器开放的端口
-        type: integer
-        default: 3000
-      volumns:
-        description: 挂载点键值对
-        type: array
-        items:
-          $ref: '#/definitions/VolumnPair'
-        default: 空
-        
-  
-  ENVpair:
-    required: 
-      - envname
-      - envvalue
-    properties:
-      envname:
-        type: string
-      envvalue:
-        type: string
-  
-  VolumnPair:
-    required: 
-      - innerlocation
-      - outlocation
-    properties:
-      innerlocation:
-        description: 在容器内的挂载点
-        type: string
-      outlocation:
-        description: 在宿主机上挂载点
-        type: string
-    
-  Log:
-    required: 
-      - log
-    properties:
-      log:
-        description: log
-        type: string 
-        
-        
-  NginxServer:
-    required: 
-      - listen
-      - servername
-      - location
-    properties:
-      listen:
-        description: 监听端口
-        type: integer
-      servername:
-        description: 访问该应用使用的域名或IP
-        type: string
-      location:
-        description: URL匹配规则
-        type: array
-        items:
-          $ref: '#/definitions/NginxLocation'
+        20403:
+          description: svc_name不存在
 
-  
-  NginxLocation:
-    required: 
-      - rule
-      - proxy_pass
-    properties:
-      rule:
-        description: 匹配规则，如"/" 或 "^~ /api/" 等
-        type: string
-      proxy_pass:
-        description: 导向的App, 如"http://consume-fe.consume-fe.svc.cluster.local:3000"
-        type: string
+  /service/{id}:
+    put:
+      tags:
+      - "service"
+      summary: 更新service
+      description: 登录操作,支持对app_id,svc_name,svc_desc的更新,更新则传，不更不传
+      parameters:
+        - in: path
+          name: id
+          description: 需更新的service的id
+          type: integer
+          required: true
+        - in: body
+          name: POST DATA
+          description:　包含更新字段的对象
+          required: true
+          type: object
+          schema:
+            properties:
+              app_id:
+                type: string
+              svc_name:
+                type: string
+              svc_desc:
+                type: string
+      responses:
+        0:
+          description: OK
+        20002:
+          description: id不存在或svc_name重复  
+    delete:
+      tags:
+      - "service"
+      summary: 删除service
+      description: 管理员操作。危险操作，删除一个service会删掉该service的所有附属资源，包括该service的所有version记录，如果某version在集群中有对应的资源，则该集群中的资源也会被删除。
+      parameters:
+        - in: path
+          name: id
+          description: 需删除的service的id
+          type: integer
+          required: true
+      responses:
+        0:
+          description: OK
+        20002:
+          description: id不存在或其他数据库错误
+        20507:
+          description: 删除集群资源出错
+
       
+
+
+          
+          
 
