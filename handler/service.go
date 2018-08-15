@@ -94,9 +94,8 @@ func DeleteService(ctx iris.Context) {
 	// current service have active version
 	if service.CurrentVersion!=""{
 		version:=&model.Version{}
-		d := model.DB.RWdb.Where("version_name = ?", service.CurrentVersion).First(&version)
-
-		if d.Error==nil{
+		d := model.DB.RWdb.Where("version_name = ?", service.CurrentVersion).Find(&version)
+		if d.Error!=nil{
 			SendResponse(ctx,errno.New(errno.ErrDatabase,d.Error),nil)
 			return
 		}
@@ -121,16 +120,8 @@ func DeleteService(ctx iris.Context) {
 		}
 	}
 
-	// get the versions that belongs to current_service and delete the database record
-	var versions []model.Version
-	d := model.DB.RWdb.Where("svc_id = ?", service.ID).Find(&versions)
-	if d.Error!=nil{
-		SendResponse(ctx,errno.New(errno.ErrDatabase,d.Error),nil)
-		return
-	}
-
 	//delete versions which belongs to current service
-	d=model.DB.RWdb.Unscoped().Delete(model.Version{}, "svc_id = ?", service_id)
+	d:=model.DB.RWdb.Unscoped().Delete(model.Version{}, "svc_id = ?", service_id)
 	if d.Error!=nil{
 		SendResponse(ctx,errno.New(errno.ErrDatabase,d.Error),nil)
 		return

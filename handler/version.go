@@ -1,10 +1,12 @@
 package handler
 
 import (
-	"encoding/json"
 	"fmt"
+	"encoding/json"
+
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/core/errors"
+
 	"github.com/muxiyun/Mae/model"
 	"github.com/muxiyun/Mae/pkg/errno"
 	"github.com/muxiyun/Mae/pkg/k8sclient"
@@ -23,9 +25,6 @@ func CreateVersion(ctx iris.Context) {
 	v.ServiceID = rv.ServiceID
 	v.VersionName = rv.VersionName
 	v.VersionDesc = rv.VersionDesc
-
-	r, _ := json.Marshal(rv)
-	fmt.Println(string(r))
 
 	//将配置部分序列化，然后存到VersionConfig字段中
 	configbytearray, err := json.Marshal(rv.VersionConf)
@@ -58,7 +57,6 @@ func ApplyVersion(ctx iris.Context) {
 		return
 	}
 
-	// get service that the version belongs to
 	service, err := model.GetServiceByID(int64(v.ServiceID))
 	if err != nil {
 		SendResponse(ctx, errno.New(errno.ErrDatabase, err), nil)
@@ -83,11 +81,10 @@ func ApplyVersion(ctx iris.Context) {
 			return
 		}
 
-		//unmarshal the old version config
+
 		var old_version_config model.VersionConfig
 		json.Unmarshal([]byte(old_version.VersionConfig), &old_version_config)
 
-		//get the deploymentClient and delete the old deployment
 		deploymentClient := k8sclient.ClientSet.ExtensionsV1beta1().
 			Deployments(old_version_config.Deployment.NameSapce)
 		err = deploymentClient.Delete(old_version_config.Deployment.DeployName, nil)
@@ -96,7 +93,6 @@ func ApplyVersion(ctx iris.Context) {
 			return
 		}
 
-		// get the serviceClient and delete the old service
 		ServiceClient := k8sclient.ClientSet.CoreV1().Services(old_version_config.Deployment.NameSapce)
 		err = ServiceClient.Delete(old_version_config.Svc.SvcName, nil)
 		if err != nil {
@@ -104,7 +100,6 @@ func ApplyVersion(ctx iris.Context) {
 			return
 		}
 
-		// turn old_version's active field to false
 		old_version.Active = false
 		if err = old_version.Update(); err != nil {
 			SendResponse(ctx, errno.New(errno.ErrDatabase, err), nil)
@@ -116,37 +111,24 @@ func ApplyVersion(ctx iris.Context) {
 	var version_config model.VersionConfig
 	json.Unmarshal([]byte(v.VersionConfig), &version_config)
 
-	// get the deployment client for the specified namespace
 	deploymentClient := k8sclient.ClientSet.ExtensionsV1beta1().
 		Deployments(version_config.Deployment.NameSapce)
-
-	// config the deployment with the version_config struct
 	deployment := ConfigDeployment(version_config)
-
-	// create the deployment
 	deploy_result, err := deploymentClient.Create(deployment)
 	if err != nil {
 		SendResponse(ctx, errno.New(errno.ErrCreateDeployment, err), nil)
 		return
 	}
 
-	// get the k8s service client of a specified namespace
 	ServiceClient := k8sclient.ClientSet.CoreV1().Services(version_config.Deployment.NameSapce)
-
-	// config the ks8 service with the version_config struct
 	svc := ConfigService(version_config)
-
-	// create the k8s service
 	svc_result, err := ServiceClient.Create(svc)
 	if err != nil {
 		SendResponse(ctx, errno.New(errno.ErrCreateService, err), nil)
 		return
 	}
 
-	// update the mae service's current_version field
-
 	service.CurrentVersion = v.VersionName
-
 	if err = service.Update(); err != nil {
 		SendResponse(ctx, errno.New(errno.ErrDatabase, err), nil)
 		return
@@ -175,29 +157,24 @@ func UnapplyVersion(ctx iris.Context) {
 		return
 	}
 
-	//get version information from database by version_name field
 	v, err := model.GetVersionByName(version_name)
 	if err != nil {
 		SendResponse(ctx, errno.New(errno.ErrDatabase, err), nil)
 		return
 	}
 
-	// unmarshal the VersionConfig field to a version_config struct
 	var version_config model.VersionConfig
 	json.Unmarshal([]byte(v.VersionConfig), &version_config)
 
-	// get the deployment client for the specified namespace
 	deploymentClient := k8sclient.ClientSet.ExtensionsV1beta1().
 		Deployments(version_config.Deployment.NameSapce)
-	err = deploymentClient.Delete(version_config.Deployment.DeployName, nil)
-	if err != nil {
+	if err := deploymentClient.Delete(version_config.Deployment.DeployName, nil);err != nil {
 		SendResponse(ctx, errno.New(errno.ErrDeleteDeployment, err), nil)
 		return
 	}
 
 	ServiceClient := k8sclient.ClientSet.CoreV1().Services(version_config.Deployment.NameSapce)
-	ServiceClient.Delete(version_config.Svc.SvcName, nil)
-	if err != nil {
+	if err:=ServiceClient.Delete(version_config.Svc.SvcName, nil);err != nil {
 		SendResponse(ctx, errno.New(errno.ErrDeleteService, err), nil)
 		return
 	}
@@ -210,7 +187,6 @@ func UnapplyVersion(ctx iris.Context) {
 	}
 	// now there is no current version
 	service.CurrentVersion = ""
-
 	if err = service.Update(); err != nil {
 		SendResponse(ctx, errno.New(errno.ErrDatabase, err), nil)
 		return
@@ -269,15 +245,13 @@ func DeleteVersion(ctx iris.Context) {
 	if version.Active == true {
 		deploymentClient := k8sclient.ClientSet.ExtensionsV1beta1().
 			Deployments(version_config.Deployment.NameSapce)
-		err = deploymentClient.Delete(version_config.Deployment.DeployName, nil)
-		if err != nil {
+		if err := deploymentClient.Delete(version_config.Deployment.DeployName, nil);err != nil {
 			SendResponse(ctx, errno.New(errno.ErrDeleteDeployment, err), nil)
 			return
 		}
 
 		ServiceClient := k8sclient.ClientSet.CoreV1().Services(version_config.Deployment.NameSapce)
-		ServiceClient.Delete(version_config.Svc.SvcName, nil)
-		if err != nil {
+		if err:=ServiceClient.Delete(version_config.Svc.SvcName, nil);err != nil {
 			SendResponse(ctx, errno.New(errno.ErrDeleteService, err), nil)
 			return
 		}

@@ -120,7 +120,7 @@ func DeleteApp(ctx iris.Context) {
 		// current_service have active version
 		if service.CurrentVersion!=""{
 			version:=&model.Version{}
-			d := model.DB.RWdb.Where("version_name = ?", service.CurrentVersion).Find(&version)
+			d := model.DB.RWdb.Where("version_name = ?", service.CurrentVersion).First(&version)
 			if d.Error!=nil{
 				SendResponse(ctx,errno.New(errno.ErrDatabase,d.Error),nil)
 				return
@@ -144,15 +144,7 @@ func DeleteApp(ctx iris.Context) {
 				return
 			}
 		}
-
-		// get the versions that belongs to current_service and delete the database record
-		var versions []model.Version
-		d = model.DB.RWdb.Where("svc_id = ?", service.ID).Find(&versions)
-		if d.Error!=nil{
-			SendResponse(ctx,errno.New(errno.ErrDatabase,d.Error),nil)
-			return
-		}
-
+		// delete versions record belongs to the service
 		d=model.DB.RWdb.Unscoped().Delete(model.Version{}, "svc_id = ?", service.ID)
 		if d.Error!=nil{
 			SendResponse(ctx,errno.New(errno.ErrDatabase,d.Error),nil)
@@ -160,6 +152,12 @@ func DeleteApp(ctx iris.Context) {
 		}
 	}
 
+	//delete service record belongs to the app
+	d=model.DB.RWdb.Unscoped().Delete(model.Service{}, "app_id = ?", app_id)
+	if d.Error!=nil {
+		SendResponse(ctx, errno.New(errno.ErrDatabase, d.Error), nil)
+		return
+	}
 
 	// finally,delete the app record from the database
 	if err := model.DeleteApp(uint(app_id)); err != nil {
