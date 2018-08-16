@@ -3,10 +3,11 @@
 package main
 
 import (
+	"time"
 	"testing"
+
 	"github.com/muxiyun/Mae/model"
 	"github.com/kataras/iris/httptest"
-	"time"
 )
 
 func TestServiceCRUD(t *testing.T) {
@@ -123,12 +124,13 @@ func TestServiceCRUD(t *testing.T) {
 
 
 func TestRecursiveDeleteService(t *testing.T){
+	time.Sleep(5*time.Second)
 	e := httptest.New(t, newApp(), httptest.URL("http://127.0.0.1:8080"))
-	//defer model.DB.RWdb.DropTableIfExists("users")
-	//defer model.DB.RWdb.DropTableIfExists("casbin_rule")
-	//defer model.DB.RWdb.DropTableIfExists("apps")
-	//defer model.DB.RWdb.DropTableIfExists("versions")
-	//defer model.DB.RWdb.DropTableIfExists("services")
+	defer model.DB.RWdb.DropTableIfExists("users")
+	defer model.DB.RWdb.DropTableIfExists("casbin_rule")
+	defer model.DB.RWdb.DropTableIfExists("apps")
+	defer model.DB.RWdb.DropTableIfExists("versions")
+	defer model.DB.RWdb.DropTableIfExists("services")
 
 	CreateUserForTest(e, "andrew", "andrew123", "andrewpqc@mails.ccnu.edu.cn")
 	CreateAdminForTest(e, "andrewadmin", "andrewadmin123", "3480437308@qq.com")
