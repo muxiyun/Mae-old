@@ -5,6 +5,8 @@ import (
 	"github.com/muxiyun/Mae/config"
 	"github.com/muxiyun/Mae/model"
 	"github.com/muxiyun/Mae/pkg/casbin"
+	"github.com/muxiyun/Mae/pkg/mail"
+
 	"github.com/muxiyun/Mae/router"
 	"net/http"
 	"time"
@@ -12,6 +14,9 @@ import (
 	"github.com/kataras/iris"
 	"github.com/lexkong/log"
 	"github.com/spf13/viper"
+	"gopkg.in/gomail.v2"
+
+	"fmt"
 )
 
 // pingServer pings the http server to make sure the router is working.
@@ -51,12 +56,53 @@ func newApp() *iris.Application {
 	//add init casbin policy to db
 	casbin.InitPolicy()
 
+	// setup mailservice
+	mail.Setup()
+
 	return app
 }
 
 func main() {
 
 	app := newApp()
+
+	// start the mail service daemon
+	go func() {
+		d := gomail.NewDialer("smtp.qq.com", 25, "3480437308@qq.com", "iifwjwzfjxvxchig")
+
+		var s gomail.SendCloser
+		var err error
+		open := false
+		for {
+			fmt.Println("mail...")
+			select {
+			case m, ok := <-mail.Ms.Ch:
+				if !ok {
+					return
+				}
+				if !open {
+					if s, err = d.Dial(); err != nil {
+						panic(err)
+					}
+					open = true
+				}
+				if err := gomail.Send(s, m); err != nil {
+					//log.Error(err)
+				}
+				// Close the connection to the SMTP server if no email was sent in
+				// the last 30 seconds.
+			case <-time.After(30 * time.Second):
+				if open {
+					if err := s.Close(); err != nil {
+						panic(err)
+					}
+					open = false
+				}
+			}
+		}
+		close(mail.Ms.Ch)
+	}()
+
 
 	// Ping the server to make sure the router is working.
 	go func() {
@@ -78,6 +124,9 @@ func main() {
 
 	log.Infof("Start to listening the incoming requests on http address: %s", viper.GetString("addr"))
 	log.Info(app.Run(iris.Addr(viper.GetString("addr")), iris.WithoutVersionChecker).Error())
+
+
+
 
 	model.DB.RWdb.Close()
 }
