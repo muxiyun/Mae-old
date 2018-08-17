@@ -7,7 +7,8 @@ import (
 	"github.com/kataras/iris/core/errors"
 	"github.com/muxiyun/Mae/model"
 	"github.com/muxiyun/Mae/pkg/errno"
-	"github.com/muxiyun/Mae/pkg/k8sclient"
+	"github.com/muxiyun/Mae/pkg/mail"
+	"time"
 )
 
 // create a service
@@ -123,6 +124,28 @@ func DeleteService(ctx iris.Context) {
 		SendResponse(ctx, errno.New(errno.ErrDatabase, err), nil)
 		return
 	}
+
+	notification:=mail.NotificationEvent{
+		Level:"Warning",
+		UserName:"Admin user",
+		Who:ctx.Values().GetString("current_user_name"),
+		Action:" delete ",
+		What:" service ["+ service.SvcName+"]",
+		When:time.Now().String(),
+	}
+
+	receptions:=[]string{}
+	var adminUsers []model.User
+	d = model.DB.RWdb.Where("role = ?", "admin").Find(&adminUsers)
+	if d.Error!=nil{
+		SendResponse(ctx,errno.New(errno.ErrDatabase,d.Error),nil)
+		return
+	}
+	for _,admin:=range adminUsers{
+		receptions=append(receptions,admin.Email)
+	}
+
+	mail.SendNotificationEmail(notification,receptions)
 
 	SendResponse(ctx, nil, iris.Map{"id": service_id})
 }

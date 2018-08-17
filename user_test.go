@@ -45,21 +45,11 @@ func TestDeleteUser(t *testing.T) {
 	e := httptest.New(t, newApp(), httptest.URL("http://127.0.0.1:8080"))
 	defer model.DB.RWdb.DropTableIfExists("users")
 
-	//test ok
-	e.POST("/api/v1.0/user").WithJSON(map[string]interface{}{
-		"username": "andrew",
-		"password": "123456",
-		"email":    "3480437308@qq.com",
-	}).Expect().Body().Contains("OK")
+	CreateUserForTest(e,"andrew","123456","3480437308@qq.com")
 
 	e.DELETE("/api/v1.0/user/1").Expect().Status(httptest.StatusForbidden)
 
-	e.POST("/api/v1.0/user").WithJSON(map[string]interface{}{
-		"username": "andrewpqc",
-		"password": "123456",
-		"email":    "andrewpqc@gmail.com",
-		"role":     "admin",
-	}).Expect().Body().Contains("OK")
+	CreateAdminForTest(e,"andrewpqc","123456","andrewpqc@gmail.com")
 
 	e.DELETE("/api/v1.0/user/1").WithBasicAuth("andrewpqc", "123456").Expect().Body().Contains("OK")
 }
@@ -68,18 +58,10 @@ func TestUpdateUser(t *testing.T) {
 	e := httptest.New(t, newApp(), httptest.URL("http://127.0.0.1:8080"))
 	defer model.DB.RWdb.DropTableIfExists("users")
 
-	//test ok
-	e.POST("/api/v1.0/user").WithJSON(map[string]interface{}{
-		"username": "andrew",
-		"password": "123456",
-		"email":    "3480437308@qq.com",
-	}).Expect().Body().Contains("OK")
+	CreateUserForTest(e,"andrew","123456","3480437308@qq.com")
 
-	e.POST("/api/v1.0/user").WithJSON(map[string]interface{}{
-		"username": "jim",
-		"password": "jimpassword",
-		"email":    "jim@gmail.com",
-	}).Expect().Body().Contains("OK")
+	CreateUserForTest(e,"jim","jimpassword","jim@gmail.com")
+
 
 	e.PUT("/api/v1.0/user/1").WithJSON(map[string]interface{}{
 		"username": "andrew2",
@@ -108,11 +90,8 @@ func TestGetUser(t *testing.T) {
 	e := httptest.New(t, newApp(), httptest.URL("http://127.0.0.1:8080"))
 	defer model.DB.RWdb.DropTableIfExists("users")
 
-	e.POST("/api/v1.0/user").WithJSON(map[string]interface{}{
-		"username": "andrew",
-		"password": "123456",
-		"email":    "3480437308@qq.com",
-	}).Expect().Body().Contains("OK")
+	CreateUserForTest(e,"andrew","123456","3480437308@qq.com")
+
 
 	e.GET("/api/v1.0/user/andrewpqc").Expect().Status(httptest.StatusForbidden)
 	e.GET("/api/v1.0/user/andrew").WithBasicAuth("andrew", "123456").
@@ -123,27 +102,11 @@ func TestGetUserList(t *testing.T) {
 	e := httptest.New(t, newApp(), httptest.URL("http://127.0.0.1:8080"))
 	defer model.DB.RWdb.DropTableIfExists("users")
 
-	//add tom
-	e.POST("/api/v1.0/user").WithJSON(map[string]interface{}{
-		"username": "tom",
-		"password": "tompassword",
-		"email":    "tom@qq.com",
-	}).Expect().Body().Contains("OK")
+	CreateUserForTest(e,"tom","tompassword","tom@qq.com")
 
-	//add jim
-	e.POST("/api/v1.0/user").WithJSON(map[string]interface{}{
-		"username": "jim",
-		"password": "123456jim",
-		"email":    "jim@qq.com",
-	}).Expect().Body().Contains("OK")
+	CreateUserForTest(e,"jim","123456jim","jim@qq.com")
 
-	//add bob
-	e.POST("/api/v1.0/user").WithJSON(map[string]interface{}{
-		"username": "bob",
-		"password": "123456bobpass",
-		"email":    "bob@qq.com",
-		"role":     "admin",
-	}).Expect().Body().Contains("OK")
+	CreateAdminForTest(e,"bob","123456bobpass","bob@qq.com")
 
 	e.GET("/api/v1.0/user").WithQuery("limit", 2).WithQuery("offsize", 1).
 		Expect().Status(httptest.StatusForbidden)
@@ -166,19 +129,10 @@ func TestUserInfoDuplicateCheck(t *testing.T) {
 	e := httptest.New(t, newApp(), httptest.URL("http://127.0.0.1:8080"))
 	defer model.DB.RWdb.DropTableIfExists("users")
 
-	//add tom
-	e.POST("/api/v1.0/user").WithJSON(map[string]interface{}{
-		"username": "tom",
-		"password": "tompassword",
-		"email":    "tom@qq.com",
-	}).Expect().Body().Contains("OK")
+	CreateUserForTest(e,"tom","tompassword","tom@qq.com")
 
-	//add jim
-	e.POST("/api/v1.0/user").WithJSON(map[string]interface{}{
-		"username": "jim",
-		"password": "123456jim",
-		"email":    "jim@qq.com",
-	}).Expect().Body().Contains("OK")
+	CreateUserForTest(e,"jim","123456jim","jim@qq.com")
+
 
 	e.GET("/api/v1.0/user/duplicate").WithQuery("username", "jim").Expect().Status(httptest.StatusOK)
 	e.GET("/api/v1.0/user/duplicate").WithQuery("username", "andrew").Expect().Status(httptest.StatusNotFound)

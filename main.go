@@ -1,22 +1,22 @@
 package main
 
 import (
+	"fmt"
+	"time"
 	"errors"
+	"net/http"
+
 	"github.com/muxiyun/Mae/config"
 	"github.com/muxiyun/Mae/model"
 	"github.com/muxiyun/Mae/pkg/casbin"
 	"github.com/muxiyun/Mae/pkg/mail"
-
 	"github.com/muxiyun/Mae/router"
-	"net/http"
-	"time"
 
 	"github.com/kataras/iris"
 	"github.com/lexkong/log"
 	"github.com/spf13/viper"
 	"gopkg.in/gomail.v2"
 
-	"fmt"
 )
 
 // pingServer pings the http server to make sure the router is working.

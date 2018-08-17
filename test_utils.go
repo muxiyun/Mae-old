@@ -6,6 +6,9 @@ import (
 	"encoding/json"
 	"github.com/iris-contrib/httpexpect"
 	"github.com/muxiyun/Mae/handler"
+
+	"strings"
+	"fmt"
 )
 
 type token struct {
@@ -18,6 +21,8 @@ type tokenResponse struct {
 	Msg  string `json:"msg"`
 }
 
+
+
 //get token by username and password for test
 func GetTokenForTest(e *httpexpect.Expect, username, password string, ex int) string {
 	body := e.GET("/api/v1.0/token").WithQuery("ex", ex).
@@ -29,25 +34,56 @@ func GetTokenForTest(e *httpexpect.Expect, username, password string, ex int) st
 	return mytokenResponse.Data.Token
 }
 
-//create a normal user for test
+
+
+
+type LinkData struct{
+	ID int `json:"id"`
+	Username string `json:"username"`
+	Link string `json:"link"`
+}
+
+type createUserReturnData struct{
+	Code int `json:"code"`
+	Msg int `json:"msg"`
+	Data LinkData `json:"data"`
+}
+
+//create a normal user and confirm the email for test
 func CreateUserForTest(e *httpexpect.Expect, username, password, email string) {
-	e.POST("/api/v1.0/user").WithJSON(map[string]interface{}{
+	returnData:=e.POST("/api/v1.0/user").WithJSON(map[string]interface{}{
 		"username": username,
 		"password": password,
 		"email":    email,
 		"role":     "user", //optional, default is 'user'
-	}).Expect().Body().Contains("OK")
+	}).Expect().Body().Raw()
+
+	var rd createUserReturnData
+	json.Unmarshal([]byte(returnData),&rd)
+
+	req:=strings.Split(rd.Data.Link[21:],"?")
+	e.GET(req[0]).WithQuery("tk",req[1][3:]).Expect().Body().Contains("验证成功")
+
 }
 
-//create a admin user for test
+//create a admin user　and confirm the email for test
 func CreateAdminForTest(e *httpexpect.Expect, username, password, email string) {
-	e.POST("/api/v1.0/user").WithJSON(map[string]interface{}{
+	returnData:=e.POST("/api/v1.0/user").WithJSON(map[string]interface{}{
 		"username": username,
 		"password": password,
 		"email":    email,
 		"role":     "admin",
-	}).Expect().Body().Contains("OK")
+	}).Expect().Body().Raw()
+
+	var rd createUserReturnData
+	json.Unmarshal([]byte(returnData),&rd)
+
+	req:=strings.Split(rd.Data.Link[21:],"?")
+	e.GET(req[0]).WithQuery("tk",req[1][3:]).Expect().Body().Contains("验证成功")
+
 }
+
+
 
 
 type NsResopnse struct {

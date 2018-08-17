@@ -30,6 +30,8 @@ func Load(app *iris.Application) *iris.Application {
 		user_app.Get("/{username:string}", handler.GetUser)
 		user_app.Get("", handler.GetUserList)
 		user_app.Get("/duplicate", handler.UserInfoDuplicateChecker)
+		user_app.Get("/confirm",handler.ConfirmUser)
+		user_app.Get("/resend",handler.ResendMail)
 	}
 
 	sd_app := app.Party("/api/v1.0/sd")

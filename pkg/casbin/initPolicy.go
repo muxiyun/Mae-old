@@ -83,6 +83,8 @@ func InitPolicy() {
 	for _, policy := range [][]string{
 		[]string{"dom_user", "/api/v1.0/user", "POST"},
 		[]string{"dom_user", "/api/v1.0/user/duplicate", "GET"},
+		[]string{"dom_user","/api/v1.0/user/confirm","GET"},
+		[]string{"dom_user","/api/v1.0/user/resend","GET"},
 
 		[]string{"dom_sd", "/api/v1.0/sd/health", "GET"},
 	} {

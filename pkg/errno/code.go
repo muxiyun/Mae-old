@@ -22,6 +22,7 @@ var (
 	ErrTokenRequired            = &Errno{Code: 20107, Message: "Token required"}
 	ErrUsernamePasswordRequired = &Errno{Code: 20108, Message: "Username and Password required"}
 	ErrUnauth                   = &Errno{Code: 20109, Message: "Unauthorized"}
+	ErrgenernateConfirmLink     = &Errno{Code: 20110, Message: "Generate Confirm Link error"}
 
 	//ns
 	ErrGetNamespace    = &Errno{Code: 20201, Message: "Error occurred while get namespace"}

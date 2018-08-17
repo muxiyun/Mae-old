@@ -6,6 +6,8 @@ import (
 	"github.com/kataras/iris"
 	"github.com/muxiyun/Mae/model"
 	"github.com/muxiyun/Mae/pkg/errno"
+	"github.com/muxiyun/Mae/pkg/mail"
+	"time"
 )
 
 //create a new app
@@ -103,6 +105,7 @@ func AppNameDuplicateChecker(ctx iris.Context) {
 func DeleteApp(ctx iris.Context) {
 	app_id, _ := ctx.Params().GetInt64("id")//get the app id
 
+	app,_:=model.GetAppByID(app_id)
 	//get services which belongs to the app
 	var services []model.Service
 	d := model.DB.RWdb.Where("app_id = ?", app_id).Find(&services)
@@ -154,6 +157,28 @@ func DeleteApp(ctx iris.Context) {
 		SendResponse(ctx, errno.New(errno.ErrDatabase, err), nil)
 		return
 	}
+
+	notification:=mail.NotificationEvent{
+		Level:"Warning",
+		UserName:"Admin user",
+		Who:ctx.Values().GetString("current_user_name"),
+		Action:" delete ",
+		What:" app ["+app.AppName+"]",
+		When:time.Now().String(),
+	}
+
+	receptions:=[]string{}
+	var adminUsers []model.User
+	d = model.DB.RWdb.Where("role = ?", "admin").Find(&adminUsers)
+	if d.Error!=nil{
+		SendResponse(ctx,errno.New(errno.ErrDatabase,d.Error),nil)
+		return
+	}
+	for _,admin:=range adminUsers{
+		receptions=append(receptions,admin.Email)
+	}
+
+	mail.SendNotificationEmail(notification,receptions)
 
 	SendResponse(ctx, nil, iris.Map{"id": app_id})
 }
