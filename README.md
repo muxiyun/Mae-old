@@ -1,20 +1,25 @@
-# MAE:Muxi APP Engine
+# [muxi application engine(Mae)](https://github.com/muxiyun/Mae/tree/master)
 
-[![Build Status](https://travis-ci.org/Andrewpqc/MAE.svg?branch=master)](https://travis-ci.org/Andrewpqc/MAE)
+PaaS of Muxi-Studio. An easier way to manage Kubernetes cluser.
 
-An easier way to manipulate Kubernetes cluser.
+Click [http://zxc0328.github.io/2017/05/27/mae/](http://zxc0328.github.io/2017/05/27/mae/) to view details.
 
-The PaaS of Muxi-Studio, Server Part of [Project MAE](http://zxc0328.github.io/2017/05/27/mae/)
 
 TODO:
-- [x] API Design
-- [x] Domain UML & Db UML
-Code Part: <br>
-- [ ] Models
-- [ ] 用户系统
-- [ ] 接入Casbin
-- [ ] 应用部分
-- [ ] 服务部分
-- [ ] 版本部分
-- [ ] 查看log
-- [ ] Nginx反向代理部分
+- [x] api design
+- [x] domain UML & database UML
+- [x] user system
+- [x] casbin access control
+- [x] application (abstract entity)
+- [x] service (abstract entity)
+- [x] version (abstract entity)
+- [x] log query
+- [x] web terminal
+- [x] email notification for admin
+NEXT:
+
+1.现在版本的切换采取的是删除原版本的资源之后创建新版本的资源，后面改为灰度发布
+
+2.优化int类型的使用，重构部分代码
+
+3.文档

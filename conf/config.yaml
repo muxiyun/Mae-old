@@ -1,0 +1,26 @@
+runmode: debug                 # 开发模式, debug, release, test
+addr: :8080                  # HTTP绑定端口
+name: mae_apiserver              # API Server的名字
+url: http://127.0.0.1:8080   # pingServer函数请求的API服务器的ip:port
+max_ping_count: 10           # pingServer函数try的次数
+jwt_secret: Rtg8BPKNEf2mB4mgvKONGPZZQSaJWNLijxR42qRgq0iBb5
+casbinmodel: conf/casbinmodel.conf
+kubeconfig: conf/admin.kubeconfig
+tls:
+  addr: :8081
+  cert: conf/example.com+4.pem
+  key: conf/example.com+4-key.pem
+log:
+  writers: file
+  logger_level: DEBUG
+  logger_file: log/mae.log
+  log_format_text: true
+  rollingPolicy: size
+  log_rotate_date: 1
+  log_rotate_size: 1
+  log_backup_count: 7
+db:
+  name: mae
+  addr: 127.0.0.1:3306
+  username: root
+  password: pqc19960320

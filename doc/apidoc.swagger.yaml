@@ -1,0 +1,881 @@
+swagger: "2.0"
+
+info:
+  version: 1.0.0
+  title: Mae api Documentation
+  description: Muxi Application Engine API Documentation
+
+schemes:
+  - https
+  - http
+host: simple.api
+basePath: /api/v1.0
+
+tags:
+- name: "auth"
+  description: auth manage
+- name: "app"
+  description:  application manage
+- name: "service"
+  description: service manage
+- name: "version"
+  description: version manage
+- name: "user"
+  description: user manage
+- name: "log"
+  description: log manage
+- name: "terminal"
+  description: Web terminal
+- name: "pod"
+  description: pod manage
+- name: "ns"
+  descripton: namespace manage
+- name: "sd"
+  description: system status
+
+
+paths:
+  /token:
+    get:
+      tags: 
+      - "auth"
+      summary: 登录获取token
+      description: 用户名密码获取token　 
+      parameters: 
+      - name: ex
+        in: query
+        type: integer
+        description: 有效期时长，单位秒，可选,默认为60*60秒
+        required: false
+      - name: Authorization
+        in: header
+        description: Basic Auth验证头，内容为base64.encode(username:password).
+        required: true
+      responses:
+        0:
+          description: OK
+        20002:
+          description: 用户名不存在
+        20104:
+          description: 密码校验失败
+        20003:
+          description: 生成token错误
+        20108:
+          description: 需要用户名和密码登录，但是服务器端接收到token
+        20109:
+          description: unauthorized(未提供Authorization请求头)
+  
+  /user:
+    post:
+      tags:
+        - "user"
+      summary: 创建用户
+      description: username,password,email必选，role可选("user" or "admin"),默认为'user' 
+      parameters: 
+        - in: body
+          name: POST DATA
+          description: json请求体
+          required: true
+          type: object
+          schema:
+            properties:
+              password:
+                type: string
+              username:
+                type: string
+              email:
+                type: string
+              role:
+                type: string
+      responses:
+        0:
+          description: OK
+        20002:
+          description: 用户名或邮箱重复
+    get:
+      tags:
+        - "user"
+      summary: 获取用户列表
+      description: 管理员操作
+      parameters: 
+        - name: limit
+          in: query
+          type: integer
+          description: 获取的用户信息条数，可选，默认20条
+          required: false
+        - name: offsize
+          in: query
+          type: integer
+          description: 从第几条开始获取，可选，默认为0,即从第一条开始获取
+          required: false
+      responses:
+        0:
+          description: OK
+        20002:
+          description: offsize超出总条数
+  /user/{username}:
+    get:
+      tags:
+        - "user"
+      summary: 根据用户名获取单个用户信息
+      description: 携带token操作
+      parameters: 
+        - in: path
+          name: username
+          type: string
+          description: 用户名
+          required: true
+      responses:
+        0:
+          description: OK
+        403:
+          description: Forbidden
+        20002:
+          description: 用户名不存在
+          
+  /user/{id}:
+    delete:
+      tags:
+        - "user"
+      summary: 根据id删除用户
+      description: 携带token,且管理员才可操作
+      parameters: 
+        - in: path
+          name: id
+          type: integer
+          description: 用户id
+          required: true
+      responses:
+        0:
+          description: OK
+        403:
+          description: Forbidden
+        20002:
+          description: 该id的用户不存在
+    
+    put:
+      tags: 
+        - "user"
+      summary: 根据id更新用户信息
+      description: 需登录操作，支持修改username,password,email
+      parameters: 
+        - in: path
+          name: id
+          type: integer
+          description: 用户id
+          required: true
+        - in: body
+          name: POST DATA
+          description:　包含需更新字段的对象
+          required: true
+          type: object
+          schema:
+            properties:
+              password:
+                type: string
+              username:
+                type: string
+              email:
+                type: string
+      responses:
+        0:
+          description: OK
+        403:
+          description: Forbidden
+        20002:
+          description: 用户名或邮箱已存在
+
+  /user/duplicate:
+    get:
+      tags:
+        - "user"
+      summary: 检查邮箱或用户名是否已被占用
+      description: 注册新用户时，动态的检测用户输入的用户名，邮箱是否可用。一次只可传username,email中的一个，若两个都传默认检测username是否存在
+      parameters: 
+        - in: query
+          name: username
+          type: string
+          description: 待检测用户名
+          required: false
+        - in: query
+          name: email
+          type: string
+          description: 待检测邮箱
+          required: false
+      responses:
+        200:
+          description: 检测项已存在于数据库中，即不可用
+        404:
+          description: 待检测项可用
+  /app:
+    post:
+      tags:
+         - "app"
+      summary: 创建一个应用
+      description: 登录操作　　 
+      parameters:
+        - in: body
+          name: POST DATA
+          description:　包含一个应用数据的对象
+          required: true
+          type: object
+          schema:
+            properties:
+              app_name:
+                type: string
+              app_desc:
+                type: string
+      responses:
+        0:
+          description: OK
+        20301:
+          description: app_name重复
+    get:
+      tags:
+        - "app"
+      summary: 获取app列表
+      description: 登录操作
+      parameters:
+        - in: query
+          name: limit
+          description: 一次获取app个数，可选，默认20
+          required: false
+          type: integer
+        - in: query
+          name: offsize
+          description: 从哪里开始获取，可选，默认从0开始，即第一条开始
+          required: false
+          type: integer
+      responses:
+        0:
+          description: OK
+        20002:
+          description: offsize超出app总数目
+
+
+  /app/{appname}:
+    get:
+      tags:
+        - "app"
+      summary: 根据appname获取app信息
+      description: 登录方可操作
+      parameters:
+        - in: path
+          name: appname
+          description: 应用名称
+          required: true
+          type: string
+      responses:
+        0:
+          description: OK
+        20302:
+          description: appname不存在
+  /app/{id}:
+    put:
+      tags:
+        - "app"
+      summary: 根据id更新app信息
+      description: 登录操作，可更新的字段为app_name,app_desc，更新则传，不更新不传
+      parameters:
+        - in: path
+          name: id
+          type: integer
+          description: 需更新的app的id
+          required: true
+        - in: body
+          name: POST DATA
+          description:　包含更新字段的对象
+          required: true
+          type: object
+          schema:
+            properties:
+              app_name:
+                type: string
+              app_desc:
+                type: string
+      responses:
+        0:
+          description: OK
+        20002:
+          description: 传入id不存在或者app_name重复
+    delete:
+      tags:
+        - "app"
+      summary: 根据id删除app
+      description: 管理员操作。该行为会删除该app下的所有附属资源，如app下的所有service对象，以及service对象下的所有version对象，如果某一个version对象在cluster中有对应资源，则也会在集群中删除对应资源。总之，该操作属于危险操作。
+      parameters:
+      - in: path
+        name: id
+        type: integer
+        description: 需删除的app的id
+        required: true
+      responses:
+        0:
+          description: OK
+        20002:
+          description:　id不存在或其他数据库相关错误
+        20507:
+          description: 删除集群资源出错
+  /app/duplicate:
+    get:
+      tags:
+      - "app"
+      summary: 检测appname是否可用
+      description:　登录操作
+      parameters:
+      - in: query
+        name: appname
+        description: 待检测应用名
+        required: true
+        type: string
+      responses:
+        0:
+          description: 检测项已存在于数据库中，即不可用
+        20002:
+          description: 待检测项可用
+  /service:
+    post:
+      tags:
+      - "service"
+      summary: 创建service
+      description: 登录操作
+      parameters:
+        - in: body
+          name: POST DATA
+          description:　包含创建service的字段信息的对象
+          required: true
+          type: object
+          schema:
+            properties:
+              app_id:
+                type: string
+              svc_name:
+                type: string
+              svc_desc:
+                type: string
+      responses:
+        0:
+          description: OK
+        20402:
+          description: svc_name重复
+    get:
+      tags:
+      - "service"
+      summary: 获取service列表
+      description: 获取某一app下的service列表为登录用户操作,获取系统全部service的列表需要管理员操作，若传app_id参数为获取app下的service列表，不传app_id则为获取系统全部service的列表
+      parameters:
+        - in: query
+          name: offsize
+          type: integer
+          description:　从哪里开始获取，默认为从第一条开始获取
+          required: false
+        - in: query
+          name: limit
+          type: integer
+          description: 获取多少条，默认一次获取20条
+          required: false
+        - in: query
+          name: app_id
+          type: integer
+          description: 若获取某一app的service列表，需传该参数；获取系统所有service则不传
+          required: false
+      responses:
+        0:
+          description: OK
+        403:
+          description: Forbidden
+        20002:
+          description:　offsize超范围或者app_id不存在
+
+
+
+  /service/{svc_name}:
+    get:
+      tags:
+      - "service"
+      summary: 根据svc_name获取service信息
+      description: 登录操作
+      parameters:
+        - in: path
+          name: svc_name
+          description:　服务名称
+          required: true
+          type: string
+      responses:
+        0:
+          description: OK
+        20403:
+          description: svc_name不存在
+
+  /service/{id}:
+    put:
+      tags:
+      - "service"
+      summary: 更新service
+      description: 登录操作,支持对app_id,svc_name,svc_desc的更新,更新则传，不更不传
+      parameters:
+        - in: path
+          name: id
+          description: 需更新的service的id
+          type: integer
+          required: true
+        - in: body
+          name: POST DATA
+          description:　包含更新字段的对象
+          required: true
+          type: object
+          schema:
+            properties:
+              app_id:
+                type: integer
+              svc_name:
+                type: string
+              svc_desc:
+                type: string
+      responses:
+        0:
+          description: OK
+        20002:
+          description: id不存在或svc_name重复  
+    delete:
+      tags:
+      - "service"
+      summary: 删除service
+      description: 管理员操作。危险操作，删除一个service会删掉该service的所有附属资源，包括该service的所有version记录，如果某version在集群中有对应的资源，则该集群中的资源也会被删除。
+      parameters:
+        - in: path
+          name: id
+          description: 需删除的service的id
+          type: integer
+          required: true
+      responses:
+        0:
+          description: OK
+        20002:
+          description: id不存在或其他数据库错误
+        20507:
+          description: 删除集群资源出错
+
+  /version:
+    post:
+      tags:
+      - "version"
+      summary: 创建版本
+      description: 登录操作，存储一个版本配置到数据库，但是不到cluster中创建资源.请求参数模板见version-template.json
+      parameters:
+        - in: body
+          name: POST DATA
+          type: object
+          schema:
+            properties:
+              svc_id:
+                type: integer
+              version_name:
+                type: string
+              version_desc:
+                type: string
+              version_conf:
+                $ref: "#/definitions/VersionConf"
+      responses:
+        0:
+          description: OK
+        20501:
+          description: 序列化出错　
+        20502:
+          description: 将版本信息存储至数据库时出错
+    get:
+      tags:
+      - "version"
+      summary: 获取版本列表
+      description: 支持获取某一service的版本的列表(登录即可操作)或者数据库中全部的版本的列表(管理员操作)。取决于传不传service_id参数
+      parameters:
+        - in: query
+          name: limit
+          description: 一次获取version个数，可选，默认20
+          required: false
+          type: integer
+        - in: query
+          name: offsize
+          description: 从哪里开始获取，可选，默认从0开始，即第一条开始
+          required: false
+          type: integer
+        - in: query
+          name: service_id
+          description: 服务id,传该参数获取的是特定service的version列表，不传则获取的是数据库中所有version的列表
+          required: false
+          type: integer
+      responses:
+        0:
+          description: OK
+        20002:
+          description: 数据库错误　
+        403:
+          description: Forbidden
+
+  /version/apply:
+    get:
+      tags:
+      - "version"
+      summary: 应用某一版本
+      description: 登录操作。如果当前service已经有版本A在集群中有对应的资源，此时apply该service的版本B的话，会删掉版本A在集群中的资源(版本A的配置信息仍然存在，下一次仍然可以被apply)，然后创建版本B在集群中的资源。如果当前service没有apply任何一个版本的话，即直接在集群中创建所apply的版本的资源。如果apply的是一个已经在集群中跑的version的话，则什么也不做
+      parameters:
+        - in: query
+          name: version_name
+          type: string
+          required: true
+      responses:
+        0:
+          description: OK
+        20002:
+          description: 数据库相关错误
+        20507:
+          description: 在集群中删除资源出错
+
+          
+      
+  /version/unapply:    
+    get:
+      tags:
+      - "version"
+      summary:　取消某一个正在应用的版本
+      description: 登录操作。如果想直接停止某一个service的话，可以对该service的当前活跃version进行unapply操作，该操作在集群中删除该版本对应的cluster资源(该version的数据库记录仍然存在，下一次仍然可以被apply)
+      parameters:
+        - in: query
+          name: version_name
+          description: 版本名
+          type: string
+          required: true
+      responses:
+        0:
+          description: OK
+        20002:
+          description: 数据库相关错误
+        20507:
+          description: 在集群中删除资源出错
+
+  /version/{version_name}:
+    get:
+      tags:
+      - "version"
+      summary: 根据版本名获取版本信息
+      description: 登录操作
+      parameters:
+        - in: path
+          name: version_name
+          description: 版本名
+          type: string
+          required: true
+      responses:
+        0:
+          description: OK
+        20002:
+          description: 数据库相关错误
+
+  /version/{id}:
+    delete:
+      tags:
+      - "version"
+      summary: 删除版本
+      description: 管理员操作。如果需删除的版本是active的，那么将先删除该版本对应的cluster资源，然后删除删除该版本的数据库记录。如果非active,则只删除该version的数据库记录。     
+      parameters:
+        - in: path
+          name: id
+          description: 版本id
+          type: integer
+          required: true
+      responses:
+        0:
+          description: OK
+        20002:
+          description: 数据库相关错误
+        20507:
+          description: 在集群中删除资源出错
+
+  /ns/{ns}:
+    post:
+      tags:
+      - "ns"
+      summary: 创建namespace
+      description:　登录操作
+      parameters:
+        - in: path
+          name: ns
+          description: 新建的命名空间名称
+          type: string
+          required: true
+      responses:
+        0:
+          description: OK
+        20203:
+          description: 命名空间创建出错
+
+    delete:
+      tags:
+      - "ns"
+      summary: 删除namespace
+      description: 管理员操作
+      parameters:
+        - in: path
+          name: ns
+          description: 需要删除的命名空间名称
+          type: string
+          required: true
+      responses:
+        0:
+          description: OK
+        20204:
+          description: 命名空间删除出错
+
+  /ns:
+    get:
+      tags:
+        - "ns"
+      summary: 获取namespace列表
+      description:　登录操作。普通用户无法获取kube-system,kube-public,default中的pod信息。管理员用户可以获取所有命名空间的pod
+      responses:
+        0:
+          description: OK
+        20201:
+          description: 命名空间获取出错
+        
+  /api/v1.0/pod/{ns}:
+    get:
+      tags:
+      - "pod"
+      summary: 获取某一命名空间中所有pod
+      description: 登录操作
+      parameters:
+        - in: path
+          name: ns
+          description: 命名空间名称
+          type: string
+          required: true
+      responses:
+        0:
+          description: OK
+        403:
+          description: Forbidden
+        20701:
+          description: pod获取出错
+  /log/{ns}/{pod_name}/{container_name}:
+    get:
+      tags:
+      - "log"
+      summary: 查询容器log 
+      description: 登录操作,普通用户无法获取kube-system,kube-public,default中的容器log。管理员用户可以获取所有命名空间的容器log
+      parameters:
+        - in: path
+          name: ns
+          description: 命名空间名称
+          type: string
+          required: true
+        - in: path
+          name: pod_name
+          description: pod名称
+          required: true
+          type: string
+        - in: path
+          name: container_name
+          description: 容器名
+          required: true
+          type: string
+      responses:
+        0:
+          description: OK
+        403:
+          description: Forbidden
+  /terminal/{ns}/{pod_name}/{container_name}: 
+    get:
+      tags:
+      - "terminal"
+      summary: 与某一容器建立web terminal会话
+      description: 登录操作,普通用户无法获取kube-system,kube-public,default中的容器。管理员用户可以获取所有命名空间的容器log
+      parameters:
+        - in: path       
+          name: ns
+          description: 命名空间名称
+          type: string
+          required: true
+        - in: path
+          name: pod_name
+          description: pod名称
+          required: true
+          type: string
+        - in: path
+          name: container_name
+          description: 容器名
+          required: true
+          type: string
+      responses:
+        0:
+          description: OK，建立会话成功，接下来传送ws数据
+        403:
+          description: Forbidden
+  /sd/health:
+    get:
+      tags:
+      - "sd"
+      summary: 应用健康检查
+      description:　无需验证
+      responses:
+        200:
+          description: OK
+        403:
+          description: Forbidden
+
+  /sd/cpu:
+    get:
+      tags:
+      - "sd"
+      summary:　cup状态　
+      description: 管理员操作
+      responses:
+        200:
+          description: OK
+        
+
+  /sd/disk:
+    get:
+      tags:
+      - "sd"
+      summary:　磁盘状态
+      description:　管理员操作
+      responses:
+        200:
+          description: OK
+        403:
+          description: Forbidden
+
+  /sd/mem:
+    get:
+      tags:
+      - "sd"
+      summary:　内存状态
+      description:　管理员操作
+      responses:
+        200:
+          description: OK
+        403:
+          description: Forbidden
+
+
+
+ 
+
+
+
+      
+
+          
+          
+
+definitions:
+  VersionConf:
+    type: object
+    properties:
+      deployment:
+        $ref: "#/definitions/Deployment"
+      svc:
+        $ref: "#/definitions/Service"
+
+  Deployment:
+    type: object
+    properties:
+      deploy_name:
+        type: string
+      name_space:
+        type: string
+      replicas:
+        type: integer
+      labels:
+        $ref: "#/definitions/Label"
+      pod_labels:
+        $ref: "#/definitions/Label"
+      containers:
+        $ref: "#/definitions/Containers"
+
+  Service:
+    type: object
+    properties:
+      svc_name:
+        type: string
+      svc_type:
+        type: string
+      selector:
+        $ref: "#/definitions/Selector"
+
+  Selector:
+    type: object
+    properties:
+      key1:
+        type: string
+      key2:
+        type: string
+
+  Label:
+    type: object
+    properties:
+      key1:
+        type: string
+      key2:
+        type: string
+
+  StartCmd:
+    type: "array"
+    items:
+      properties:
+        cmd:
+          type: "string"
+        
+  Env:
+    type: "array"
+    items:
+      properties:
+        env_key:
+          type: string
+        env_val:
+          type: string
+
+  Volume:
+    type: "array"
+    items:
+      properties:
+        volume_name:
+          type: string
+        read_only:
+          type: boolean
+        host_path:
+          type: string
+        host_path_type:
+          type: string
+        target_path:
+          type: string
+  Port:
+    type: "array"
+    items:
+      properties:
+        port_name:
+          type: string
+        image_port:
+          type: integer
+        target_port:
+          type: integer
+        protocol:
+          type: string
+        
+  Containers:
+    type: "array"
+    items:
+      properties:
+        ctr_name:
+          type: string
+        image_url:
+          type: string
+        start_cmd:
+          $ref: "#/definitions/StartCmd"
+        envs:
+          $ref: "#/definitions/Env"
+        volumes:
+          $ref: "#/definitions/Volume"
+        ports:
+          $ref: "#/definitions/Port"
