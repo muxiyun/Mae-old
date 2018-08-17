@@ -214,6 +214,13 @@ func UserInfoDuplicateChecker(ctx iris.Context) {
 	email := ctx.URLParamDefault("email", "")
 	//检查用户名是否占用
 	if username != "" {
+		//不能使用roleAdmin,roleUser,roleAnonymous作为用户名
+		if username=="roleAdmin"|| username=="roleUser"||username=="roleAnonymous"{
+			ctx.StatusCode(iris.StatusOK)
+			ctx.WriteString(fmt.Sprintf("user %s already exist", username))
+			return
+		}
+
 		user, _ := model.GetUserByName(username)
 		if user.UserName != "" {
 			ctx.StatusCode(iris.StatusOK)

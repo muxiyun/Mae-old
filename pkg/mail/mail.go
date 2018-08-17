@@ -1,11 +1,11 @@
 package mail
 
 import (
-	"bytes"
-	"gopkg.in/gomail.v2"
-	"html/template"
-	"io/ioutil"
 	"log"
+	"bytes"
+	"io/ioutil"
+	"html/template"
+	"gopkg.in/gomail.v2"
 )
 
 type NotificationEvent struct {

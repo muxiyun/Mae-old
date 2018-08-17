@@ -329,9 +329,9 @@ paths:
         required: true
         type: string
       responses:
-        0:
+        200:
           description: 检测项已存在于数据库中，即不可用
-        20002:
+        404:
           description: 待检测项可用
   /service:
     post:
@@ -388,7 +388,23 @@ paths:
           description:　offsize超范围或者app_id不存在
 
 
-
+  /service/duplicate:
+    get:
+      tags:
+      - "service"
+      summary: 检测service name是否可用
+      description:　登录操作
+      parameters:
+      - in: query
+        name: svcname
+        description: 待检测服务名
+        required: true
+        type: string
+      responses:
+        200:
+          description: 检测项已存在于数据库中，即不可用
+        404:
+          description: 待检测项可用
   /service/{svc_name}:
     get:
       tags:

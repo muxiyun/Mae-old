@@ -67,6 +67,7 @@ func Load(app *iris.Application) *iris.Application {
 		service_app.Delete("/{id:long}", handler.DeleteService)
 		service_app.Get("/{svc_name:string}", handler.GetService)
 		service_app.Get("", handler.GetServiceList)
+		service_app.Get("/duplicate", handler.ServiceNameDuplicateChecker)
 	}
 
 	version_app := app.Party("/api/v1.0/version")

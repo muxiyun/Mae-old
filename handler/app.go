@@ -1,13 +1,14 @@
 package handler
 
 import (
+	"fmt"
+	"time"
 	"errors"
 	"encoding/json"
 	"github.com/kataras/iris"
 	"github.com/muxiyun/Mae/model"
 	"github.com/muxiyun/Mae/pkg/errno"
 	"github.com/muxiyun/Mae/pkg/mail"
-	"time"
 )
 
 //create a new app
@@ -35,6 +36,7 @@ func GetApp(ctx iris.Context) {
 	}
 	SendResponse(ctx, nil, app)
 }
+
 
 //update the info of a app
 func UpdateApp(ctx iris.Context) {
@@ -84,18 +86,16 @@ func GetAppList(ctx iris.Context) {
 func AppNameDuplicateChecker(ctx iris.Context) {
 	appname := ctx.URLParamDefault("appname", "")
 
-	if appname != "" {
-		app, err := model.GetAppByName(appname)
-		if err != nil {
-			SendResponse(ctx, errno.New(errno.ErrDatabase, err),
-				iris.Map{"message": app.AppName + " not exists"})
-			return
-		}
-		SendResponse(ctx, nil, iris.Map{"message": appname + " exists"})
+	app, _ := model.GetAppByName(appname)
+	if app.AppName == "" {
+		ctx.StatusCode(iris.StatusNotFound)
+		ctx.WriteString(fmt.Sprintf("app %s not exist", appname))
 		return
 	}
+	ctx.StatusCode(iris.StatusOK)
+	ctx.WriteString(fmt.Sprintf("app %s already exist", appname))
+	return
 
-	SendResponse(ctx, errno.New(errno.ErrAppNameNotProvide, errors.New("")), nil)
 }
 
 
