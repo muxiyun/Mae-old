@@ -15,7 +15,7 @@ TODO:
 - [x] version (abstract entity)
 - [x] log query
 - [x] web terminal
-
+- [x] email notification for admin
 NEXT:
 
 1.现在版本的切换采取的是删除原版本的资源之后创建新版本的资源，后面改为灰度发布
