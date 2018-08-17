@@ -21,8 +21,11 @@ import:
   - load
   - mem
 - package: github.com/spf13/viper
-- package: golang.org/x/crypto/bcrypt
+- package: golang.org/x/crypto
+  subpackages:
+  - bcrypt
 - package: gopkg.in/go-playground/validator.v9
+- package: gopkg.in/gomail.v2
 - package: k8s.io/api
   subpackages:
   - core/v1
