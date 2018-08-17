@@ -239,7 +239,6 @@ func UserInfoDuplicateChecker(ctx iris.Context) {
 	}
 }
 
-
 func ConfirmUser(ctx iris.Context) {
 	tokenString := ctx.URLParam("tk")
 	tk := token.NewJWToken("")
