@@ -32,7 +32,7 @@ func getConfirmLink(ctx iris.Context, user model.User) (string, error) {
 	tokenString, err := tk.GenJWToken(map[string]interface{}{
 		"username":       user.UserName,
 		"signTime":       time.Now().Unix(),
-		"validdeltatime": 30, // 30 minutes
+		"validdeltatime": 30*60, // 30 minutes
 	})
 	if err != nil {
 		return "", err
