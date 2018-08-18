@@ -1,6 +1,6 @@
-runmode: debug                 # 开发模式, debug, release, test
-addr: :8080                  # HTTP绑定端口
-name: mae_apiserver              # API Server的名字
+runmode: dev               # 开发模式, prod/dev
+addr: :8080                 # HTTP绑定端口
+name: mae_apiserver           # API Server的名字
 url: http://127.0.0.1:8080   # pingServer函数请求的API服务器的ip:port
 max_ping_count: 10           # pingServer函数try的次数
 jwt_secret: Rtg8BPKNEf2mB4mgvKONGPZZQSaJWNLijxR42qRgq0iBb5  #46字符的随机字符串
@@ -35,7 +35,7 @@ mail:
   host: smtp.qq.com
   #邮件服务端口
   port: 25
-  username: 3480437308@qq.com　
+  username: 3480437308@qq.com
   senderNickName: Mae notification robot　
   password: iifwjwzfjxvxchig
   #与邮件服务器连接的最大时长，默认30秒，即30秒之内没有需要发送的邮件则断开与邮件服务器的连接

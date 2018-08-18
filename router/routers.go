@@ -2,6 +2,7 @@ package router
 
 import (
 	"github.com/kataras/iris"
+	"github.com/kataras/iris/middleware/recover"
 	"github.com/muxiyun/Mae/handler"
 	"github.com/muxiyun/Mae/pkg/casbin"
 	"github.com/muxiyun/Mae/router/middleware"
@@ -13,6 +14,7 @@ func Load(app *iris.Application) *iris.Application {
 	app.Use(middleware.NoCache)
 	app.Use(middleware.Options)
 	app.Use(middleware.Secure)
+	app.Use(recover.New())
 	app.Use(casbin.CasbinMiddleware.ServeHTTP)
 
 	//routers setup here

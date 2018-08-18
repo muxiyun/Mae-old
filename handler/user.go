@@ -119,7 +119,6 @@ func CreateUser(ctx iris.Context) {
 	}
 
 	if err := user.Create(); err != nil {
-		fmt.Println(err)
 		SendResponse(ctx, errno.New(errno.ErrDatabase, err), nil)
 		return
 	}

@@ -1,8 +1,6 @@
 package middleware
 
 import (
-	"encoding/base64"
-	"strings"
 	"time"
 
 	"github.com/kataras/iris"
@@ -15,22 +13,13 @@ import (
 )
 
 func TokenChecker(ctx iris.Context) {
-	auth_info := ctx.GetHeader("Authorization")
-	if auth_info == "" {
+	token_or_username,password,ok:=ctx.Request().BasicAuth()
+	if !ok{
 		ctx.Values().Set("current_user_name", "")
 		ctx.Values().Set("token_used", "0")
 		ctx.Next()
 		return
 	} else {
-		result, err := base64.StdEncoding.DecodeString(auth_info[6:])
-		if err != nil {
-			handler.SendResponse(ctx, errno.New(errno.ErrDecodeToken, err), nil)
-			return
-		}
-		auth_strs := strings.Split(string(result), ":")
-		token_or_username := auth_strs[0]
-		password := auth_strs[1]
-		//fmt.Println("token_or_username:",token_or_username,"passwd",password)
 		if token_or_username == "" {
 			ctx.Values().Set("current_user_name", "")
 			ctx.Values().Set("token_used", "0")
