@@ -8,7 +8,6 @@ import (
 	"github.com/muxiyun/Mae/model"
 	"github.com/muxiyun/Mae/pkg/k8sclient"
 	"errors"
-	"github.com/spf13/viper"
 )
 
 func SendResponse(c iris.Context, err error, data interface{}) {
@@ -23,12 +22,6 @@ func SendResponse(c iris.Context, err error, data interface{}) {
 	})
 }
 
-func IsProductionEnvironment()bool{
-	if viper.GetString("runmode")=="prod"{
-		return true
-	}
-	return false
-}
 
 func DeleteDeploymentAndServiceInCluster(version_config model.VersionConfig)error{
 	//delete the deployment

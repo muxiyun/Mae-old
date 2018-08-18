@@ -2,7 +2,7 @@ package errno
 
 import (
 	"fmt"
-	"github.com/muxiyun/Mae/handler"
+	"github.com/spf13/viper"
 )
 
 type Errno struct {
@@ -45,6 +45,13 @@ func IsErrUserNotFound(err error) bool {
 }
 
 
+func isProductionEnvironment()bool {
+	if viper.GetString("runmode") == "prod" {
+		return true
+	}
+	return false
+}
+
 
 func DecodeErr(err error) (int, string) {
 	if err == nil {
@@ -53,7 +60,7 @@ func DecodeErr(err error) (int, string) {
 
 	switch typed := err.(type) {
 	case *Err:
-		if handler.IsProductionEnvironment(){
+		if isProductionEnvironment(){
 			return typed.Code,typed.Message
 		}else{
 			return typed.Code, typed.Message + ", " + typed.Err.Error()

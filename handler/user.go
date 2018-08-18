@@ -135,8 +135,8 @@ func CreateUser(ctx iris.Context) {
 
 	// Be careful,confirm link can't be return to client in production environment
 	// here we return it just for test
-	if IsProductionEnvironment(){
-		SendResponse(ctx,nil, iris.Map{"id": user.ID, "username": user.UserName})
+	if viper.GetString("runmode")=="prod"{
+		SendResponse(ctx, nil, iris.Map{"id": user.ID, "username": user.UserName})
 	}else{
 		SendResponse(ctx, nil, iris.Map{"id": user.ID, "username": user.UserName,"link":link})
 	}
