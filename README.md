@@ -1,5 +1,21 @@
 # [muxi application engine(Mae)](https://github.com/muxiyun/Mae/tree/master)
 
+```
+                 _      _      _
+              __(.)< __(.)> __(.)=
+              \___)  \___)  \___)
+                     _      _      _
+                  __(.)< __(.)> __(.)=
+                  \___)  \___)  \___)
+                 _      _      _
+              __(.)< __(.)> __(.)=
+              \___)  \___)  \___)
+                     _      _      _
+                  __(.)< __(.)> __(.)=
+                  \___)  \___)  \___)
+
+```
+
 PaaS of Muxi-Studio. An easier way to manage Kubernetes cluser.
 
 Click [http://zxc0328.github.io/2017/05/27/mae/](http://zxc0328.github.io/2017/05/27/mae/) to view details.
@@ -23,7 +39,7 @@ you can also refer to [`glide mirror`](https://glide.readthedocs.io/en/latest/co
 
 Before you run Mae, you firstly have to config it. How to config? 
 
-Firstly, you have to get the admin's kubeconfig file, and make sure the name of this file is `admin.kubeconfig`(if not so, you may have to rename it). Then put the `admin.kubeconfig` file in the `conf` folder of this project. the `admin.kubeconfig` is the link between this program and the kubernets cluster. So it's really import.
+Firstly, you have to get the admin's kubeconfig file, and make sure the name of this file is `admin.kubeconfig`(if not so, you may have to rename it). Then put the `admin.kubeconfig` file in the `conf` folder of this project. the `admin.kubeconfig` is the link between this program and the kubernets cluster. So it's really important.
 
 Secondly, You have to edit `conf/config.yaml` to config the mysql database connection information, the listen address and other configurable options. There are a lot of annotations in the config file, so you can view that to know more.
 
