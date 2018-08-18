@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"time"
 	"errors"
 	"net/http"
@@ -64,17 +63,19 @@ func newApp() *iris.Application {
 
 func main() {
 
+	printLogo()
+
 	app := newApp()
 
 	// start the mail service daemon
 	go func() {
-		d := gomail.NewDialer("smtp.qq.com", 25, "3480437308@qq.com", "iifwjwzfjxvxchig")
+
+		d := gomail.NewDialer(viper.GetString("mail.host"), viper.GetInt("mail.port"), viper.GetString("mail.username"), viper.GetString("mail.password"))
 
 		var s gomail.SendCloser
 		var err error
 		open := false
 		for {
-			fmt.Println("mail...")
 			select {
 			case m, ok := <-mail.Ms.Ch:
 				if !ok {
@@ -91,7 +92,8 @@ func main() {
 				}
 				// Close the connection to the SMTP server if no email was sent in
 				// the last 30 seconds.
-			case <-time.After(30 * time.Second):
+
+			case <-time.After(time.Duration(viper.GetInt("mail.maxFreeTime")) * time.Second):
 				if open {
 					if err := s.Close(); err != nil {
 						panic(err)

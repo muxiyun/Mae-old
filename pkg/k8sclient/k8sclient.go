@@ -1,7 +1,6 @@
 package k8sclient
 
 import (
-	"fmt"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/schema"
 	"k8s.io/apimachinery/pkg/runtime/serializer"
@@ -24,14 +23,12 @@ func init() {
 	if err != nil {
 		panic(err.Error())
 	}
-	fmt.Println("k8s client config success")
 
 	//get clientset
 	ClientSet, err = kubernetes.NewForConfig(Config)
 	if err != nil {
 		panic(err.Error())
 	}
-	fmt.Println("get clientset success")
 
 	groupversion := schema.GroupVersion{
 		Group:   "",
@@ -47,6 +44,5 @@ func init() {
 	if err != nil {
 		panic(err.Error())
 	}
-	fmt.Println("get restclient success")
 
 }

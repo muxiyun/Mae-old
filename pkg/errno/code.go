@@ -34,6 +34,7 @@ var (
 	ErrCreateApp         = &Errno{Code: 20301, Message: "Error occurred while create App"}
 	ErrGetApp            = &Errno{Code: 20302, Message: "Error occurred while get app by app_name"}
 	ErrAppNameNotProvide = &Errno{Code: 20303, Message: "AppName not provided"}
+	ErrServiceNameNotProvide =&Errno{Code:20304,Message: "svcName not provided"}
 
 	//Service
 	ServiceNameEmptyorAppIDTypeError = &Errno{Code: 20401, Message: "Error Service Name can't be empty and app_id should be int but not string "}

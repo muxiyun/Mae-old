@@ -1,8 +1,8 @@
 package handler
 
 import (
-	"fmt"
 	"encoding/json"
+	"fmt"
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/core/errors"
 	"github.com/muxiyun/Mae/model"
@@ -86,18 +86,18 @@ func DeleteService(ctx iris.Context) {
 	service_id, _ := ctx.Params().GetInt64("id")
 
 	// get the current service object
-	service,err:=model.GetServiceByID(service_id)
-	if err!=nil{
-		SendResponse(ctx,errno.New(errno.ErrDatabase,err),nil)
+	service, err := model.GetServiceByID(service_id)
+	if err != nil {
+		SendResponse(ctx, errno.New(errno.ErrDatabase, err), nil)
 		return
 	}
 
 	// current service have active version
-	if service.CurrentVersion!=""{
-		version:=&model.Version{}
+	if service.CurrentVersion != "" {
+		version := &model.Version{}
 		d := model.DB.RWdb.Where("version_name = ?", service.CurrentVersion).Find(&version)
-		if d.Error!=nil{
-			SendResponse(ctx,errno.New(errno.ErrDatabase,d.Error),nil)
+		if d.Error != nil {
+			SendResponse(ctx, errno.New(errno.ErrDatabase, d.Error), nil)
 			return
 		}
 
@@ -105,17 +105,17 @@ func DeleteService(ctx iris.Context) {
 		var version_config model.VersionConfig
 		json.Unmarshal([]byte(version.VersionConfig), &version_config)
 
-		if err:=DeleteDeploymentAndServiceInCluster(version_config);err!=nil{
-			SendResponse(ctx,errno.New(errno.ErrDeleteResourceInCluster,err),nil)
+		if err := DeleteDeploymentAndServiceInCluster(version_config); err != nil {
+			SendResponse(ctx, errno.New(errno.ErrDeleteResourceInCluster, err), nil)
 			return
 		}
 
 	}
 
 	//delete versions which belongs to current service
-	d:=model.DB.RWdb.Unscoped().Delete(model.Version{}, "svc_id = ?", service_id)
-	if d.Error!=nil{
-		SendResponse(ctx,errno.New(errno.ErrDatabase,d.Error),nil)
+	d := model.DB.RWdb.Unscoped().Delete(model.Version{}, "svc_id = ?", service_id)
+	if d.Error != nil {
+		SendResponse(ctx, errno.New(errno.ErrDatabase, d.Error), nil)
 		return
 	}
 
@@ -125,31 +125,30 @@ func DeleteService(ctx iris.Context) {
 		return
 	}
 
-	notification:=mail.NotificationEvent{
-		Level:"Warning",
-		UserName:"Admin user",
-		Who:ctx.Values().GetString("current_user_name"),
-		Action:" delete ",
-		What:" service ["+ service.SvcName+"]",
-		When:time.Now().String(),
+	notification := mail.NotificationEvent{
+		Level:    "Warning",
+		UserName: "Admin user",
+		Who:      ctx.Values().GetString("current_user_name"),
+		Action:   " delete ",
+		What:     " service [" + service.SvcName + "]",
+		When:     time.Now().String(),
 	}
 
-	receptions:=[]string{}
+	receptions := []string{}
 	var adminUsers []model.User
 	d = model.DB.RWdb.Where("role = ?", "admin").Find(&adminUsers)
-	if d.Error!=nil{
-		SendResponse(ctx,errno.New(errno.ErrDatabase,d.Error),nil)
+	if d.Error != nil {
+		SendResponse(ctx, errno.New(errno.ErrDatabase, d.Error), nil)
 		return
 	}
-	for _,admin:=range adminUsers{
-		receptions=append(receptions,admin.Email)
+	for _, admin := range adminUsers {
+		receptions = append(receptions, admin.Email)
 	}
 
-	mail.SendNotificationEmail(notification,receptions)
+	mail.SendNotificationEmail(notification, receptions)
 
 	SendResponse(ctx, nil, iris.Map{"id": service_id})
 }
-
 
 //get all services or services that belongs to an app
 func GetServiceList(ctx iris.Context) {
@@ -179,4 +178,20 @@ func GetServiceList(ctx iris.Context) {
 		return
 	}
 	SendResponse(ctx, nil, iris.Map{"count": count, "svcs": svcs})
+}
+
+//check whether a service name exist in db
+func ServiceNameDuplicateChecker(ctx iris.Context) {
+	svcName := ctx.URLParamDefault("svcname", "")
+
+	svc, _ := model.GetServiceByName(svcName)
+	if svc.SvcName == "" {
+		ctx.StatusCode(iris.StatusNotFound)
+		ctx.WriteString(fmt.Sprintf("service %s not exist", svcName))
+		return
+	}
+	ctx.StatusCode(iris.StatusOK)
+	ctx.WriteString(fmt.Sprintf("service %s already exist", svc.SvcName))
+	return
+
 }

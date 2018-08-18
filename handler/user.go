@@ -12,6 +12,7 @@ import (
 	"github.com/muxiyun/Mae/pkg/errno"
 	"github.com/muxiyun/Mae/pkg/mail"
 	"github.com/muxiyun/Mae/pkg/token"
+	"github.com/spf13/viper"
 )
 
 //获取验证链接
@@ -32,7 +33,7 @@ func getConfirmLink(ctx iris.Context, user model.User) (string, error) {
 	tokenString, err := tk.GenJWToken(map[string]interface{}{
 		"username":       user.UserName,
 		"signTime":       time.Now().Unix(),
-		"validdeltatime": 30, // 30 minutes
+		"validdeltatime": viper.GetInt("mail.confirmTime")*60,
 	})
 	if err != nil {
 		return "", err
@@ -214,6 +215,13 @@ func UserInfoDuplicateChecker(ctx iris.Context) {
 	email := ctx.URLParamDefault("email", "")
 	//检查用户名是否占用
 	if username != "" {
+		//不能使用roleAdmin,roleUser,roleAnonymous作为用户名
+		if username=="roleAdmin"|| username=="roleUser"||username=="roleAnonymous"{
+			ctx.StatusCode(iris.StatusOK)
+			ctx.WriteString(fmt.Sprintf("user %s already exist", username))
+			return
+		}
+
 		user, _ := model.GetUserByName(username)
 		if user.UserName != "" {
 			ctx.StatusCode(iris.StatusOK)
