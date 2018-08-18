@@ -12,6 +12,7 @@ import (
 	"github.com/muxiyun/Mae/pkg/errno"
 	"github.com/muxiyun/Mae/pkg/mail"
 	"github.com/muxiyun/Mae/pkg/token"
+	"github.com/spf13/viper"
 )
 
 //获取验证链接
@@ -32,7 +33,7 @@ func getConfirmLink(ctx iris.Context, user model.User) (string, error) {
 	tokenString, err := tk.GenJWToken(map[string]interface{}{
 		"username":       user.UserName,
 		"signTime":       time.Now().Unix(),
-		"validdeltatime": 30*60, // 30 minutes
+		"validdeltatime": viper.GetInt("mail.confirmTime")*60,
 	})
 	if err != nil {
 		return "", err

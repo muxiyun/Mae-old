@@ -7,10 +7,11 @@ import (
 	"github.com/kataras/iris"
 	"github.com/muxiyun/Mae/pkg/errno"
 	"github.com/muxiyun/Mae/pkg/token"
+	"github.com/spf13/viper"
 )
 
 func SignToken(ctx iris.Context) {
-	validdeltatime := ctx.URLParamInt64Default("ex", 60*60) //validity period,default a hour
+	validdeltatime := ctx.URLParamInt64Default("ex", viper.GetInt64("tokenEffectiveTime")*60)
 	current_user_name := ctx.Values().GetString("current_user_name")
 
 	if current_user_name == "" {
