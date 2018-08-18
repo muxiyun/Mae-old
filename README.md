@@ -6,7 +6,7 @@ Click [http://zxc0328.github.io/2017/05/27/mae/](http://zxc0328.github.io/2017/0
 
 
 ## Feature:
-- [x] fast version switch and management
+- [x] fast and sliding version switch and management
 - [x] application management for microservices
 - [x] casbin access control(RBAC with domains/tenants)
 - [x] log query of sepcific container
@@ -38,7 +38,7 @@ After you have finished the config part, you can just to use the following comma
 ``` bash
 $ go test -v -cover=true
 ```
-But we don't to suggest you to do so. In order to prevent the rapid consumption of cluster resources and the interaction between test cases, we recommend that you run the test cases one by one in you integrated development environment(suggest [Goland](https://www.jetbrains.com/go/)).
+But we don't suggest you to do so. In order to prevent the rapid consumption of cluster resources and the interaction between test cases, we recommend that you run the test cases one by one in you integrated development environment(suggest [Goland](https://www.jetbrains.com/go/)).
 
 ## Next:
 
