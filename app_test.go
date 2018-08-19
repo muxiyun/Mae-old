@@ -93,11 +93,11 @@ func TestAppCRUD(t *testing.T) {
 
 	// a normal user to test app_name duplicate checker
 	e.GET("/api/v1.0/app/duplicate").WithQuery("appname", "华师匣子").
-		WithBasicAuth(andrew_token, "").Expect().Body().NotContains("record not found")
+		WithBasicAuth(andrew_token, "").Expect().Body().NotContains("not exist")
 
 	// an admin user to test app_name duplicate checker
 	e.GET("/api/v1.0/app/duplicate").WithQuery("appname", "木小犀机器人").
-		WithBasicAuth(andrewadmin_token, "").Expect().Body().Contains("record not found")
+		WithBasicAuth(andrewadmin_token, "").Expect().Body().Contains("not exist")
 }
 
 
