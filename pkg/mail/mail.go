@@ -2,6 +2,7 @@ package mail
 
 import (
 	"log"
+	"time"
 	"bytes"
 	"io/ioutil"
 	"html/template"
@@ -85,4 +86,47 @@ func SendConfirmEmail(ce ConfirmEvent, recipient string) {
 	Ms.Msg.SetBody("text/html", tpl.String())
 
 	Ms.Ch <- Ms.Msg
+}
+
+
+// start the mail service daemon with a goroutine in your main function
+// like the following
+//
+//   go mail.StartMailDaemon()
+func StartMailDaemon() {
+
+	d := gomail.NewDialer(viper.GetString("mail.host"), viper.GetInt("mail.port"),
+		viper.GetString("mail.username"), viper.GetString("mail.password"))
+
+	var s gomail.SendCloser
+	var err error
+	open := false
+	for {
+		select {
+		case m, ok := <-Ms.Ch:
+			if !ok {
+				return
+			}
+			if !open {
+				if s, err = d.Dial(); err != nil {
+					panic(err)
+				}
+				open = true
+			}
+			if err := gomail.Send(s, m); err != nil {
+				log.Println(err.Error())
+			}
+			// Close the connection to the SMTP server if no email was sent in
+			// the last 30 seconds.
+
+		case <-time.After(time.Duration(viper.GetInt("mail.maxFreeTime")) * time.Second):
+			if open {
+				if err := s.Close(); err != nil {
+					panic(err)
+				}
+				open = false
+			}
+		}
+	}
+	close(Ms.Ch)
 }
