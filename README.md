@@ -49,7 +49,7 @@ $ go build && ./Mae
 ```
 Then, you can check `/api/v1.0/sd/health` to see whether it work properly or not.
 
-Actually, if you don't want to build it youself, you can use the binary version of release.
+Actually, if you don't want to build it by youself, you can use the binary version of [release](https://github.com/muxiyun/Mae/releases/tag/v1.0.1).
 
 ## Test
 After you have finished the config part, you can just to use the following command to run the whole test.
@@ -66,4 +66,4 @@ But we don't suggest you to do so. In order to prevent the rapid consumption of 
 4. Further improve the documentation
 
 ## Thanks
-Thanks for developers of kubernetes,client-go,iris and mysql.
+Thanks for developers of golang, kubernetes and client-go.
