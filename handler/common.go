@@ -23,7 +23,6 @@ func SendResponse(c iris.Context, err error, data interface{}) {
 }
 
 
-
 func DeleteDeploymentAndServiceInCluster(version_config model.VersionConfig)error{
 	//delete the deployment
 	deploymentClient := k8sclient.ClientSet.ExtensionsV1beta1().

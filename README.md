@@ -41,13 +41,15 @@ Before you run Mae, you firstly have to config it. How to config?
 
 Firstly, you have to get the admin's kubeconfig file, and make sure the name of this file is `admin.kubeconfig`(if not so, you may have to rename it). Then put the `admin.kubeconfig` file in the `conf` folder of this project. the `admin.kubeconfig` is the link between this program and the kubernets cluster. So it's really important.
 
-Secondly, You have to edit `conf/config.yaml` to config the mysql database connection information, the listen address and other configurable options. There are a lot of annotations in the config file, so you can view that to know more.
+Secondly, You have to edit `conf/config.yaml` to config the mysql database connection information, the listen address and other configurable options.Note that you have to manually create a database which is named `mae`. There are a lot of annotations in the config file, so you can view that to know more.
 
 After you have finished the config part, you can build and run it by typing the following command in you shell.
 ``` bash
 $ go build && ./Mae
 ```
 Then, you can check `/api/v1.0/sd/health` to see whether it work properly or not.
+
+Actually, if you don't want to build it by youself, you can use the binary version of [release](https://github.com/muxiyun/Mae/releases/tag/v1.0.1).
 
 ## Test
 After you have finished the config part, you can just to use the following command to run the whole test.
@@ -64,4 +66,4 @@ But we don't suggest you to do so. In order to prevent the rapid consumption of 
 4. Further improve the documentation
 
 ## Thanks
-Thanks for developers of kubernetes,client-go,iris and mysql.
+Thanks for developers of golang, kubernetes and client-go.

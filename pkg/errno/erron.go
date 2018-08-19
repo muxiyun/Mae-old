@@ -1,6 +1,9 @@
 package errno
 
-import "fmt"
+import (
+	"fmt"
+	"github.com/spf13/viper"
+)
 
 type Errno struct {
 	Code    int
@@ -41,6 +44,15 @@ func IsErrUserNotFound(err error) bool {
 	return code == ErrUserNotFound.Code
 }
 
+
+func isProductionEnvironment()bool {
+	if viper.GetString("runmode") == "prod" {
+		return true
+	}
+	return false
+}
+
+
 func DecodeErr(err error) (int, string) {
 	if err == nil {
 		return OK.Code, OK.Message
@@ -48,7 +60,11 @@ func DecodeErr(err error) (int, string) {
 
 	switch typed := err.(type) {
 	case *Err:
-		return typed.Code, typed.Message + " " + typed.Err.Error()
+		if isProductionEnvironment(){
+			return typed.Code,typed.Message
+		}else{
+			return typed.Code, typed.Message + ", " + typed.Err.Error()
+		}
 	case *Errno:
 		return typed.Code, typed.Message
 	default:

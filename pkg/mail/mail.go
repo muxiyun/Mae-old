@@ -41,11 +41,11 @@ func Setup() {
 	Ms.Msg.SetHeader("From", Ms.Msg.FormatAddress(viper.GetString("mail.username"), viper.GetString("mail.senderNickName")))
 	Ms.Msg.SetHeader("Subject", "Notification from Mae")
 
-	notification, err := ioutil.ReadFile("./pkg/mail/notification.tpl")
+	notification, err := ioutil.ReadFile("./conf/mailTemplates/notification.tpl")
 	if err != nil {
 		log.Fatal("error occurred while read from notification.tpl")
 	}
-	confirm, err := ioutil.ReadFile("./pkg/mail/confirm.tpl")
+	confirm, err := ioutil.ReadFile("./conf/mailTemplates/confirm.tpl")
 	if err != nil {
 		log.Fatal("error occurred while read from confirm.tpl")
 	}
