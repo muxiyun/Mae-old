@@ -1,9 +1,6 @@
 package main
 
 import (
-	"time"
-	"errors"
-	"net/http"
 
 	"github.com/muxiyun/Mae/config"
 	"github.com/muxiyun/Mae/model"
@@ -12,27 +9,10 @@ import (
 	"github.com/muxiyun/Mae/router"
 
 	"github.com/kataras/iris"
-	"github.com/lexkong/log"
 	"github.com/spf13/viper"
-	"gopkg.in/gomail.v2"
-
+	"github.com/lexkong/log"
 )
 
-// pingServer pings the http server to make sure the router is working.
-func pingServer() error {
-	for i := 0; i < viper.GetInt("max_ping_count"); i++ {
-		// Ping the server by sending a GET request to `/health`.
-		resp, err := http.Get(viper.GetString("url") + "/api/v1.0/sd/health")
-		if err == nil && resp.StatusCode == 200 {
-			return nil
-		}
-
-		// Sleep for a second to continue the next ping.
-		log.Info("Waiting for the router, retry in 1 second.")
-		time.Sleep(time.Second)
-	}
-	return errors.New("Cannot connect to the router.")
-}
 
 //for test
 func newApp() *iris.Application {
@@ -67,44 +47,8 @@ func main() {
 
 	app := newApp()
 
-	// start the mail service daemon
-	go func() {
-
-		d := gomail.NewDialer(viper.GetString("mail.host"), viper.GetInt("mail.port"), viper.GetString("mail.username"), viper.GetString("mail.password"))
-
-		var s gomail.SendCloser
-		var err error
-		open := false
-		for {
-			select {
-			case m, ok := <-mail.Ms.Ch:
-				if !ok {
-					return
-				}
-				if !open {
-					if s, err = d.Dial(); err != nil {
-						panic(err)
-					}
-					open = true
-				}
-				if err := gomail.Send(s, m); err != nil {
-					//log.Error(err)
-				}
-				// Close the connection to the SMTP server if no email was sent in
-				// the last 30 seconds.
-
-			case <-time.After(time.Duration(viper.GetInt("mail.maxFreeTime")) * time.Second):
-				if open {
-					if err := s.Close(); err != nil {
-						panic(err)
-					}
-					open = false
-				}
-			}
-		}
-		close(mail.Ms.Ch)
-	}()
-
+	// start mail daemon
+	go mail.StartMailDaemon()
 
 	// Ping the server to make sure the router is working.
 	go func() {
@@ -126,8 +70,6 @@ func main() {
 
 	log.Infof("Start to listening the incoming requests on http address: %s", viper.GetString("addr"))
 	log.Info(app.Run(iris.Addr(viper.GetString("addr")), iris.WithoutVersionChecker).Error())
-
-
 
 
 	model.DB.RWdb.Close()
